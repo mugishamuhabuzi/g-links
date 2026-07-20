@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Add Business - Venx Market</title>
+
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:Arial;
+}
+
+
+body{
+
+background:#f4f4f4;
+
+}
+
+
+.container{
+
+width:95%;
+max-width:700px;
+
+margin:30px auto;
+
+background:white;
+
+padding:25px;
+
+border-radius:12px;
+
+box-shadow:0 5px 15px #ccc;
+
+}
+
+
+h2{
+
+text-align:center;
+
+color:#0b8f4d;
+
+}
+
+
+h3{
+
+margin-top:20px;
+
+color:#333;
+
+}
+
+
+input,textarea,select{
+
+width:100%;
+
+padding:12px;
+
+margin-top:8px;
+
+margin-bottom:12px;
+
+border:1px solid #ccc;
+
+border-radius:8px;
+
+}
+
+
+textarea{
+
+height:100px;
+
+}
+
+
+button{
+
+width:100%;
+
+padding:14px;
+
+background:#0b8f4d;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+font-size:17px;
+
+margin-top:15px;
+
+}
+
+
+.item-box{
+
+background:#eee;
+
+padding:15px;
+
+border-radius:10px;
+
+margin-top:15px;
+
+}
+
+
+.remove{
+
+background:#d33;
+
+}
+
+
+#preview img{
+
+width:100px;
+
+height:100px;
+
+object-fit:cover;
+
+border-radius:10px;
+
+margin:5px;
+
+}
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<h2>
+Register Your Business
+</h2>
+
+
+<h3>Business Information</h3>
+
+
+<input id="businessName"
+placeholder="Business Name">
+
+
+<input id="businessPhone"
+placeholder="Business Phone Number">
+
+
+<input id="address"
+placeholder="Business Address">
+
+
+<select id="category">
+
+<option value="">
+Select Main Category
+</option>
+
+<option>
+Electronics
+</option>
+
+<option>
+Clothes
+</option>
+
+<option>
+Food
+</option>
+
+<option>
+Furniture
+</option>
+
+<option>
+Cars
+</option>
+
+<option>
+Beauty
+</option>
+
+<option>
+Other
+</option>
+
+</select>
+
+
+<textarea id="description"
+placeholder="Business Description">
+</textarea>
+
+
+
+<h3>
+Business Logo
+</h3>
+
+
+<input type="file"
+id="logo"
+accept="image/*">
+
+
+<div id="logoPreview"></div>
+
+
+
+
+<h3>
+Items / Products
+</h3>
+
+
+
+<div id="items"></div>
+
+
+<button onclick="addItem()">
++ Add Item
+</button>
+
+
+
+
+<button id="submitBtn">
+
+Submit Business Registration
+
+</button>
+
+
+
+</div>
+
+
+
+
+<script>
+
+
+let products=[];
+
+
+function addItem(){
+
+
+let id=Date.now();
+
+
+
+let div=document.createElement("div");
+
+
+div.className="item-box";
+
+
+div.innerHTML=`
+
+<h4>Item</h4>
+
+
+<input class="itemName"
+placeholder="Item Name">
+
+
+<input class="itemCategory"
+placeholder="Item Category">
+
+
+<textarea class="itemDescription"
+placeholder="Item Description">
+</textarea>
+
+
+<input class="itemSize"
+placeholder="Size">
+
+
+<input class="itemModel"
+placeholder="Model">
+
+
+<input class="itemMaterial"
+placeholder="Material">
+
+
+<input class="itemPrice"
+type="number"
+placeholder="Price UGX">
+
+
+<input class="itemImage"
+type="file"
+accept="image/*">
+
+
+<button class="remove"
+onclick="this.parentElement.remove()">
+
+Remove Item
+
+</button>
+
+`;
+
+
+document.getElementById("items")
+.appendChild(div);
+
+
+}
+
+
+
+
+document.getElementById("submitBtn")
+.onclick=function(){
+
+
+
+let itemBoxes=document
+.querySelectorAll(".item-box");
+
+
+
+let items=[];
+
+
+
+itemBoxes.forEach(box=>{
+
+
+items.push({
+
+name:
+box.querySelector(".itemName").value,
+
+
+category:
+box.querySelector(".itemCategory").value,
+
+
+description:
+box.querySelector(".itemDescription").value,
+
+
+size:
+box.querySelector(".itemSize").value,
+
+
+model:
+box.querySelector(".itemModel").value,
+
+
+material:
+box.querySelector(".itemMaterial").value,
+
+
+price:
+box.querySelector(".itemPrice").value
+
+
+});
+
+
+});
+
+
+
+
+
+let business={
+
+
+businessName:
+document.getElementById("businessName").value,
+
+
+phone:
+document.getElementById("businessPhone").value,
+
+
+address:
+document.getElementById("address").value,
+
+
+category:
+document.getElementById("category").value,
+
+
+description:
+document.getElementById("description").value,
+
+
+items:items,
+
+
+status:"pending",
+
+
+registrationFee:2000,
+
+
+paymentNumber:"0777364587",
+
+
+paymentName:"MUGISHA MUHABUZI",
+
+
+created:
+new Date().toISOString()
+
+
+};
+
+
+
+
+
+localStorage.setItem(
+
+"pendingBusiness",
+
+JSON.stringify(business)
+
+);
+
+
+
+
+
+window.location="business-registration-fee-form.html";
+
+
+
+};
+
+
+
+</script>
+
+
+</body>
+
+</html>
