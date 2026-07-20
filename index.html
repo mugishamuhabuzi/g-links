@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Venx Online Market</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+background:#f5f5f5;
+padding-bottom:80px;
+}
+
+header{
+background:#0b8f4d;
+padding:15px;
+position:sticky;
+top:0;
+z-index:100;
+}
+
+.search-container{
+position:relative;
+}
+
+#search{
+width:100%;
+padding:12px;
+border:none;
+border-radius:25px;
+font-size:16px;
+outline:none;
+}
+
+#suggestions{
+position:absolute;
+background:white;
+width:100%;
+border-radius:10px;
+margin-top:5px;
+display:none;
+box-shadow:0 5px 10px rgba(0,0,0,.2);
+max-height:250px;
+overflow-y:auto;
+}
+
+#suggestions div{
+padding:12px;
+cursor:pointer;
+}
+
+#suggestions div:hover{
+background:#efefef;
+}
+
+.section-title{
+padding:15px;
+font-size:22px;
+font-weight:bold;
+}
+
+.items{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+gap:15px;
+padding:15px;
+}
+
+.card{
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+.card img{
+width:100%;
+height:170px;
+object-fit:cover;
+}
+
+.info{
+padding:10px;
+}
+
+.name{
+font-size:18px;
+font-weight:bold;
+}
+
+.price{
+color:#0b8f4d;
+margin-top:5px;
+font-weight:bold;
+}
+
+.bottom-nav{
+
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+
+height:65px;
+
+background:white;
+
+display:flex;
+
+justify-content:space-around;
+
+align-items:center;
+
+box-shadow:0 -2px 8px rgba(0,0,0,.15);
+
+}
+
+.bottom-nav a{
+
+text-decoration:none;
+
+color:#555;
+
+font-size:14px;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+}
+
+.bottom-nav a.active{
+
+color:#0b8f4d;
+
+font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="search-container">
+
+<input
+type="text"
+id="search"
+placeholder="Search items...">
+
+<div id="suggestions"></div>
+
+</div>
+
+</header>
+
+<h2 class="section-title">
+Popular Items
+</h2>
+
+<div class="items" id="items">
+
+<div class="card">
+<img src="https://picsum.photos/300?1">
+<div class="info">
+<div class="name">Laptop</div>
+<div class="price">UGX 2,500,000</div>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/300?2">
+<div class="info">
+<div class="name">Television</div>
+<div class="price">UGX 980,000</div>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/300?3">
+<div class="info">
+<div class="name">Shoes</div>
+<div class="price">UGX 95,000</div>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/300?4">
+<div class="info">
+<div class="name">Phone</div>
+<div class="price">UGX 700,000</div>
+</div>
+</div>
+
+</div>
+
+<nav class="bottom-nav">
+
+<a href="#" class="active">
+🏠
+<span>Home</span>
+</a>
+
+<a href="#">
+📦
+<span>My Orders</span>
+</a>
+
+<a href="#">
+👤
+<span>Account</span>
+</a>
+
+</nav>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+
+authDomain: "venx-online-market.firebaseapp.com",
+
+projectId: "venx-online-market",
+
+storageBucket: "venx-online-market.firebasestorage.app",
+
+messagingSenderId: "820627929510",
+
+appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
+
+measurementId: "G-BLH2T3CBVQ"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+getAnalytics(app);
+
+const categories=[
+
+"Accessories",
+
+"Appliances",
+
+"Baby Products",
+
+"Bags",
+
+"Books",
+
+"Cars",
+
+"Clothes",
+
+"Computers",
+
+"Cosmetics",
+
+"Electronics",
+
+"Furniture",
+
+"Groceries",
+
+"Health",
+
+"Home",
+
+"Jewelry",
+
+"Laptops",
+
+"Phones",
+
+"Shoes",
+
+"Sports",
+
+"Televisions",
+
+"Toys",
+
+"Watches"
+
+];
+
+const search=document.getElementById("search");
+
+const suggestions=document.getElementById("suggestions");
+
+search.addEventListener("input",()=>{
+
+let value=search.value.toLowerCase();
+
+suggestions.innerHTML="";
+
+if(value===""){
+
+suggestions.style.display="none";
+
+return;
+
+}
+
+let found=categories.filter(item=>
+
+item.toLowerCase().includes(value)
+
+);
+
+found.forEach(cat=>{
+
+let div=document.createElement("div");
+
+div.innerHTML=cat;
+
+div.onclick=()=>{
+
+search.value=cat;
+
+suggestions.style.display="none";
+
+};
+
+suggestions.appendChild(div);
+
+});
+
+suggestions.style.display=
+
+found.length?"block":"none";
+
+});
+
+document.addEventListener("click",(e)=>{
+
+if(!e.target.closest(".search-container")){
+
+suggestions.style.display="none";
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
