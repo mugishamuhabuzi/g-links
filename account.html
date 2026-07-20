@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Create Account</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+background:#f3f3f3;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.container{
+
+width:95%;
+max-width:420px;
+
+background:white;
+
+padding:25px;
+
+border-radius:12px;
+
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+}
+
+h2{
+
+text-align:center;
+
+margin-bottom:20px;
+
+color:#0b8f4d;
+
+}
+
+input{
+
+width:100%;
+
+padding:13px;
+
+margin-bottom:15px;
+
+border:1px solid #ccc;
+
+border-radius:8px;
+
+font-size:16px;
+
+outline:none;
+
+}
+
+button{
+
+width:100%;
+
+padding:14px;
+
+background:#0b8f4d;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+font-size:17px;
+
+cursor:pointer;
+
+}
+
+button:hover{
+
+background:#08753f;
+
+}
+
+#message{
+
+margin-top:15px;
+
+text-align:center;
+
+font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Create Account</h2>
+
+<input
+type="text"
+id="fullname"
+placeholder="Full Name">
+
+<input
+type="email"
+id="email"
+placeholder="Email Address">
+
+<input
+type="text"
+id="phone"
+placeholder="Phone Number">
+
+<input
+type="password"
+id="password"
+placeholder="Password">
+
+<button id="registerBtn">
+Create Account
+</button>
+
+<div id="message"></div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+import {
+
+getFirestore,
+
+doc,
+
+setDoc,
+
+serverTimestamp
+
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+
+const firebaseConfig={
+
+apiKey:"AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+
+authDomain:"venx-online-market.firebaseapp.com",
+
+projectId:"venx-online-market",
+
+storageBucket:"venx-online-market.firebasestorage.app",
+
+messagingSenderId:"820627929510",
+
+appId:"1:820627929510:web:aa97704fbf1c6bf4077767",
+
+measurementId:"G-BLH2T3CBVQ"
+
+};
+
+const app=initializeApp(firebaseConfig);
+
+const auth=getAuth(app);
+
+const db=getFirestore(app);
+
+const btn=document.getElementById("registerBtn");
+
+const msg=document.getElementById("message");
+
+btn.onclick=async()=>{
+
+const fullname=document.getElementById("fullname").value.trim();
+
+const email=document.getElementById("email").value.trim();
+
+const phone=document.getElementById("phone").value.trim();
+
+const password=document.getElementById("password").value;
+
+if(fullname==""||email==""||phone==""||password==""){
+
+msg.style.color="red";
+
+msg.innerHTML="Please fill in all fields.";
+
+return;
+
+}
+
+try{
+
+const userCredential=await createUserWithEmailAndPassword(
+
+auth,
+
+email,
+
+password
+
+);
+
+const uid=userCredential.user.uid;
+
+await setDoc(doc(db,"users",uid),{
+
+fullname:fullname,
+
+email:email,
+
+phone:phone,
+
+createdAt:serverTimestamp()
+
+});
+
+msg.style.color="green";
+
+msg.innerHTML="Account created successfully.";
+
+setTimeout(()=>{
+
+window.location="add-business.html";
+
+},1500);
+
+}
+
+catch(error){
+
+msg.style.color="red";
+
+msg.innerHTML=error.message;
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
