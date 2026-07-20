@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create Account</title>
+<title>Venx Account</title>
 
 <style>
 
@@ -13,93 +13,94 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial,Helvetica,sans-serif;
+font-family:Arial;
 }
 
 body{
-background:#f3f3f3;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
+background:#f4f4f4;
 }
 
 .container{
 
 width:95%;
-max-width:420px;
-
+max-width:430px;
 background:white;
-
+margin:40px auto;
 padding:25px;
-
 border-radius:12px;
-
-box-shadow:0 5px 15px rgba(0,0,0,.15);
+box-shadow:0 5px 15px #ccc;
 
 }
 
 h2{
 
 text-align:center;
-
+color:#0b8f4d;
 margin-bottom:20px;
 
-color:#0b8f4d;
-
 }
+
 
 input{
 
 width:100%;
-
-padding:13px;
-
-margin-bottom:15px;
-
+padding:12px;
+margin-bottom:12px;
 border:1px solid #ccc;
-
 border-radius:8px;
 
-font-size:16px;
-
-outline:none;
-
 }
+
 
 button{
 
 width:100%;
-
-padding:14px;
-
-background:#0b8f4d;
-
-color:white;
-
+padding:13px;
+margin-top:10px;
 border:none;
-
 border-radius:8px;
-
-font-size:17px;
-
+background:#0b8f4d;
+color:white;
+font-size:16px;
 cursor:pointer;
 
 }
 
-button:hover{
 
-background:#08753f;
+.gray{
+
+background:#555;
 
 }
 
+
+.hidden{
+
+display:none;
+
+}
+
+
+.card{
+
+background:#eee;
+padding:15px;
+border-radius:10px;
+
+}
+
+
+.card p{
+
+margin:10px 0;
+
+}
+
+
 #message{
 
-margin-top:15px;
-
 text-align:center;
-
-font-weight:bold;
+margin-top:10px;
 
 }
 
@@ -107,63 +108,189 @@ font-weight:bold;
 
 </head>
 
+
 <body>
+
 
 <div class="container">
 
+
+<!-- LOGIN -->
+
+<div id="loginBox">
+
+<h2>Sign In</h2>
+
+
+<input 
+id="loginEmail"
+type="email"
+placeholder="Email">
+
+
+<input
+id="loginPassword"
+type="password"
+placeholder="Password">
+
+
+<button id="loginBtn">
+Sign In
+</button>
+
+
+<button class="gray" id="showRegister">
+Create New Account
+</button>
+
+
+</div>
+
+
+
+<!-- REGISTER -->
+
+<div id="registerBox" class="hidden">
+
+
 <h2>Create Account</h2>
 
-<input
-type="text"
-id="fullname"
+
+<input 
+id="name"
 placeholder="Full Name">
 
-<input
+
+<input 
+id="regEmail"
 type="email"
-id="email"
-placeholder="Email Address">
+placeholder="Email">
+
 
 <input
-type="text"
 id="phone"
 placeholder="Phone Number">
 
+
 <input
-type="password"
 id="password"
+type="password"
 placeholder="Password">
+
 
 <button id="registerBtn">
 Create Account
 </button>
 
-<div id="message"></div>
+
+<button class="gray" id="showLogin">
+Already have account
+</button>
+
 
 </div>
 
+
+
+<!-- ACCOUNT DETAILS -->
+
+
+<div id="accountBox" class="hidden">
+
+
+<h2>My Account</h2>
+
+
+<div class="card">
+
+<p>
+<b>Name:</b>
+<span id="userName"></span>
+</p>
+
+
+<p>
+<b>Email:</b>
+<span id="userEmail"></span>
+</p>
+
+
+<p>
+<b>Phone:</b>
+<span id="userPhone"></span>
+</p>
+
+
+</div>
+
+
+
+<button id="businessBtn">
+
+</button>
+
+
+
+<button class="gray" id="logoutBtn">
+Logout
+</button>
+
+
+</div>
+
+
+
+<div id="message"></div>
+
+
+</div>
+
+
+
+
+
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+
 
 import {
+
 getAuth,
-createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+onAuthStateChanged,
+signOut
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
 
 import {
 
 getFirestore,
-
 doc,
-
 setDoc,
-
+getDoc,
+collection,
+query,
+where,
+getDocs,
 serverTimestamp
 
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+}
+
+from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+
+
 
 
 const firebaseConfig={
+
 
 apiKey:"AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
 
@@ -181,85 +308,273 @@ measurementId:"G-BLH2T3CBVQ"
 
 };
 
+
+
 const app=initializeApp(firebaseConfig);
+
 
 const auth=getAuth(app);
 
+
 const db=getFirestore(app);
 
-const btn=document.getElementById("registerBtn");
 
-const msg=document.getElementById("message");
 
-btn.onclick=async()=>{
 
-const fullname=document.getElementById("fullname").value.trim();
+const loginBox=document.getElementById("loginBox");
 
-const email=document.getElementById("email").value.trim();
+const registerBox=document.getElementById("registerBox");
 
-const phone=document.getElementById("phone").value.trim();
+const accountBox=document.getElementById("accountBox");
 
-const password=document.getElementById("password").value;
+const message=document.getElementById("message");
 
-if(fullname==""||email==""||phone==""||password==""){
 
-msg.style.color="red";
 
-msg.innerHTML="Please fill in all fields.";
 
-return;
+
+// switch forms
+
+
+showRegister.onclick=()=>{
+
+loginBox.classList.add("hidden");
+
+registerBox.classList.remove("hidden");
 
 }
+
+
+
+showLogin.onclick=()=>{
+
+registerBox.classList.add("hidden");
+
+loginBox.classList.remove("hidden");
+
+}
+
+
+
+
+
+// CREATE ACCOUNT
+
+
+registerBtn.onclick=async()=>{
+
 
 try{
 
-const userCredential=await createUserWithEmailAndPassword(
+
+const user=await createUserWithEmailAndPassword(
 
 auth,
 
-email,
+regEmail.value,
 
-password
+password.value
 
 );
 
-const uid=userCredential.user.uid;
 
-await setDoc(doc(db,"users",uid),{
 
-fullname:fullname,
+await setDoc(
 
-email:email,
+doc(db,"users",user.user.uid),
 
-phone:phone,
+{
+
+fullname:name.value,
+
+email:regEmail.value,
+
+phone:phone.value,
 
 createdAt:serverTimestamp()
 
-});
+}
 
-msg.style.color="green";
 
-msg.innerHTML="Account created successfully.";
+);
 
-setTimeout(()=>{
+
+}catch(e){
+
+message.innerHTML=e.message;
+
+}
+
+
+}
+
+
+
+
+
+// LOGIN
+
+
+loginBtn.onclick=async()=>{
+
+
+try{
+
+
+await signInWithEmailAndPassword(
+
+auth,
+
+loginEmail.value,
+
+loginPassword.value
+
+);
+
+
+}
+
+catch(e){
+
+message.innerHTML=e.message;
+
+}
+
+
+}
+
+
+
+
+
+// CHECK USER
+
+
+onAuthStateChanged(auth,async(user)=>{
+
+
+if(user){
+
+
+loginBox.classList.add("hidden");
+
+registerBox.classList.add("hidden");
+
+accountBox.classList.remove("hidden");
+
+
+
+const userDoc=await getDoc(
+
+doc(db,"users",user.uid)
+
+);
+
+
+
+if(userDoc.exists()){
+
+
+let data=userDoc.data();
+
+
+userName.innerHTML=data.fullname;
+
+userEmail.innerHTML=data.email;
+
+userPhone.innerHTML=data.phone;
+
+
+}
+
+
+
+
+// CHECK BUSINESS
+
+
+const businessQuery=query(
+
+collection(db,"businesses"),
+
+where("ownerId","==",user.uid)
+
+);
+
+
+
+const result=await getDocs(businessQuery);
+
+
+
+const businessBtn=document.getElementById("businessBtn");
+
+
+
+if(!result.empty){
+
+
+businessBtn.innerHTML="My Business";
+
+
+businessBtn.onclick=()=>{
+
+window.location="my-business.html";
+
+}
+
+
+
+}else{
+
+
+businessBtn.innerHTML="Add Business";
+
+
+businessBtn.onclick=()=>{
 
 window.location="add-business.html";
 
-},1500);
+}
+
 
 }
 
-catch(error){
 
-msg.style.color="red";
 
-msg.innerHTML=error.message;
+}else{
+
+
+accountBox.classList.add("hidden");
+
+loginBox.classList.remove("hidden");
+
 
 }
 
-}
+
+
+});
+
+
+
+
+
+// LOGOUT
+
+
+logoutBtn.onclick=()=>{
+
+
+signOut(auth);
+
+
+};
+
+
 
 </script>
+
 
 </body>
 </html>
