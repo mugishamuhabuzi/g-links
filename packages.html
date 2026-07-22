@@ -66,7 +66,7 @@
       padding: 0 16px;
     }
 
-    /* --- Country & Currency Selector Bar --- */
+    /* --- Country & Currency Selector --- */
     .country-selector-card {
       background: white;
       border-radius: 12px;
@@ -100,7 +100,7 @@
       cursor: pointer;
     }
 
-    /* --- Grace Period Offer Banner --- */
+    /* --- Grace Period Banner --- */
     .grace-banner {
       background: linear-gradient(135deg, #11998e, #38ef7d);
       color: white;
@@ -127,7 +127,7 @@
       line-height: 1.4;
     }
 
-    /* --- Package Cards --- */
+    /* --- Package Grid --- */
     .packages-grid {
       display: flex;
       flex-direction: column;
@@ -376,7 +376,7 @@
     <a href="add-business.html" class="back-btn" aria-label="Go Back">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
-    <div class="header-title">Vendor Registration & Packages</div>
+    <div class="header-title">Vendor Packages</div>
   </header>
 
   <!-- Container -->
@@ -400,13 +400,32 @@
     <!-- 1 Year Grace Period Offer Banner -->
     <div class="grace-banner">
       <h3><i class="fa-solid fa-gift"></i> 1-YEAR FREE GRACE PERIOD</h3>
-      <p>All new business owners get 1 Year Free access to monthly package fees! You only pay a standard one-time business registration fee.</p>
+      <p>All new vendors get 1 Year Free access to monthly package fees! You only pay the one-time registration fee today.</p>
     </div>
 
     <!-- Package Options Grid -->
     <div class="packages-grid">
 
-      <!-- Basic Package -->
+      <!-- OPTION 1: 10% Pay-Per-Sale Commission Package -->
+      <div class="package-card">
+        <div class="package-header">
+          <div class="package-title">Pay-As-You-Sell</div>
+          <div class="package-price-box">
+            <div class="free-price">10% <span>/ sale</span></div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li><i class="fa-solid fa-percent" style="color: #e67e22;"></i> <strong>10% Sales Deduction</strong> on each item sold</li>
+          <li><i class="fa-solid fa-coins"></i> <strong>UGX 0 Monthly Fee</strong> (No upfront subscription)</li>
+          <li><i class="fa-solid fa-boxes-stacked"></i> Flexible Item Limit</li>
+          <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
+        </ul>
+        <button class="btn-select" onclick="openCheckout('Pay-As-You-Sell (10% Commission)', 'Flexible', 0, 0.10)">
+          <span>Select 10% Commission Plan</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- OPTION 2: Basic Package (50,000 / 15 Items / 0% Commission) -->
       <div class="package-card">
         <div class="package-header">
           <div class="package-title">Basic Plan</div>
@@ -417,16 +436,16 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>15 Business Items</strong></li>
-          <li><i class="fa-solid fa-percent"></i> <strong>10% Sales Deduction</strong> per item sold</li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong> (Keep 100% of sales)</li>
           <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
         </ul>
-        <button class="btn-select" onclick="openCheckout('Basic Plan', 15, 50000)">
+        <button class="btn-select" onclick="openCheckout('Basic Plan', '15 Items', 50000, 0.00)">
           <span>Select Basic Plan</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
 
-      <!-- Advanced Package -->
+      <!-- OPTION 3: Advanced Package (100,000 / 25 Items / 0% Commission) -->
       <div class="package-card recommended">
         <span class="badge-tag">Most Popular</span>
         <div class="package-header">
@@ -438,17 +457,17 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>25 Business Items</strong></li>
-          <li><i class="fa-solid fa-percent"></i> <strong>10% Sales Deduction</strong> per item sold</li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong> (Keep 100% of sales)</li>
           <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
-          <li><i class="fa-solid fa-circle-check"></i> Verified Store Badge</li>
+          <li><i class="fa-solid fa-certificate"></i> Verified Business Badge</li>
         </ul>
-        <button class="btn-select" onclick="openCheckout('Advanced Plan', 25, 100000)">
+        <button class="btn-select" onclick="openCheckout('Advanced Plan', '25 Items', 100000, 0.00)">
           <span>Select Advanced Plan</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
 
-      <!-- Premium Package -->
+      <!-- OPTION 4: Premium Package (150,000 / 35 Items / 0% Commission) -->
       <div class="package-card">
         <div class="package-header">
           <div class="package-title">Premium Plan</div>
@@ -459,12 +478,12 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>35 Business Items</strong></li>
-          <li><i class="fa-solid fa-percent"></i> <strong>10% Sales Deduction</strong> per item sold</li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong> (Keep 100% of sales)</li>
           <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
           <li><i class="fa-solid fa-star" style="color: var(--accent-gold);"></i> Priority Search Placement</li>
         </ul>
-        <button class="btn-select" onclick="openCheckout('Premium Plan', 35, 150000)">
+        <button class="btn-select" onclick="openCheckout('Premium Plan', '35 Items', 150000, 0.00)">
           <span>Select Premium Plan</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
@@ -476,7 +495,7 @@
   <div id="checkoutModal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Complete Registration</h3>
+        <h3>Confirm Registration</h3>
         <button class="close-modal" onclick="closeCheckout()">&times;</button>
       </div>
 
@@ -486,30 +505,26 @@
           <strong id="modalPackageName">Basic Plan</strong>
         </div>
         <div class="summary-row">
-          <span>Item Limit:</span>
+          <span>Item Allowance:</span>
           <strong id="modalItemLimit">15 Items</strong>
         </div>
         <div class="summary-row">
-          <span>Monthly Package Fee:</span>
-          <span style="text-decoration: line-through;" id="modalMonthlyFee">UGX 50,000</span>
-        </div>
-        <div class="summary-row" style="color: var(--primary-color);">
-          <span>New Owner Grace Period:</span>
-          <strong>1 Year FREE</strong>
+          <span>Monthly Subscription:</span>
+          <span id="modalMonthlyFee">UGX 50,000</span>
         </div>
         <div class="summary-row">
           <span>Sales Deduction / Commission:</span>
-          <strong>10% per sale</strong>
+          <strong id="modalCommissionRate" style="color: var(--primary-color);">0% per sale</strong>
         </div>
         <div class="summary-row total">
-          <span>Business Reg. Fee Due:</span>
+          <span>One-Time Reg Fee Due:</span>
           <span id="modalTotalDue">UGX 3,000</span>
         </div>
       </div>
 
       <div class="notice-box">
-        <i class="fa-solid fa-circle-info"></i> <strong>Admin Approval Notice:</strong><br>
-        Upon submitting your registration payment, your business profile will be reviewed by the admin. Your business will go live on Venx Market as soon as admin approval is granted.
+        <i class="fa-solid fa-shield-halved"></i> <strong>Admin Approval Required:</strong><br>
+        Once you pay the registration fee and submit, your business status will be set to <strong>Pending Approval</strong>. It will be reviewed by the admin and put live shortly!
       </div>
 
       <button id="payAndSubmitBtn" class="btn-select">
@@ -598,17 +613,25 @@
     }
 
     // Modal Control Functions
-    window.openCheckout = function(packageName, itemLimit, baseMonthlyUGX) {
+    window.openCheckout = function(packageName, itemLimit, baseMonthlyUGX, commissionRate) {
       selectedPackageData = {
         packageName,
         itemLimit,
         baseMonthlyUGX,
+        commissionRate,
         regFeeUGX: 3000
       };
 
       document.getElementById("modalPackageName").textContent = packageName;
-      document.getElementById("modalItemLimit").textContent = `${itemLimit} Business Items`;
-      document.getElementById("modalMonthlyFee").textContent = `${formatAmount(baseMonthlyUGX)}/mo`;
+      document.getElementById("modalItemLimit").textContent = itemLimit;
+
+      if (baseMonthlyUGX > 0) {
+        document.getElementById("modalMonthlyFee").textContent = `${formatAmount(baseMonthlyUGX)}/mo (FREE Year 1)`;
+      } else {
+        document.getElementById("modalMonthlyFee").textContent = "UGX 0 / Month";
+      }
+
+      document.getElementById("modalCommissionRate").textContent = commissionRate > 0 ? `${commissionRate * 100}% Deduction per sale` : "0% (No Deduction)";
       document.getElementById("modalTotalDue").textContent = formatAmount(3000);
 
       document.getElementById("checkoutModal").style.display = "flex";
@@ -647,25 +670,25 @@
           package: selectedPackageData.packageName,
           itemLimit: selectedPackageData.itemLimit,
           monthlyFeeUGX: selectedPackageData.baseMonthlyUGX,
-          commissionRate: 0.10, // 10% sales deduction
+          commissionRate: selectedPackageData.commissionRate,
           country: countrySelect.value,
           currency: currentCurrency,
           registrationFeePaid: true,
           registrationFeeAmount: selectedPackageData.regFeeUGX,
           gracePeriodActive: true,
           gracePeriodExpiresAt: gracePeriodEnd,
-          status: "pending_approval", // Business alive after admin approval
-          isLive: false,               // Admin must activate
+          status: "pending_approval", // Pending admin approval
+          isLive: false,               // Admin must set to true
           updatedAt: serverTimestamp()
         });
 
         closeCheckout();
-        showAlert("Registration fee received! Your business is submitted and currently PENDING ADMIN APPROVAL. You will be notified once live.", "success");
+        showAlert("Registration submitted! Your business is currently PENDING ADMIN APPROVAL. It will go live once verified.", "success");
 
         // Clear temporary business ID
         localStorage.removeItem("createdBusinessId");
 
-        // Redirect to Account / Dashboard after 3 seconds
+        // Redirect after 3.5 seconds
         setTimeout(() => {
           window.location.href = "index.html";
         }, 3500);
