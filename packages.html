@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Package - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --accent-gold: #f39c12;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Top Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* --- Container --- */
+    .container {
+      max-width: 600px;
+      margin: 16px auto;
+      padding: 0 16px;
+    }
+
+    /* --- Country & Currency Selector Bar --- */
+    .country-selector-card {
+      background: white;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid var(--border-color);
+    }
+
+    .country-selector-card label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .country-select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-weight: 600;
+      font-size: 13px;
+      background: #fafafa;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* --- Grace Period Offer Banner --- */
+    .grace-banner {
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+      color: white;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(11, 143, 77, 0.2);
+    }
+
+    .grace-banner h3 {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .grace-banner p {
+      font-size: 12px;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+
+    /* --- Package Cards --- */
+    .packages-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .package-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 2px solid transparent;
+      position: relative;
+    }
+
+    .package-card.recommended {
+      border-color: var(--primary-color);
+    }
+
+    .badge-tag {
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: var(--primary-color);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .package-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .package-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .package-price-box {
+      text-align: right;
+    }
+
+    .original-price {
+      text-decoration: line-through;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .free-price {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
+    .free-price span {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .features-list {
+      list-style: none;
+      margin-bottom: 18px;
+    }
+
+    .features-list li {
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .features-list li i {
+      color: var(--primary-color);
+      font-size: 14px;
+      width: 18px;
+    }
+
+    .btn-select {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-select:hover {
+      background: var(--primary-dark);
+    }
+
+    /* --- Payment Modal --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 16px;
+    }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 450px;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .summary-box {
+      background: var(--bg-color);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 18px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .summary-row.total {
+      border-top: 1px dashed var(--border-color);
+      padding-top: 8px;
+      margin-top: 8px;
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--primary-color);
+    }
+
+    .notice-box {
+      background: #fff8e6;
+      border: 1px solid #ffe58f;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+      color: #8a6d3b;
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    /* --- Alert Messages --- */
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-success {
+      background: #e6fffa;
+      color: #234e52;
+      border: 1px solid #b2f5ea;
+    }
+
+    .alert-error {
+      background: #fff5f5;
+      color: #9b2c2c;
+      border: 1px solid #feb2b2;
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 25%;
+    }
+
+    .bottom-nav a i {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <a href="add-business.html" class="back-btn" aria-label="Go Back">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div class="header-title">Vendor Registration & Packages</div>
+  </header>
+
+  <!-- Container -->
+  <div class="container">
+    <div id="alertBox" class="alert"></div>
+
+    <!-- Country & Currency Selector -->
+    <div class="country-selector-card">
+      <label for="countrySelect">
+        <i class="fa-solid fa-globe" style="color: var(--primary-color);"></i> Select Country:
+      </label>
+      <select id="countrySelect" class="country-select">
+        <option value="UG" data-curr="UGX" data-rate="1" selected>🇺🇬 Uganda (UGX)</option>
+        <option value="KE" data-curr="KES" data-rate="0.035">🇰🇪 Kenya (KES)</option>
+        <option value="TZ" data-curr="TZS" data-rate="0.72">🇹🇿 Tanzania (TZS)</option>
+        <option value="RW" data-curr="RWF" data-rate="0.36">🇷🇼 Rwanda (RWF)</option>
+        <option value="US" data-curr="USD" data-rate="0.00027">🌐 Global (USD $)</option>
+      </select>
+    </div>
+
+    <!-- 1 Year Grace Period Offer Banner -->
+    <div class="grace-banner">
+      <h3><i class="fa-solid fa-gift"></i> 1-YEAR FREE GRACE PERIOD</h3>
+      <p>All new business owners get 1 Year Free access to monthly package fees! You only pay a standard one-time business registration fee.</p>
+    </div>
+
+    <!-- Package Options Grid -->
+    <div class="packages-grid">
+
+      <!-- Basic Package -->
+      <div class="package-card">
+        <div class="package-header">
+          <div class="package-title">Basic Plan</div>
+          <div class="package-price-box">
+            <div class="original-price" id="basicOriginalPrice">UGX 50,000/mo</div>
+            <div class="free-price">FREE <span>(Year 1)</span></div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>15 Business Items</strong></li>
+          <li><i class="fa-solid fa-percent"></i> <strong>10% Sales Deduction</strong> per item sold</li>
+          <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
+          <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
+        </ul>
+        <button class="btn-select" onclick="openCheckout('Basic Plan', 15, 50000)">
+          <span>Select Basic Plan</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Advanced Package -->
+      <div class="package-card recommended">
+        <span class="badge-tag">Most Popular</span>
+        <div class="package-header">
+          <div class="package-title">Advanced Plan</div>
+          <div class="package-price-box">
+            <div class="original-price" id="advOriginalPrice">UGX 100,000/mo</div>
+            <div class="free-price">FREE <span>(Year 1)</span></div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>25 Business Items</strong></li>
+          <li><i class="fa-solid fa-percent"></i> <strong>10% Sales Deduction</strong> per item sold</li>
+          <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
+          <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
+          <li><i class="fa-solid fa-circle-check"></i> Verified Store Badge</li>
+        </ul>
+        <button class="btn-select" onclick="openCheckout('Advanced Plan', 25, 100000)">
+          <span>Select Advanced Plan</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Premium Package -->
+      <div class="package-card">
+        <div class="package-header">
+          <div class="package-title">Premium Plan</div>
+          <div class="package-price-box">
+            <div class="original-price" id="premOriginalPrice">UGX 150,000/mo</div>
+            <div class="free-price">FREE <span>(Year 1)</span></div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>35 Business Items</strong></li>
+          <li><i class="fa-solid fa-percent"></i> <strong>10% Sales Deduction</strong> per item sold</li>
+          <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
+          <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
+          <li><i class="fa-solid fa-star" style="color: var(--accent-gold);"></i> Priority Search Placement</li>
+        </ul>
+        <button class="btn-select" onclick="openCheckout('Premium Plan', 35, 150000)">
+          <span>Select Premium Plan</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Registration Payment & Confirmation Modal -->
+  <div id="checkoutModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Complete Registration</h3>
+        <button class="close-modal" onclick="closeCheckout()">&times;</button>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-row">
+          <span>Selected Package:</span>
+          <strong id="modalPackageName">Basic Plan</strong>
+        </div>
+        <div class="summary-row">
+          <span>Item Limit:</span>
+          <strong id="modalItemLimit">15 Items</strong>
+        </div>
+        <div class="summary-row">
+          <span>Monthly Package Fee:</span>
+          <span style="text-decoration: line-through;" id="modalMonthlyFee">UGX 50,000</span>
+        </div>
+        <div class="summary-row" style="color: var(--primary-color);">
+          <span>New Owner Grace Period:</span>
+          <strong>1 Year FREE</strong>
+        </div>
+        <div class="summary-row">
+          <span>Sales Deduction / Commission:</span>
+          <strong>10% per sale</strong>
+        </div>
+        <div class="summary-row total">
+          <span>Business Reg. Fee Due:</span>
+          <span id="modalTotalDue">UGX 3,000</span>
+        </div>
+      </div>
+
+      <div class="notice-box">
+        <i class="fa-solid fa-circle-info"></i> <strong>Admin Approval Notice:</strong><br>
+        Upon submitting your registration payment, your business profile will be reviewed by the admin. Your business will go live on Venx Market as soon as admin approval is granted.
+      </div>
+
+      <button id="payAndSubmitBtn" class="btn-select">
+        <i class="fa-solid fa-lock"></i> Pay Registration & Submit
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="categories.html">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Category</span>
+    </a>
+    <a href="orders.html">
+      <i class="fa-solid fa-box"></i>
+      <span>My Orders</span>
+    </a>
+    <a href="account.html">
+      <i class="fa-solid fa-user"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Firebase & Package Logic Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getFirestore, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
+      measurementId: "G-BLH2T3CBVQ"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Dynamic Currency & Country Logic
+    const countrySelect = document.getElementById("countrySelect");
+    const alertBox = document.getElementById("alertBox");
+
+    let currentCurrency = "UGX";
+    let currentRate = 1;
+    let selectedPackageData = null;
+
+    function formatAmount(baseUGX) {
+      const converted = Math.round(baseUGX * currentRate);
+      if (currentCurrency === "USD") {
+        return `$${(baseUGX * currentRate).toFixed(2)}`;
+      }
+      return `${currentCurrency} ${converted.toLocaleString()}`;
+    }
+
+    function updatePricesDisplay() {
+      const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+      currentCurrency = selectedOption.getAttribute("data-curr");
+      currentRate = parseFloat(selectedOption.getAttribute("data-rate"));
+
+      document.getElementById("basicOriginalPrice").textContent = `${formatAmount(50000)}/mo`;
+      document.getElementById("advOriginalPrice").textContent = `${formatAmount(100000)}/mo`;
+      document.getElementById("premOriginalPrice").textContent = `${formatAmount(150000)}/mo`;
+
+      const regFeeTexts = document.querySelectorAll(".regFeeText");
+      regFeeTexts.forEach(el => el.textContent = formatAmount(3000));
+    }
+
+    countrySelect.addEventListener("change", updatePricesDisplay);
+    updatePricesDisplay(); // Initial trigger
+
+    function showAlert(message, type) {
+      alertBox.textContent = message;
+      alertBox.className = `alert alert-${type}`;
+      alertBox.style.display = "block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Modal Control Functions
+    window.openCheckout = function(packageName, itemLimit, baseMonthlyUGX) {
+      selectedPackageData = {
+        packageName,
+        itemLimit,
+        baseMonthlyUGX,
+        regFeeUGX: 3000
+      };
+
+      document.getElementById("modalPackageName").textContent = packageName;
+      document.getElementById("modalItemLimit").textContent = `${itemLimit} Business Items`;
+      document.getElementById("modalMonthlyFee").textContent = `${formatAmount(baseMonthlyUGX)}/mo`;
+      document.getElementById("modalTotalDue").textContent = formatAmount(3000);
+
+      document.getElementById("checkoutModal").style.display = "flex";
+    };
+
+    window.closeCheckout = function() {
+      document.getElementById("checkoutModal").style.display = "none";
+    };
+
+    // Payment & Submission Handler
+    document.getElementById("payAndSubmitBtn").addEventListener("click", async () => {
+      const businessId = localStorage.getItem("createdBusinessId");
+
+      if (!businessId) {
+        showAlert("No business record found. Please register your business first.", "error");
+        closeCheckout();
+        setTimeout(() => {
+          window.location.href = "add-business.html";
+        }, 2000);
+        return;
+      }
+
+      const payBtn = document.getElementById("payAndSubmitBtn");
+      payBtn.disabled = true;
+      payBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+
+      try {
+        // Calculate 1 Year Grace Period Expiry Date
+        const gracePeriodEnd = new Date();
+        gracePeriodEnd.setFullYear(gracePeriodEnd.getFullYear() + 1);
+
+        const businessRef = doc(db, "businesses", businessId);
+        
+        // Update Firestore document
+        await updateDoc(businessRef, {
+          package: selectedPackageData.packageName,
+          itemLimit: selectedPackageData.itemLimit,
+          monthlyFeeUGX: selectedPackageData.baseMonthlyUGX,
+          commissionRate: 0.10, // 10% sales deduction
+          country: countrySelect.value,
+          currency: currentCurrency,
+          registrationFeePaid: true,
+          registrationFeeAmount: selectedPackageData.regFeeUGX,
+          gracePeriodActive: true,
+          gracePeriodExpiresAt: gracePeriodEnd,
+          status: "pending_approval", // Business alive after admin approval
+          isLive: false,               // Admin must activate
+          updatedAt: serverTimestamp()
+        });
+
+        closeCheckout();
+        showAlert("Registration fee received! Your business is submitted and currently PENDING ADMIN APPROVAL. You will be notified once live.", "success");
+
+        // Clear temporary business ID
+        localStorage.removeItem("createdBusinessId");
+
+        // Redirect to Account / Dashboard after 3 seconds
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 3500);
+
+      } catch (error) {
+        console.error("Error submitting package payment:", error);
+        showAlert("Failed to record payment and update business status. Please try again.", "error");
+        payBtn.disabled = false;
+        payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay Registration & Submit`;
+      }
+    });
+  </script>
+</body>
+</html>
