@@ -444,22 +444,21 @@
         };
 
         // 3. Save to Firestore ('businesses' collection)
-        await addDoc(collection(db, "businesses"), businessData);
+        const docRef = await addDoc(collection(db, "businesses"), businessData);
 
-        showAlert("Business registered successfully!", "success");
-        form.reset();
-        previewImg.style.display = "none";
-        uploadText.textContent = "Tap to upload business logo";
+        showAlert("Business registered successfully! Redirecting to packages...", "success");
 
-        // Redirect back to home after 2 seconds
+        // Save business ID locally so packages.html knows which business is subscribing
+        localStorage.setItem("createdBusinessId", docRef.id);
+
+        // Redirect directly to packages.html after 1.5 seconds
         setTimeout(() => {
-          window.location.href = "index.html";
-        }, 2000);
+          window.location.href = "packages.html";
+        }, 1500);
 
       } catch (error) {
         console.error("Error creating business:", error);
         showAlert(error.message || "An error occurred while creating your business.", "error");
-      } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = `<i class="fa-solid fa-store"></i> Register Business`;
       }
