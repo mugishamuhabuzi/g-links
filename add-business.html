@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Business - Venx Online Market</title>
-  <!-- FontAwesome Icons -->
+  <title>Register Business - Venx Online Market</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -22,7 +21,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -31,7 +30,7 @@
       padding-bottom: 90px;
     }
 
-    /* --- Top Header --- */
+    /* Top Header */
     header {
       background: var(--primary-color);
       padding: 16px;
@@ -49,8 +48,6 @@
       color: white;
       font-size: 20px;
       text-decoration: none;
-      display: flex;
-      align-items: center;
     }
 
     .header-title {
@@ -58,138 +55,85 @@
       font-weight: 700;
     }
 
-    /* --- Form Container --- */
-    .form-container {
-      max-width: 600px;
+    /* Container & Form */
+    .container {
+      max-width: 500px;
       margin: 20px auto;
       padding: 0 16px;
     }
 
     .form-card {
       background: var(--card-bg);
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
     }
 
     .form-group {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .form-group label {
       display: block;
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 700;
       margin-bottom: 6px;
       color: var(--text-main);
     }
 
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
+    .form-control {
       width: 100%;
-      padding: 12px 14px;
+      padding: 12px;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      font-size: 15px;
+      border-radius: 10px;
+      font-size: 14px;
       outline: none;
       background: #fafafa;
-      transition: border-color 0.2s, background 0.2s;
     }
 
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
+    .form-control:focus {
       border-color: var(--primary-color);
-      background: #ffffff;
+      background: white;
     }
 
-    .form-group textarea {
-      resize: vertical;
-      min-height: 90px;
-    }
-
-    /* Image Upload Box */
-    .image-upload-wrapper {
-      border: 2px dashed var(--border-color);
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      background: #fafafa;
-      cursor: pointer;
-      position: relative;
-      transition: border-color 0.2s;
-    }
-
-    .image-upload-wrapper:hover {
-      border-color: var(--primary-color);
-    }
-
-    .image-upload-wrapper input[type="file"] {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    .upload-icon {
-      font-size: 32px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .preview-img {
-      max-width: 100%;
-      max-height: 150px;
-      border-radius: 8px;
-      display: none;
-      margin: 10px auto 0;
-      object-fit: cover;
-    }
-
-    /* Submit Button */
     .btn-submit {
       width: 100%;
       padding: 14px;
       background: var(--primary-color);
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 10px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      transition: background 0.2s;
+      margin-top: 10px;
     }
 
-    .btn-submit:disabled {
-      background: #a0aec0;
-      cursor: not-allowed;
-    }
-
-    .btn-submit:not(:disabled):hover {
+    .btn-submit:hover {
       background: var(--primary-dark);
     }
 
-    /* --- Alert Messages --- */
+    /* Loading Overlay */
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
     .alert {
       padding: 12px;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
       margin-bottom: 16px;
       display: none;
-    }
-
-    .alert-success {
-      background: #e6fffa;
-      color: #234e52;
-      border: 1px solid #b2f5ea;
     }
 
     .alert-error {
@@ -198,12 +142,10 @@
       border: 1px solid #feb2b2;
     }
 
-    /* --- Bottom Navigation --- */
+    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: var(--nav-height);
       background: white;
       display: flex;
@@ -221,133 +163,84 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      width: 25%;
+      width: 20%;
     }
 
-    .bottom-nav a i {
-      font-size: 18px;
-    }
-
-    .bottom-nav a.active {
+    .bottom-nav a.plus-btn {
       color: var(--primary-color);
-      font-weight: 700;
+      font-size: 22px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Loading Overlay during authentication and business checks -->
+  <div id="loadingOverlay">
+    <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+    <p style="margin-top: 10px;">Checking Account Status...</p>
+  </div>
+
   <header>
-    <a href="index.html" class="back-btn" aria-label="Go Back">
-      <i class="fa-solid fa-arrow-left"></i>
-    </a>
-    <div class="header-title">Register Business</div>
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+    <div class="header-title">Register Your Business</div>
   </header>
 
-  <!-- Form Container -->
-  <div class="form-container">
+  <div class="container">
+    <div id="alertBox" class="alert alert-error"></div>
+
     <div class="form-card">
-      <div id="alertBox" class="alert"></div>
-
       <form id="addBusinessForm">
-        <!-- Business Logo -->
         <div class="form-group">
-          <label>Business Logo / Photo</label>
-          <div class="image-upload-wrapper">
-            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-            <p id="uploadText" style="font-size: 13px; color: var(--text-muted);">Tap to upload business logo</p>
-            <input type="file" id="logoInput" accept="image/*" required>
-            <img id="previewImg" class="preview-img" alt="Logo Preview">
-          </div>
+          <label for="businessName"><i class="fa-solid fa-store"></i> Business Name</label>
+          <input type="text" id="businessName" class="form-control" placeholder="e.g., Kampala Fashion Hub" required>
         </div>
 
-        <!-- Business Name -->
         <div class="form-group">
-          <label for="businessName">Business Name *</label>
-          <input type="text" id="businessName" placeholder="e.g. Kampala Electronics Ltd" required>
-        </div>
-
-        <!-- Owner Name -->
-        <div class="form-group">
-          <label for="ownerName">Owner Name *</label>
-          <input type="text" id="ownerName" placeholder="Full Name" required>
-        </div>
-
-        <!-- Phone Number -->
-        <div class="form-group">
-          <label for="phone">Phone Contact *</label>
-          <input type="tel" id="phone" placeholder="e.g. +256 700 000000" required>
-        </div>
-
-        <!-- Category -->
-        <div class="form-group">
-          <label for="category">Business Category *</label>
-          <select id="category" required>
+          <label for="category"><i class="fa-solid fa-list"></i> Category</label>
+          <select id="category" class="form-control" required>
             <option value="">Select Category</option>
-            <option value="Electronics">Electronics & Tech</option>
-            <option value="Fashion">Fashion & Shoes</option>
-            <option value="Groceries">Groceries & Supermarket</option>
-            <option value="Furniture">Home & Furniture</option>
-            <option value="Cosmetics">Cosmetics & Beauty</option>
-            <option value="Appliances">Home Appliances</option>
-            <option value="Automotive">Cars & Automotive</option>
-            <option value="Services">Services & Maintenance</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion & Clothing</option>
+            <option value="Groceries">Groceries & Food</option>
+            <option value="Health">Health & Beauty</option>
+            <option value="General">General Services</option>
           </select>
         </div>
 
-        <!-- Location -->
         <div class="form-group">
-          <label for="location">Location / Address *</label>
-          <input type="text" id="location" placeholder="e.g. Arcades, Level 2, Kampala" required>
+          <label for="phone"><i class="fa-solid fa-phone"></i> Phone Number</label>
+          <input type="tel" id="phone" class="form-control" placeholder="e.g., 0770000000" required>
         </div>
 
-        <!-- Description -->
         <div class="form-group">
-          <label for="description">Business Description</label>
-          <textarea id="description" placeholder="Briefly describe what your business sells or offers..."></textarea>
+          <label for="location"><i class="fa-solid fa-location-dot"></i> Physical Address / City</label>
+          <input type="text" id="location" class="form-control" placeholder="e.g., Wandegeya, Kampala" required>
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" id="submitBtn" class="btn-submit">
-          <i class="fa-solid fa-store"></i> Register Business
+        <button type="submit" id="saveBusinessBtn" class="btn-submit">
+          Continue to Select Package <i class="fa-solid fa-arrow-right"></i>
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Bottom Navigation -->
+  <!-- Bottom Nav with explicit Plus (+) link -->
   <nav class="bottom-nav">
-    <a href="index.html">
-      <i class="fa-solid fa-house"></i>
-      <span>Home</span>
-    </a>
-    <a href="categories.html">
-      <i class="fa-solid fa-layer-group"></i>
-      <span>Category</span>
-    </a>
-    <a href="orders.html">
-      <i class="fa-solid fa-box"></i>
-      <span>My Orders</span>
-    </a>
-    <a href="account.html">
-      <i class="fa-solid fa-user"></i>
-      <span>Account</span>
-    </a>
+    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <!-- Plus button passes ?fromPlus=true so owners can access this page directly -->
+    <a href="add-business.html?fromPlus=true" class="plus-btn"><i class="fa-solid fa-circle-plus"></i></a>
+    <a href="orders.html"><i class="fa-solid fa-box"></i><span>Orders</span></a>
+    <a href="account.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
   </nav>
 
-  <!-- Firebase & Cloudinary Scripts -->
+  <!-- Firebase Auth & Account Check Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
-    // Cloudinary Credentials
-    const CLOUDINARY_CONFIG = {
-      cloudName: "kztwhj2x",
-      uploadPreset: "mugistore",
-      uploadUrl: "https://api.cloudinary.com/v1_1/kztwhj2x/image/upload"
-    };
-
-    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
       authDomain: "venx-online-market.firebaseapp.com",
@@ -358,109 +251,96 @@
       measurementId: "G-BLH2T3CBVQ"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Form & UI Elements
-    const form = document.getElementById("addBusinessForm");
-    const logoInput = document.getElementById("logoInput");
-    const previewImg = document.getElementById("previewImg");
-    const uploadText = document.getElementById("uploadText");
-    const submitBtn = document.getElementById("submitBtn");
+    const loadingOverlay = document.getElementById("loadingOverlay");
     const alertBox = document.getElementById("alertBox");
+    let currentUser = null;
 
-    // Live Image Preview Handler
-    logoInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          previewImg.src = event.target.result;
-          previewImg.style.display = "block";
-          uploadText.textContent = file.name;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+    // Check if the user navigated here via the Plus (+) button
+    const urlParams = new URLSearchParams(window.location.search);
+    const isFromPlusButton = urlParams.get("fromPlus") === "true";
 
-    // Cloudinary Image Upload Function
-    async function uploadToCloudinary(file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", CLOUDINARY_CONFIG.uploadPreset);
-
-      const response = await fetch(CLOUDINARY_CONFIG.uploadUrl, {
-        method: "POST",
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image to Cloudinary.");
-      }
-
-      const data = await response.json();
-      return data.secure_url;
-    }
-
-    // Alert Message Helper
-    function showAlert(message, type) {
-      alertBox.textContent = message;
-      alertBox.className = `alert alert-${type}`;
-      alertBox.style.display = "block";
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Form Submission Handler
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const logoFile = logoInput.files[0];
-      if (!logoFile) {
-        showAlert("Please select a business logo or image.", "error");
+    // Auth State Listener
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // If not logged in, send to login page
+        window.location.href = "login.html";
         return;
       }
 
-      // UI Loading State
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Registering...`;
-      alertBox.style.display = "none";
+      currentUser = user;
+
+      // Skip redirection check if explicitly clicking the Plus (+) button
+      if (!isFromPlusButton) {
+        try {
+          // Check if this user already has a business registered
+          const q = query(collection(db, "businesses"), where("ownerId", "==", user.uid));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            // User already has a business! Redirect to main market or account page
+            const existingBusiness = querySnapshot.docs[0].data();
+            localStorage.setItem("myBusinessId", querySnapshot.docs[0].id);
+            
+            // Redirect home or to vendor dashboard
+            window.location.href = "index.html";
+            return;
+          }
+        } catch (err) {
+          console.error("Error checking existing business:", err);
+        }
+      }
+
+      // Hide loading screen if user needs to create a business
+      loadingOverlay.style.display = "none";
+    });
+
+    // Handle Business Registration Form Submission
+    document.getElementById("addBusinessForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!currentUser) {
+        alert("Please log in first.");
+        return;
+      }
+
+      const saveBtn = document.getElementById("saveBusinessBtn");
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving Business...`;
 
       try {
-        // 1. Upload Logo to Cloudinary
-        const logoUrl = await uploadToCloudinary(logoFile);
+        const businessName = document.getElementById("businessName").value.trim();
+        const category = document.getElementById("category").value;
+        const phone = document.getElementById("phone").value.trim();
+        const location = document.getElementById("location").value.trim();
 
-        // 2. Prepare Business Data
-        const businessData = {
-          name: document.getElementById("businessName").value.trim(),
-          owner: document.getElementById("ownerName").value.trim(),
-          phone: document.getElementById("phone").value.trim(),
-          category: document.getElementById("category").value,
-          location: document.getElementById("location").value.trim(),
-          description: document.getElementById("description").value.trim(),
-          logo: logoUrl,
-          verified: false,
+        // Create new business document in Firestore
+        const docRef = await addDoc(collection(db, "businesses"), {
+          ownerId: currentUser.uid,
+          ownerEmail: currentUser.email,
+          businessName: businessName,
+          category: category,
+          phone: phone,
+          location: location,
+          status: "draft",
           createdAt: serverTimestamp()
-        };
+        });
 
-        // 3. Save to Firestore ('businesses' collection)
-        const docRef = await addDoc(collection(db, "businesses"), businessData);
-
-        showAlert("Business registered successfully! Redirecting to packages...", "success");
-
-        // Save business ID locally so packages.html knows which business is subscribing
+        // Store business ID for packages selection page
         localStorage.setItem("createdBusinessId", docRef.id);
 
-        // Redirect directly to packages.html after 1.5 seconds
-        setTimeout(() => {
-          window.location.href = "packages.html";
-        }, 1500);
+        // Direct user to packages page
+        window.location.href = "packages.html";
 
       } catch (error) {
         console.error("Error creating business:", error);
-        showAlert(error.message || "An error occurred while creating your business.", "error");
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="fa-solid fa-store"></i> Register Business`;
+        alertBox.textContent = "Failed to register business. Please try again.";
+        alertBox.style.display = "block";
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `Continue to Select Package <i class="fa-solid fa-arrow-right"></i>`;
       }
     });
   </script>
