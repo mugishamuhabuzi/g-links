@@ -1,369 +1,583 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --nav-height: 65px;
+    }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-<title>Venx Online Market</title>
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
 
-<style>
+    /* --- Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 12px 16px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial, Helvetica, sans-serif;
-}
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      color: white;
+    }
 
-body{
-background:#f5f5f5;
-padding-bottom:80px;
-}
+    .brand-logo {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
 
-header{
-background:#0b8f4d;
-padding:15px;
-position:sticky;
-top:0;
-z-index:100;
-}
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
 
-.search-container{
-position:relative;
-}
+    .icon-btn {
+      position: relative;
+      color: white;
+      text-decoration: none;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-#search{
-width:100%;
-padding:12px;
-border:none;
-border-radius:25px;
-font-size:16px;
-outline:none;
-}
+    .badge-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 8px;
+      height: 8px;
+      background-color: #ff4757;
+      border-radius: 50%;
+      border: 1.5px solid var(--primary-color);
+    }
 
-#suggestions{
-position:absolute;
-background:white;
-width:100%;
-border-radius:10px;
-margin-top:5px;
-display:none;
-box-shadow:0 5px 10px rgba(0,0,0,.2);
-max-height:250px;
-overflow-y:auto;
-}
+    .search-container {
+      position: relative;
+    }
 
-#suggestions div{
-padding:12px;
-cursor:pointer;
-}
+    .search-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
 
-#suggestions div:hover{
-background:#efefef;
-}
+    .search-input-wrapper i {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
 
-.section-title{
-padding:15px;
-font-size:22px;
-font-weight:bold;
-}
+    #search {
+      width: 100%;
+      padding: 10px 14px 10px 40px;
+      border: none;
+      border-radius: 20px;
+      font-size: 15px;
+      outline: none;
+      background: white;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+    }
 
-.items{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
-gap:15px;
-padding:15px;
-}
+    #suggestions {
+      position: absolute;
+      background: white;
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 6px;
+      display: none;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 1001;
+    }
 
-.card{
-background:white;
-border-radius:10px;
-overflow:hidden;
-box-shadow:0 2px 8px rgba(0,0,0,.1);
-}
+    #suggestions div {
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      border-bottom: 1px solid #f0f0f0;
+    }
 
-.card img{
-width:100%;
-height:170px;
-object-fit:cover;
-}
+    #suggestions div:hover {
+      background: #f8f9fa;
+      color: var(--primary-color);
+    }
 
-.info{
-padding:10px;
-}
+    /* --- Sliding Banner Carousel --- */
+    .slider-container {
+      position: relative;
+      margin: 16px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
 
-.name{
-font-size:18px;
-font-weight:bold;
-}
+    .slider-wrapper {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      width: 100%;
+    }
 
-.price{
-color:#0b8f4d;
-margin-top:5px;
-font-weight:bold;
-}
+    .slide {
+      min-width: 100%;
+      height: 160px;
+      position: relative;
+    }
 
-.bottom-nav{
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-position:fixed;
-bottom:0;
-left:0;
-right:0;
+    .slide-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      color: white;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+    }
 
-height:65px;
+    .slider-dots {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      display: flex;
+      gap: 6px;
+    }
 
-background:white;
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      transition: background 0.3s;
+    }
 
-display:flex;
+    .dot.active {
+      background: white;
+      width: 18px;
+      border-radius: 4px;
+    }
 
-justify-content:space-around;
+    /* --- Quick Categories --- */
+    .categories-preview {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 0 16px 8px;
+      scrollbar-width: none;
+    }
 
-align-items:center;
+    .categories-preview::-webkit-scrollbar {
+      display: none;
+    }
 
-box-shadow:0 -2px 8px rgba(0,0,0,.15);
+    .cat-chip {
+      background: white;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      color: var(--text-main);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
 
-}
+    /* --- Items Grid --- */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px 8px;
+    }
 
-.bottom-nav a{
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
 
-text-decoration:none;
+    .items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+      padding: 0 16px;
+    }
 
-color:#555;
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.2s;
+    }
 
-font-size:14px;
+    .card:active {
+      transform: scale(0.98);
+    }
 
-display:flex;
+    .card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
 
-flex-direction:column;
+    .info {
+      padding: 10px;
+    }
 
-align-items:center;
+    .name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-}
+    .price {
+      color: var(--primary-color);
+      margin-top: 4px;
+      font-weight: 700;
+      font-size: 15px;
+    }
 
-.bottom-nav a.active{
+    .loading-text, .empty-text {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 30px;
+      color: var(--text-muted);
+    }
 
-color:#0b8f4d;
+    /* --- Floating Action Button (Add Business) --- */
+    .fab-add-business {
+      position: fixed;
+      bottom: 80px;
+      right: 18px;
+      width: 54px;
+      height: 54px;
+      background: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 22px;
+      box-shadow: 0 4px 15px rgba(11, 143, 77, 0.4);
+      z-index: 999;
+      transition: transform 0.2s, background-color 0.2s;
+    }
 
-font-weight:bold;
+    .fab-add-business:active {
+      transform: scale(0.92);
+      background: var(--primary-dark);
+    }
 
-}
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
 
-</style>
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 25%;
+    }
 
+    .bottom-nav a i {
+      font-size: 18px;
+    }
+
+    .bottom-nav a.active {
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+  </style>
 </head>
-
 <body>
 
-<header>
-
-<div class="search-container">
-
-<input
-type="text"
-id="search"
-placeholder="Search items...">
-
-<div id="suggestions"></div>
-
-</div>
-
-</header>
-
-<h2 class="section-title">
-Popular Items
-</h2>
-
-<div class="items" id="items">
-
-<div class="card">
-<img src="https://picsum.photos/300?1">
-<div class="info">
-<div class="name">Laptop</div>
-<div class="price">UGX 2,500,000</div>
-</div>
-</div>
-
-<div class="card">
-<img src="https://picsum.photos/300?2">
-<div class="info">
-<div class="name">Television</div>
-<div class="price">UGX 980,000</div>
-</div>
-</div>
-
-<div class="card">
-<img src="https://picsum.photos/300?3">
-<div class="info">
-<div class="name">Shoes</div>
-<div class="price">UGX 95,000</div>
-</div>
-</div>
-
-<div class="card">
-<img src="https://picsum.photos/300?4">
-<div class="info">
-<div class="name">Phone</div>
-<div class="price">UGX 700,000</div>
-</div>
-</div>
-
-</div>
-
-<nav class="bottom-nav">
-
-<a href="#" class="active">
-🏠
-<span>Home</span>
-</a>
-
-<a href="#">
-📦
-<span>My Orders</span>
-</a>
-
-<a href="account.html">
-👤
-<span>Account</span>
-</a>
-
-</nav>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
-
-const firebaseConfig = {
-
-apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
-
-authDomain: "venx-online-market.firebaseapp.com",
-
-projectId: "venx-online-market",
-
-storageBucket: "venx-online-market.firebasestorage.app",
-
-messagingSenderId: "820627929510",
-
-appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
-
-measurementId: "G-BLH2T3CBVQ"
-
-};
-
-const app = initializeApp(firebaseConfig);
-
-getAnalytics(app);
-
-const categories=[
-
-"Accessories",
-
-"Appliances",
-
-"Baby Products",
-
-"Bags",
-
-"Books",
-
-"Cars",
-
-"Clothes",
-
-"Computers",
-
-"Cosmetics",
-
-"Electronics",
-
-"Furniture",
-
-"Groceries",
-
-"Health",
-
-"Home",
-
-"Jewelry",
-
-"Laptops",
-
-"Phones",
-
-"Shoes",
-
-"Sports",
-
-"Televisions",
-
-"Toys",
-
-"Watches"
-
-];
-
-const search=document.getElementById("search");
-
-const suggestions=document.getElementById("suggestions");
-
-search.addEventListener("input",()=>{
-
-let value=search.value.toLowerCase();
-
-suggestions.innerHTML="";
-
-if(value===""){
-
-suggestions.style.display="none";
-
-return;
-
-}
-
-let found=categories.filter(item=>
-
-item.toLowerCase().includes(value)
-
-);
-
-found.forEach(cat=>{
-
-let div=document.createElement("div");
-
-div.innerHTML=cat;
-
-div.onclick=()=>{
-
-search.value=cat;
-
-suggestions.style.display="none";
-
-};
-
-suggestions.appendChild(div);
-
-});
-
-suggestions.style.display=
-
-found.length?"block":"none";
-
-});
-
-document.addEventListener("click",(e)=>{
-
-if(!e.target.closest(".search-container")){
-
-suggestions.style.display="none";
-
-}
-
-});
-
-</script>
-
+  <!-- Top Header -->
+  <header>
+    <div class="top-bar">
+      <div class="brand-logo">Venx Market</div>
+      <div class="header-actions">
+        <a href="#" class="icon-btn" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span class="badge-dot"></span>
+        </a>
+        <a href="account.html" class="icon-btn" aria-label="Profile">
+          <i class="fa-regular fa-circle-user"></i>
+        </a>
+      </div>
+    </div>
+    
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="search" placeholder="Search products, brands, categories...">
+      </div>
+      <div id="suggestions"></div>
+    </div>
+  </header>
+
+  <!-- Banner Carousel -->
+  <div class="slider-container">
+    <div class="slider-wrapper" id="sliderWrapper">
+      <div class="slide">
+        <img src="https://picsum.photos/600/250?1" alt="Special Deals">
+        <div class="slide-overlay">🔥 Mega Deals up to 40% OFF</div>
+      </div>
+      <div class="slide">
+        <img src="https://picsum.photos/600/250?2" alt="Electronics Super Sale">
+        <div class="slide-overlay">⚡ Fresh Tech & Accessories</div>
+      </div>
+      <div class="slide">
+        <img src="https://picsum.photos/600/250?3" alt="Local Stores">
+        <div class="slide-overlay">🛍️ Support Local Businesses</div>
+      </div>
+    </div>
+    <div class="slider-dots" id="sliderDots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <!-- Category Scroll Bar -->
+  <div class="categories-preview">
+    <div class="cat-chip"><i class="fa-solid fa-laptop"></i> Laptops</div>
+    <div class="cat-chip"><i class="fa-solid fa-mobile-screen"></i> Phones</div>
+    <div class="cat-chip"><i class="fa-solid fa-shirt"></i> Fashion</div>
+    <div class="cat-chip"><i class="fa-solid fa-couch"></i> Home</div>
+    <div class="cat-chip"><i class="fa-solid fa-basket-shopping"></i> Groceries</div>
+  </div>
+
+  <!-- Items Grid -->
+  <div class="section-header">
+    <h2 class="section-title">Popular Items</h2>
+  </div>
+
+  <div class="items" id="items">
+    <div class="loading-text">Loading items...</div>
+  </div>
+
+  <!-- Floating Action Button to Add Business -->
+  <a href="add-business.html" class="fab-add-business" title="Add Business">
+    <i class="fa-solid fa-plus"></i>
+  </a>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html" class="active">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="categories.html">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Category</span>
+    </a>
+    <a href="orders.html">
+      <i class="fa-solid fa-box"></i>
+      <span>My Orders</span>
+    </a>
+    <a href="account.html">
+      <i class="fa-solid fa-user"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Firebase Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+    // Your Exact Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
+      measurementId: "G-BLH2T3CBVQ"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    getAnalytics(app);
+    const db = getFirestore(app);
+
+    const itemsContainer = document.getElementById("items");
+
+    // Real-Time Firestore Listener for the 'items' collection
+    // This automatically creates and reads the 'items' collection
+    const itemsRef = collection(db, "items");
+    onSnapshot(itemsRef, (snapshot) => {
+      itemsContainer.innerHTML = "";
+
+      if (snapshot.empty) {
+        // Fallback default cards if no items are added in Firestore yet
+        itemsContainer.innerHTML = `
+          <div class="card">
+            <img src="https://picsum.photos/300?1" alt="Laptop">
+            <div class="info">
+              <div class="name">Laptop</div>
+              <div class="price">UGX 2,500,000</div>
+            </div>
+          </div>
+          <div class="card">
+            <img src="https://picsum.photos/300?2" alt="Television">
+            <div class="info">
+              <div class="name">Television</div>
+              <div class="price">UGX 980,000</div>
+            </div>
+          </div>
+          <div class="card">
+            <img src="https://picsum.photos/300?3" alt="Shoes">
+            <div class="info">
+              <div class="name">Shoes</div>
+              <div class="price">UGX 95,000</div>
+            </div>
+          </div>
+          <div class="card">
+            <img src="https://picsum.photos/300?4" alt="Phone">
+            <div class="info">
+              <div class="name">Phone</div>
+              <div class="price">UGX 700,000</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Render documents dynamically from Firestore
+      snapshot.docs.forEach((doc) => {
+        const item = doc.data();
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${item.image || 'https://picsum.photos/300'}" alt="${item.name}">
+          <div class="info">
+            <div class="name">${item.name || 'Unnamed Item'}</div>
+            <div class="price">UGX ${Number(item.price || 0).toLocaleString()}</div>
+          </div>
+        `;
+        itemsContainer.appendChild(card);
+      });
+    }, (error) => {
+      console.error("Firestore Error: ", error);
+      itemsContainer.innerHTML = `<div class="empty-text">Error loading items from database.</div>`;
+    });
+
+    // Search bar functionality
+    const categories = [
+      "Accessories", "Appliances", "Baby Products", "Bags", "Books", "Cars",
+      "Clothes", "Computers", "Cosmetics", "Electronics", "Furniture",
+      "Groceries", "Health", "Home", "Jewelry", "Laptops", "Phones",
+      "Shoes", "Sports", "Televisions", "Toys", "Watches"
+    ];
+
+    const search = document.getElementById("search");
+    const suggestions = document.getElementById("suggestions");
+
+    search.addEventListener("input", () => {
+      let value = search.value.toLowerCase();
+      suggestions.innerHTML = "";
+      if (value === "") {
+        suggestions.style.display = "none";
+        return;
+      }
+      let found = categories.filter(item => item.toLowerCase().includes(value));
+      found.forEach(cat => {
+        let div = document.createElement("div");
+        div.innerHTML = cat;
+        div.onclick = () => {
+          search.value = cat;
+          suggestions.style.display = "none";
+        };
+        suggestions.appendChild(div);
+      });
+      suggestions.style.display = found.length ? "block" : "none";
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-container")) {
+        suggestions.style.display = "none";
+      }
+    });
+
+    // Sliding Banner Logic
+    const sliderWrapper = document.getElementById("sliderWrapper");
+    const dots = document.querySelectorAll(".dot");
+    let currentSlide = 0;
+    const totalSlides = dots.length;
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+      dots.forEach((dot, index) => {
+        dot.classList.toggle("active", index === currentSlide);
+      });
+    }
+
+    setInterval(nextSlide, 3500);
+  </script>
 </body>
 </html>
+
