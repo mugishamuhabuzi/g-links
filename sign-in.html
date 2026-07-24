@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Account - Venx Online Market</title>
+  <title>Sign In - Venx Online Market</title>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -41,8 +41,14 @@
       color: white;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 16px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
     }
 
     .header-title {
@@ -131,85 +137,9 @@
       background: #e6fffa;
     }
 
-    .btn-danger {
-      background: #e74c3c;
-      color: white;
-      margin-top: 16px;
-    }
-
-    /* --- User Profile Header --- */
-    .profile-header {
-      text-align: center;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 20px;
-    }
-
-    .profile-avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: #e6fffa;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      margin: 0 auto 12px auto;
-    }
-
-    .user-name {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .user-email {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    /* --- Menu List --- */
-    .menu-list {
-      list-style: none;
-    }
-
-    .menu-item {
-      margin-bottom: 8px;
-    }
-
-    .menu-link {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      border-radius: 10px;
-      text-decoration: none;
-      color: var(--text-main);
-      background: #fafafa;
-      font-size: 14px;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-
-    .menu-link:hover {
-      background: #f0f0f0;
-    }
-
-    .menu-link-content {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .menu-link i.icon {
-      color: var(--primary-color);
-      font-size: 16px;
-      width: 20px;
-    }
-
     .divider {
       text-align: center;
-      margin: 16px 0;
+      margin: 20px 0;
       position: relative;
     }
 
@@ -273,11 +203,6 @@
       width: 20%;
     }
 
-    .bottom-nav a.active {
-      color: var(--primary-color);
-      font-weight: bold;
-    }
-
     .bottom-nav a.plus-btn {
       color: var(--primary-color);
       font-size: 22px;
@@ -289,20 +214,21 @@
 
   <!-- Top Header -->
   <header>
-    <div class="header-title">My Account</div>
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+    <div class="header-title">Sign In</div>
   </header>
 
   <div class="container">
     <div id="alertBox" class="alert alert-error"></div>
 
-    <!-- VIEW 1: SIGN IN / SIGN UP FORM (Shown to Guests) -->
-    <div id="guestView" class="card" style="display: none;">
+    <!-- SIGN IN FORM -->
+    <div class="card">
       <h2 style="font-size: 20px; margin-bottom: 6px; text-align: center;">Welcome Back</h2>
       <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center;">
-        Sign in to your account to continue
+        Sign in to access your Venx Market account
       </p>
 
-      <form id="loginForm">
+      <form id="signInForm">
         <div class="form-group">
           <label for="email"><i class="fa-solid fa-envelope"></i> Email Address</label>
           <input type="email" id="email" class="form-control" placeholder="yourname@example.com" required>
@@ -313,7 +239,7 @@
           <input type="password" id="password" class="form-control" placeholder="••••••••" required>
         </div>
 
-        <!-- SIGN IN BUTTON: Logs in and redirects to index.html -->
+        <!-- SIGN IN BUTTON: Directs to index.html on success -->
         <button type="submit" id="signInBtn" class="btn btn-primary">
           <i class="fa-solid fa-right-to-bracket"></i> Sign In
         </button>
@@ -323,48 +249,10 @@
         <span>Don't have an account?</span>
       </div>
 
-      <!-- CREATE NEW ACCOUNT / SIGN UP BUTTON -->
-      <a href="signup.html" class="btn btn-outline">
+      <!-- CREATE NEW ACCOUNT BUTTON: Navigates to account.html -->
+      <a href="account.html" class="btn btn-outline">
         <i class="fa-solid fa-user-plus"></i> Create New Account
       </a>
-    </div>
-
-    <!-- VIEW 2: LOGGED IN PROFILE DASHBOARD (Shown to Existing Users) -->
-    <div id="userView" class="card" style="display: none;">
-      <div class="profile-header">
-        <div class="profile-avatar">
-          <i class="fa-solid fa-user"></i>
-        </div>
-        <div class="user-name" id="profileName">User Account</div>
-        <div class="user-email" id="profileEmail">user@example.com</div>
-      </div>
-
-      <!-- Account Navigation Links (Note: Add Business option removed) -->
-      <ul class="menu-list">
-        <li class="menu-item">
-          <a href="orders.html" class="menu-link">
-            <div class="menu-link-content">
-              <i class="fa-solid fa-box icon"></i>
-              <span>My Orders</span>
-            </div>
-            <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-muted);"></i>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="index.html" class="menu-link">
-            <div class="menu-link-content">
-              <i class="fa-solid fa-store icon"></i>
-              <span>Explore Marketplace</span>
-            </div>
-            <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-muted);"></i>
-          </a>
-        </li>
-      </ul>
-
-      <!-- Logout Button -->
-      <button id="logoutBtn" class="btn btn-danger">
-        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
-      </button>
     </div>
   </div>
 
@@ -378,7 +266,6 @@
       <i class="fa-solid fa-layer-group"></i>
       <span>Category</span>
     </a>
-    <!-- Plus button links to add-business.html directly -->
     <a href="add-business.html?fromPlus=true" class="plus-btn">
       <i class="fa-solid fa-circle-plus"></i>
     </a>
@@ -386,16 +273,16 @@
       <i class="fa-solid fa-box"></i>
       <span>Orders</span>
     </a>
-    <a href="account.html" class="active">
+    <a href="account.html">
       <i class="fa-solid fa-user"></i>
       <span>Account</span>
     </a>
   </nav>
 
-  <!-- Firebase Auth & Account Script -->
+  <!-- Firebase Auth Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
     // Firebase Configuration
     const firebaseConfig = {
@@ -412,8 +299,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const guestView = document.getElementById("guestView");
-    const userView = document.getElementById("userView");
     const alertBox = document.getElementById("alertBox");
 
     function showError(message) {
@@ -421,23 +306,16 @@
       alertBox.style.display = "block";
     }
 
-    // Monitor Auth State
+    // Check if user is already signed in
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Logged In: Show Account Dashboard
-        guestView.style.display = "none";
-        userView.style.display = "block";
-        document.getElementById("profileEmail").textContent = user.email || "Registered User";
-        document.getElementById("profileName").textContent = user.displayName || user.email.split('@')[0];
-      } else {
-        // Logged Out: Show Sign In & Sign Up options
-        userView.style.display = "none";
-        guestView.style.display = "block";
+        // If already logged in, redirect directly to market home
+        window.location.href = "index.html";
       }
     });
 
     // Handle Sign In & Redirect to index.html
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    document.getElementById("signInForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
       const email = document.getElementById("email").value.trim();
@@ -449,23 +327,13 @@
 
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        // On successful Sign In, redirect directly to index.html
+        // On successful sign in, redirect straight to index.html
         window.location.href = "index.html";
       } catch (error) {
-        console.error("Login Error:", error);
-        showError("Invalid email or password. Please try again.");
+        console.error("Sign In Error:", error);
+        showError("Invalid email or password. Please check your credentials and try again.");
         signInBtn.disabled = false;
         signInBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In`;
-      }
-    });
-
-    // Handle Sign Out
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      try {
-        await signOut(auth);
-        window.location.reload();
-      } catch (error) {
-        console.error("Sign out error:", error);
       }
     });
   </script>
