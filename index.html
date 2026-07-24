@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Venx Online Market</title>
+  <title>Venx Online Market - Home</title>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -14,6 +14,7 @@
       --card-bg: #ffffff;
       --text-main: #2c3e50;
       --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
       --nav-height: 65px;
     }
 
@@ -21,296 +22,200 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
       background: var(--bg-color);
       color: var(--text-main);
-      padding-bottom: 90px;
+      padding-bottom: 85px;
     }
 
-    /* --- Header --- */
+    /* --- Top Header & Search --- */
     header {
       background: var(--primary-color);
-      padding: 12px 16px 16px;
+      padding: 16px;
       position: sticky;
       top: 0;
       z-index: 1000;
+      color: white;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    .top-bar {
+    .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
-      color: white;
     }
 
-    .brand-logo {
+    .logo-text {
       font-size: 20px;
       font-weight: 800;
       letter-spacing: 0.5px;
     }
 
-    .header-actions {
+    .header-icons {
       display: flex;
-      align-items: center;
       gap: 16px;
+      font-size: 18px;
     }
 
-    .icon-btn {
-      position: relative;
+    .header-icons a {
       color: white;
       text-decoration: none;
-      font-size: 20px;
+    }
+
+    .search-box {
       display: flex;
       align-items: center;
-      justify-content: center;
-    }
-
-    .badge-dot {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 8px;
-      height: 8px;
-      background-color: #ff4757;
-      border-radius: 50%;
-      border: 1.5px solid var(--primary-color);
-    }
-
-    .search-container {
-      position: relative;
-    }
-
-    .search-input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-input-wrapper i {
-      position: absolute;
-      left: 14px;
-      color: var(--text-muted);
-      font-size: 15px;
-    }
-
-    #search {
-      width: 100%;
-      padding: 10px 14px 10px 40px;
-      border: none;
-      border-radius: 20px;
-      font-size: 15px;
-      outline: none;
       background: white;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
-    }
-
-    #suggestions {
-      position: absolute;
-      background: white;
-      width: 100%;
-      border-radius: 12px;
-      margin-top: 6px;
-      display: none;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      max-height: 250px;
-      overflow-y: auto;
-      z-index: 1001;
-    }
-
-    #suggestions div {
-      padding: 12px 16px;
-      cursor: pointer;
-      font-size: 14px;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    #suggestions div:hover {
-      background: #f8f9fa;
-      color: var(--primary-color);
-    }
-
-    /* --- Sliding Banner Carousel --- */
-    .slider-container {
-      position: relative;
-      margin: 16px;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    .slider-wrapper {
-      display: flex;
-      transition: transform 0.5s ease-in-out;
-      width: 100%;
-    }
-
-    .slide {
-      min-width: 100%;
-      height: 160px;
-      position: relative;
-    }
-
-    .slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .slide-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(transparent, rgba(0,0,0,0.7));
-      color: white;
-      padding: 12px 16px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .slider-dots {
-      position: absolute;
-      bottom: 8px;
-      right: 12px;
-      display: flex;
-      gap: 6px;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.5);
-      transition: background 0.3s;
-    }
-
-    .dot.active {
-      background: white;
-      width: 18px;
-      border-radius: 4px;
-    }
-
-    /* --- Quick Categories --- */
-    .categories-preview {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 0 16px 8px;
-      scrollbar-width: none;
-    }
-
-    .categories-preview::-webkit-scrollbar {
-      display: none;
-    }
-
-    .cat-chip {
-      background: white;
+      border-radius: 10px;
       padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      white-space: nowrap;
-      color: var(--text-main);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.04);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
     }
 
-    /* --- Items Grid --- */
+    .search-box i {
+      color: var(--text-muted);
+      margin-right: 8px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 14px;
+      background: transparent;
+    }
+
+    /* --- Main Container --- */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* --- Hero Banner --- */
+    .hero-banner {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      border-radius: 16px;
+      padding: 20px;
+      color: white;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(11, 143, 77, 0.2);
+    }
+
+    .hero-banner h2 {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .hero-banner p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    /* --- Section Titles --- */
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 16px 8px;
+      margin-bottom: 12px;
     }
 
     .section-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
+      color: var(--text-main);
     }
 
-    .items {
+    .see-all {
+      font-size: 13px;
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* --- Categories Grid --- */
+    .categories-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 14px;
-      padding: 0 16px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
     }
 
-    .card {
+    .category-card {
       background: var(--card-bg);
       border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 14px 8px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
       transition: transform 0.2s;
     }
 
-    .card:active {
-      transform: scale(0.98);
+    .category-card:active {
+      transform: scale(0.95);
     }
 
-    .card img {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-    }
-
-    .info {
-      padding: 10px;
-    }
-
-    .name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-main);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .price {
+    .category-card i {
+      font-size: 20px;
       color: var(--primary-color);
-      margin-top: 4px;
-      font-weight: 700;
-      font-size: 15px;
+      margin-bottom: 6px;
+      display: block;
     }
 
-    .loading-text, .empty-text {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 30px;
-      color: var(--text-muted);
+    .category-card span {
+      font-size: 11px;
+      font-weight: 600;
+      display: block;
     }
 
-    /* --- Floating Action Button (Add Business) --- */
-    .fab-add-business {
-      position: fixed;
-      bottom: 80px;
-      right: 18px;
-      width: 54px;
-      height: 54px;
-      background: var(--primary-color);
-      color: white;
-      border-radius: 50%;
+    /* --- Products Grid --- */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-img-wrapper {
+      height: 120px;
+      background: #eef2f5;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-decoration: none;
-      font-size: 22px;
-      box-shadow: 0 4px 15px rgba(11, 143, 77, 0.4);
-      z-index: 999;
-      transition: transform 0.2s, background-color 0.2s;
+      color: var(--text-muted);
     }
 
-    .fab-add-business:active {
-      transform: scale(0.92);
-      background: var(--primary-dark);
+    .product-details {
+      padding: 12px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text-main);
+    }
+
+    .product-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-color);
     }
 
     /* --- Bottom Navigation --- */
@@ -336,16 +241,18 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      width: 25%;
-    }
-
-    .bottom-nav a i {
-      font-size: 18px;
+      width: 20%;
     }
 
     .bottom-nav a.active {
       color: var(--primary-color);
-      font-weight: 700;
+      font-weight: bold;
+    }
+
+    .bottom-nav a.plus-btn {
+      color: var(--primary-color);
+      font-size: 24px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -353,101 +260,113 @@
 
   <!-- Top Header -->
   <header>
-    <div class="top-bar">
-      <div class="brand-logo">Venx Market</div>
-      <div class="header-actions">
-        <a href="#" class="icon-btn" aria-label="Notifications">
-          <i class="fa-regular fa-bell"></i>
-          <span class="badge-dot"></span>
-        </a>
-        <a href="account.html" class="icon-btn" aria-label="Profile">
-          <i class="fa-regular fa-circle-user"></i>
-        </a>
+    <div class="header-top">
+      <div class="logo-text">Venx Market</div>
+      <div class="header-icons">
+        <a href="notifications.html"><i class="fa-solid fa-bell"></i></a>
+        <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
       </div>
     </div>
-    
-    <div class="search-container">
-      <div class="search-input-wrapper">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="search" placeholder="Search products, brands, categories...">
-      </div>
-      <div id="suggestions"></div>
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search products, services, businesses...">
     </div>
   </header>
 
-  <!-- Banner Carousel -->
-  <div class="slider-container">
-    <div class="slider-wrapper" id="sliderWrapper">
-      <div class="slide">
-        <img src="https://picsum.photos/600/250?1" alt="Special Deals">
-        <div class="slide-overlay">🔥 Mega Deals up to 40% OFF</div>
+  <div class="container">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <h2>Welcome to Venx Market</h2>
+      <p>Discover products, connect with top businesses, and place orders directly.</p>
+    </div>
+
+    <!-- Quick Categories -->
+    <div class="section-header">
+      <span class="section-title">Categories</span>
+      <a href="categories.html" class="see-all">See All</a>
+    </div>
+
+    <div class="categories-grid">
+      <a href="categories.html?cat=electronics" class="category-card">
+        <i class="fa-solid fa-mobile-screen"></i>
+        <span>Electronics</span>
+      </a>
+      <a href="categories.html?cat=fashion" class="category-card">
+        <i class="fa-solid fa-shirt"></i>
+        <span>Fashion</span>
+      </a>
+      <a href="categories.html?cat=food" class="category-card">
+        <i class="fa-solid fa-utensils"></i>
+        <span>Food & Drinks</span>
+      </a>
+      <a href="categories.html?cat=services" class="category-card">
+        <i class="fa-solid fa-briefcase"></i>
+        <span>Services</span>
+      </a>
+    </div>
+
+    <!-- Featured Listings -->
+    <div class="section-header">
+      <span class="section-title">Featured Listings</span>
+      <a href="products.html" class="see-all">Explore</a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="product-img-wrapper">
+          <i class="fa-solid fa-store fa-2x"></i>
+        </div>
+        <div class="product-details">
+          <div class="product-title">Sample Product Item</div>
+          <div class="product-price">UGX 50,000</div>
+        </div>
       </div>
-      <div class="slide">
-        <img src="https://picsum.photos/600/250?2" alt="Electronics Super Sale">
-        <div class="slide-overlay">⚡ Fresh Tech & Accessories</div>
-      </div>
-      <div class="slide">
-        <img src="https://picsum.photos/600/250?3" alt="Local Stores">
-        <div class="slide-overlay">🛍️ Support Local Businesses</div>
+
+      <div class="product-card">
+        <div class="product-img-wrapper">
+          <i class="fa-solid fa-bag-shopping fa-2x"></i>
+        </div>
+        <div class="product-details">
+          <div class="product-title">Business Service</div>
+          <div class="product-price">UGX 120,000</div>
+        </div>
       </div>
     </div>
-    <div class="slider-dots" id="sliderDots">
-      <div class="dot active"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-    </div>
   </div>
 
-  <!-- Category Scroll Bar -->
-  <div class="categories-preview">
-    <div class="cat-chip"><i class="fa-solid fa-laptop"></i> Laptops</div>
-    <div class="cat-chip"><i class="fa-solid fa-mobile-screen"></i> Phones</div>
-    <div class="cat-chip"><i class="fa-solid fa-shirt"></i> Fashion</div>
-    <div class="cat-chip"><i class="fa-solid fa-couch"></i> Home</div>
-    <div class="cat-chip"><i class="fa-solid fa-basket-shopping"></i> Groceries</div>
-  </div>
-
-  <!-- Items Grid -->
-  <div class="section-header">
-    <h2 class="section-title">Popular Items</h2>
-  </div>
-
-  <div class="items" id="items">
-    <div class="loading-text">Loading items...</div>
-  </div>
-
-  <!-- Floating Action Button to Add Business -->
-  <a href="add-business.html" class="fab-add-business" title="Add Business">
-    <i class="fa-solid fa-plus"></i>
-  </a>
-
-  <!-- Bottom Navigation -->
+  <!-- Bottom Navigation Bar -->
   <nav class="bottom-nav">
+    <!-- Home -->
     <a href="index.html" class="active">
       <i class="fa-solid fa-house"></i>
       <span>Home</span>
     </a>
+    <!-- Category -->
     <a href="categories.html">
       <i class="fa-solid fa-layer-group"></i>
       <span>Category</span>
     </a>
+    <!-- PLUS BUTTON: Connects to packages.html -->
+    <a href="packages.html" class="plus-btn">
+      <i class="fa-solid fa-circle-plus"></i>
+    </a>
+    <!-- Orders -->
     <a href="orders.html">
       <i class="fa-solid fa-box"></i>
-      <span>My Orders</span>
+      <span>Orders</span>
     </a>
+    <!-- ACCOUNT BUTTON: Connects to account.html -->
     <a href="account.html">
       <i class="fa-solid fa-user"></i>
       <span>Account</span>
     </a>
   </nav>
 
-  <!-- Firebase Integration -->
+  <!-- Firebase Integration Module -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
-    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
-    // Your Exact Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
       authDomain: "venx-online-market.firebaseapp.com",
@@ -458,126 +377,16 @@
       measurementId: "G-BLH2T3CBVQ"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    getAnalytics(app);
-    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    const itemsContainer = document.getElementById("items");
-
-    // Real-Time Firestore Listener for the 'items' collection
-    // This automatically creates and reads the 'items' collection
-    const itemsRef = collection(db, "items");
-    onSnapshot(itemsRef, (snapshot) => {
-      itemsContainer.innerHTML = "";
-
-      if (snapshot.empty) {
-        // Fallback default cards if no items are added in Firestore yet
-        itemsContainer.innerHTML = `
-          <div class="card">
-            <img src="https://picsum.photos/300?1" alt="Laptop">
-            <div class="info">
-              <div class="name">Laptop</div>
-              <div class="price">UGX 2,500,000</div>
-            </div>
-          </div>
-          <div class="card">
-            <img src="https://picsum.photos/300?2" alt="Television">
-            <div class="info">
-              <div class="name">Television</div>
-              <div class="price">UGX 980,000</div>
-            </div>
-          </div>
-          <div class="card">
-            <img src="https://picsum.photos/300?3" alt="Shoes">
-            <div class="info">
-              <div class="name">Shoes</div>
-              <div class="price">UGX 95,000</div>
-            </div>
-          </div>
-          <div class="card">
-            <img src="https://picsum.photos/300?4" alt="Phone">
-            <div class="info">
-              <div class="name">Phone</div>
-              <div class="price">UGX 700,000</div>
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      // Render documents dynamically from Firestore
-      snapshot.docs.forEach((doc) => {
-        const item = doc.data();
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <img src="${item.image || 'https://picsum.photos/300'}" alt="${item.name}">
-          <div class="info">
-            <div class="name">${item.name || 'Unnamed Item'}</div>
-            <div class="price">UGX ${Number(item.price || 0).toLocaleString()}</div>
-          </div>
-        `;
-        itemsContainer.appendChild(card);
-      });
-    }, (error) => {
-      console.error("Firestore Error: ", error);
-      itemsContainer.innerHTML = `<div class="empty-text">Error loading items from database.</div>`;
-    });
-
-    // Search bar functionality
-    const categories = [
-      "Accessories", "Appliances", "Baby Products", "Bags", "Books", "Cars",
-      "Clothes", "Computers", "Cosmetics", "Electronics", "Furniture",
-      "Groceries", "Health", "Home", "Jewelry", "Laptops", "Phones",
-      "Shoes", "Sports", "Televisions", "Toys", "Watches"
-    ];
-
-    const search = document.getElementById("search");
-    const suggestions = document.getElementById("suggestions");
-
-    search.addEventListener("input", () => {
-      let value = search.value.toLowerCase();
-      suggestions.innerHTML = "";
-      if (value === "") {
-        suggestions.style.display = "none";
-        return;
-      }
-      let found = categories.filter(item => item.toLowerCase().includes(value));
-      found.forEach(cat => {
-        let div = document.createElement("div");
-        div.innerHTML = cat;
-        div.onclick = () => {
-          search.value = cat;
-          suggestions.style.display = "none";
-        };
-        suggestions.appendChild(div);
-      });
-      suggestions.style.display = found.length ? "block" : "none";
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".search-container")) {
-        suggestions.style.display = "none";
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User logged in:", user.email);
+      } else {
+        console.log("No user signed in.");
       }
     });
-
-    // Sliding Banner Logic
-    const sliderWrapper = document.getElementById("sliderWrapper");
-    const dots = document.querySelectorAll(".dot");
-    let currentSlide = 0;
-    const totalSlides = dots.length;
-
-    function nextSlide() {
-      currentSlide = (currentSlide + 1) % totalSlides;
-      sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-      dots.forEach((dot, index) => {
-        dot.classList.toggle("active", index === currentSlide);
-      });
-    }
-
-    setInterval(nextSlide, 3500);
   </script>
 </body>
 </html>
-
