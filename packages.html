@@ -277,7 +277,7 @@
     <a href="index.html" class="back-btn" aria-label="Go Back">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
-    <div class="header-title">Select Vendor Package</div>
+    <div class="header-title">Vendor Packages</div>
   </header>
 
   <!-- Container -->
@@ -300,7 +300,7 @@
     <!-- 1 Year Grace Period Offer Banner -->
     <div class="grace-banner">
       <h3><i class="fa-solid fa-gift"></i> 1-YEAR FREE GRACE PERIOD</h3>
-      <p>All new vendors get 1 Year Free access to monthly package fees! You only pay the one-time registration fee on checkout.</p>
+      <p>All new vendors get 1 Year Free access to monthly package fees! Select your plan below to register your business.</p>
     </div>
 
     <!-- Package Options Grid -->
@@ -321,11 +321,11 @@
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
         </ul>
         <button class="btn-select" onclick="selectPackage('Pay-As-You-Sell (10% Commission)', 10, 0, 0.10)">
-          <span>Select 10% Plan</span> <i class="fa-solid fa-arrow-right"></i>
+          <span>Select 10% Commission Plan</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
 
-      <!-- OPTION 2: Basic Package -->
+      <!-- OPTION 2: Basic Package (50,000 / 15 Items / 0% Commission) -->
       <div class="package-card">
         <div class="package-header">
           <div class="package-title">Basic Plan</div>
@@ -336,7 +336,7 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>15 Business Items</strong></li>
-          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong></li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong> (Keep 100% of sales)</li>
           <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
         </ul>
@@ -345,7 +345,7 @@
         </button>
       </div>
 
-      <!-- OPTION 3: Advanced Package -->
+      <!-- OPTION 3: Advanced Package (100,000 / 25 Items / 0% Commission) -->
       <div class="package-card recommended">
         <span class="badge-tag">Most Popular</span>
         <div class="package-header">
@@ -357,7 +357,7 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>25 Business Items</strong></li>
-          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong></li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong> (Keep 100% of sales)</li>
           <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
           <li><i class="fa-solid fa-certificate"></i> Verified Business Badge</li>
@@ -367,7 +367,7 @@
         </button>
       </div>
 
-      <!-- OPTION 4: Premium Package -->
+      <!-- OPTION 4: Premium Package (150,000 / 35 Items / 0% Commission) -->
       <div class="package-card">
         <div class="package-header">
           <div class="package-title">Premium Plan</div>
@@ -378,7 +378,7 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>35 Business Items</strong></li>
-          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong></li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong> (Keep 100% of sales)</li>
           <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
           <li><i class="fa-solid fa-star" style="color: var(--accent-gold);"></i> Priority Search Placement</li>
@@ -393,12 +393,25 @@
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
-    <a href="orders.html"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
-    <a href="account.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
+    <a href="index.html">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="categories.html">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Category</span>
+    </a>
+    <a href="orders.html">
+      <i class="fa-solid fa-box"></i>
+      <span>My Orders</span>
+    </a>
+    <a href="account.html">
+      <i class="fa-solid fa-user"></i>
+      <span>Account</span>
+    </a>
   </nav>
 
+  <!-- Script to Handle Dynamic Currency and Package Selection -->
   <script>
     const countrySelect = document.getElementById("countrySelect");
     let currentCurrency = "UGX";
@@ -424,24 +437,24 @@
     }
 
     countrySelect.addEventListener("change", updatePricesDisplay);
-    updatePricesDisplay();
+    updatePricesDisplay(); // Initial load
 
-    // Package Selection Handler -> Redirects to add-business.html
+    // Function to handle selection and redirect to add-business.html
     function selectPackage(packageName, itemLimit, baseMonthlyUGX, commissionRate) {
-      const packageInfo = {
-        packageName,
-        itemLimit,
-        baseMonthlyUGX,
-        commissionRate,
+      const selectedPackageData = {
+        packageName: packageName,
+        itemLimit: itemLimit,
+        baseMonthlyUGX: baseMonthlyUGX,
+        commissionRate: commissionRate,
         regFeeUGX: 3000,
         country: countrySelect.value,
         currency: currentCurrency
       };
 
-      // Save selected package info locally
-      localStorage.setItem("selectedPackage", JSON.stringify(packageInfo));
+      // Store in localStorage for add-business.html to read
+      localStorage.setItem("selectedPackage", JSON.stringify(selectedPackageData));
 
-      // Navigate directly to Add Business Page
+      // Navigate to Add Business page
       window.location.href = "add-business.html";
     }
   </script>
