@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage My Businesses - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --danger-color: #e53e3e;
+      --warning-color: #d69e2e;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Top Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .add-header-btn {
+      color: var(--primary-color);
+      background: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .add-header-btn:hover {
+      background: #e6fffa;
+    }
+
+    .add-header-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* --- Main Container --- */
+    .container {
+      max-width: 550px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    /* --- Navigation Arrow Switcher Bar --- */
+    .business-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .nav-arrow-btn {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .nav-arrow-btn:hover:not(:disabled) {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .nav-arrow-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .nav-counter {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* --- Business Card Profile View --- */
+    .business-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .cover-photo-container {
+      width: 100%;
+      height: 130px;
+      background: linear-gradient(135deg, #0b8f4d, #086d3a);
+      position: relative;
+    }
+
+    .cover-photo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .logo-avatar-wrapper {
+      position: absolute;
+      bottom: -35px;
+      left: 20px;
+      width: 76px;
+      height: 76px;
+      border-radius: 16px;
+      border: 3px solid white;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+
+    .logo-avatar-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .badge-status {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-active { background: #e6fffa; color: #234e52; border: 1px solid #b2f5ea; }
+    .badge-inactive { background: #edf2f7; color: #4a5568; border: 1px solid #cbd5e0; }
+
+    .business-card-body {
+      padding: 45px 20px 20px 20px;
+    }
+
+    .biz-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .biz-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .biz-category {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary-color);
+      background: #e6fffa;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-top: 4px;
+    }
+
+    .biz-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    /* Info Table Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 12px;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 16px;
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .info-item i {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #f0fdf4;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .info-item-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .info-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Action Buttons Bar */
+    .card-actions-bar {
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 16px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-edit-biz {
+      background: #edf2f7;
+      color: var(--text-main);
+    }
+
+    .btn-edit-biz:hover { background: #e2e8f0; }
+
+    .btn-delete-biz {
+      background: #fff5f5;
+      color: var(--danger-color);
+      border: 1px solid #feb2b2;
+    }
+
+    .btn-delete-biz:hover { background: #fed7d7; }
+
+    .btn-toggle-status {
+      background: #fefcbf;
+      color: #744210;
+      border: 1px solid #f6e05e;
+    }
+
+    /* --- Form Styling --- */
+    .form-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      background: #fafafa;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      background: white;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Image Preview Container */
+    .image-preview-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      padding: 8px;
+      background: #f8fafc;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+    }
+
+    .image-preview-wrapper img {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #e2e8f0;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary { background: var(--primary-color); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-cancel { background: #e2e8f0; color: var(--text-main); }
+    .btn-cancel:hover { background: #cbd5e0; }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-success { background: #e6fffa; color: #234e52; border: 1px solid #b2f5ea; }
+    .alert-error { background: #fff5f5; color: #9b2c2c; border: 1px solid #feb2b2; }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 20%;
+    }
+
+    .bottom-nav a.active { color: var(--primary-color); font-weight: bold; }
+    .bottom-nav a.plus-btn { color: var(--primary-color); font-size: 22px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-left">
+      <a href="account.html" class="back-btn" title="Back to Account">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <div class="header-title">Manage My Businesses</div>
+    </div>
+    <button id="openAddBusinessBtn" class="add-header-btn">
+      <i class="fa-solid fa-plus"></i> Add Business
+    </button>
+  </header>
+
+  <div class="container">
+    <div id="alertBox" class="alert"></div>
+
+    <!-- Navigation Arrows Switcher -->
+    <div id="businessNavBar" class="business-nav-bar" style="display: none;">
+      <button id="prevBizBtn" class="nav-arrow-btn" title="Previous Business">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <div id="navCounter" class="nav-counter">Business 1 of 1</div>
+      <button id="nextBizBtn" class="nav-arrow-btn" title="Next Business">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- ADD / EDIT BUSINESS FORM CARD -->
+    <div id="businessFormCard" class="form-card" style="display: none;">
+      <div class="form-header">
+        <h3 id="formTitle" style="font-size: 16px;"><i class="fa-solid fa-store"></i> Add New Business</h3>
+        <button id="closeFormX" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;">&times;</button>
+      </div>
+
+      <form id="businessForm">
+        <!-- Business Name -->
+        <div class="form-group">
+          <label for="bizName">Business Name *</label>
+          <input type="text" id="bizName" class="form-control" placeholder="e.g. Venx Supermarket, Kampala Organics" required>
+        </div>
+
+        <!-- Category & Status -->
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label for="bizCategory">Category / Type *</label>
+            <select id="bizCategory" class="form-control" required>
+              <option value="">-- Select Category --</option>
+              <option value="Grocery & Supermarket">Grocery & Supermarket</option>
+              <option value="Meat, Poultry & Fish">Meat, Poultry & Fish</option>
+              <option value="Coffee, Tea & Cocoa">Coffee, Tea & Cocoa</option>
+              <option value="Dairy & Dairy Products">Dairy & Dairy Products</option>
+              <option value="Restaurant & Food Processing">Restaurant & Food Processing</option>
+              <option value="Electronics & Appliances">Electronics & Appliances</option>
+              <option value="Fashion & Clothing">Fashion & Clothing</option>
+              <option value="Agriculture & Farm Input">Agriculture & Farm Input</option>
+              <option value="General Retail">General Retail</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label for="bizStatus">Store Status</label>
+            <select id="bizStatus" class="form-control">
+              <option value="active">Active (Open)</option>
+              <option value="inactive">Inactive (Closed)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Business Description -->
+        <div class="form-group">
+          <label for="bizDescription">Business Description / Tagline</label>
+          <textarea id="bizDescription" class="form-control" placeholder="Brief details about products sold, operating focus, etc."></textarea>
+        </div>
+
+        <!-- Contact Numbers -->
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label for="bizPhone">Phone Number *</label>
+            <input type="tel" id="bizPhone" class="form-control" placeholder="e.g. +256 700 000 000" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label for="bizWhatsapp">WhatsApp Number</label>
+            <input type="tel" id="bizWhatsapp" class="form-control" placeholder="e.g. +256 700 000 000">
+          </div>
+        </div>
+
+        <!-- Email & Address -->
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label for="bizEmail">Business Email</label>
+            <input type="email" id="bizEmail" class="form-control" placeholder="e.g. contact@mybusiness.com">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label for="bizAddress">Location / Address *</label>
+            <input type="text" id="bizAddress" class="form-control" placeholder="e.g. Kyambogo, Kampala" required>
+          </div>
+        </div>
+
+        <!-- Opening Hours & Payment Details -->
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label for="bizHours">Opening Hours</label>
+            <input type="text" id="bizHours" class="form-control" placeholder="e.g. Mon - Sat: 8am - 8pm">
+          </div>
+        </div>
+
+        <!-- Payment Setup -->
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label for="bizMomoName">Mobile Money Account Name</label>
+            <input type="text" id="bizMomoName" class="form-control" placeholder="e.g. John Doe / Venx Ltd">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label for="bizMomoNumber">Mobile Money Phone Number</label>
+            <input type="tel" id="bizMomoNumber" class="form-control" placeholder="e.g. 0770000000">
+          </div>
+        </div>
+
+        <!-- Business Logo Upload (Cloudinary) -->
+        <div class="form-group">
+          <label for="bizLogoFile"><i class="fa-solid fa-image"></i> Business Logo</label>
+          <input type="file" id="bizLogoFile" class="form-control" accept="image/*">
+          <div id="logoPreviewContainer" class="image-preview-wrapper" style="display: none;">
+            <img id="logoPreview" src="" alt="Logo Preview">
+            <span style="font-size: 12px; color: var(--text-muted);">Logo Preview</span>
+          </div>
+        </div>
+
+        <!-- Business Cover Photo Upload (Cloudinary) -->
+        <div class="form-group">
+          <label for="bizCoverFile"><i class="fa-solid fa-panorama"></i> Business Banner / Cover Photo</label>
+          <input type="file" id="bizCoverFile" class="form-control" accept="image/*">
+          <div id="coverPreviewContainer" class="image-preview-wrapper" style="display: none;">
+            <img id="coverPreview" src="" alt="Cover Preview" style="width: 100px; height: 50px;">
+            <span style="font-size: 12px; color: var(--text-muted);">Cover Preview</span>
+          </div>
+        </div>
+
+        <!-- Form Action Buttons -->
+        <div class="btn-group">
+          <button type="button" id="cancelFormBtn" class="btn btn-cancel">Cancel</button>
+          <button type="submit" id="saveBizBtn" class="btn btn-primary">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Save Business
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- BUSINESS VIEW CONTAINER -->
+    <div id="businessViewContainer">
+      <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top: 10px; font-size: 14px;">Loading business profile...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <a href="index.html">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="categories.html">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Category</span>
+    </a>
+    <a href="packages.html" class="plus-btn">
+      <i class="fa-solid fa-circle-plus"></i>
+    </a>
+    <a href="orders.html">
+      <i class="fa-solid fa-box"></i>
+      <span>Orders</span>
+    </a>
+    <a href="account.html" class="active">
+      <i class="fa-solid fa-user"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Firebase & Cloudinary Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      query, 
+      where, 
+      getDocs, 
+      addDoc, 
+      doc, 
+      updateDoc, 
+      deleteDoc, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+    // Cloudinary Credentials
+    const CLOUDINARY_CLOUD_NAME = "venx-market"; 
+    const CLOUDINARY_UPLOAD_PRESET = "venx_preset"; 
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
+      measurementId: "G-BLH2T3CBVQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const businessFormCard = document.getElementById("businessFormCard");
+    const businessForm = document.getElementById("businessForm");
+    const formTitle = document.getElementById("formTitle");
+    const saveBizBtn = document.getElementById("saveBizBtn");
+    const businessViewContainer = document.getElementById("businessViewContainer");
+    const alertBox = document.getElementById("alertBox");
+
+    const businessNavBar = document.getElementById("businessNavBar");
+    const prevBizBtn = document.getElementById("prevBizBtn");
+    const nextBizBtn = document.getElementById("nextBizBtn");
+    const navCounter = document.getElementById("navCounter");
+
+    // File Preview Elements
+    const bizLogoFile = document.getElementById("bizLogoFile");
+    const logoPreviewContainer = document.getElementById("logoPreviewContainer");
+    const logoPreview = document.getElementById("logoPreview");
+
+    const bizCoverFile = document.getElementById("bizCoverFile");
+    const coverPreviewContainer = document.getElementById("coverPreviewContainer");
+    const coverPreview = document.getElementById("coverPreview");
+
+    // Application State
+    let userBusinesses = [];
+    let currentBizIndex = 0;
+    let currentUserId = null;
+    let editingBizId = null;
+    let existingLogoUrl = "";
+    let existingCoverUrl = "";
+
+    function showAlert(msg, type = "success") {
+      alertBox.textContent = msg;
+      alertBox.className = `alert alert-${type}`;
+      alertBox.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => alertBox.style.display = "none", 3500);
+    }
+
+    // Check Authentication & Load Business Profiles
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUserId = user.uid;
+        await fetchUserBusinesses();
+      } else {
+        window.location.href = "account.html";
+      }
+    });
+
+    // Fetch Businesses belonging to current user
+    async function fetchUserBusinesses() {
+      try {
+        const q = query(collection(db, "businesses"), where("userId", "==", currentUserId));
+        const querySnapshot = await getDocs(q);
+
+        userBusinesses = [];
+        querySnapshot.forEach((docSnap) => {
+          userBusinesses.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        if (currentBizIndex >= userBusinesses.length) {
+          currentBizIndex = Math.max(0, userBusinesses.length - 1);
+        }
+
+        renderCurrentBusiness();
+      } catch (err) {
+        console.error("Error fetching business data:", err);
+        businessViewContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger-color);"></i>
+            <h3>Error Loading Business Profile</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Please verify network connection and try again.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Render currently selected Business
+    function renderCurrentBusiness() {
+      if (userBusinesses.length === 0) {
+        businessNavBar.style.display = "none";
+        businessViewContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-store-slash"></i>
+            <h3>No Business Profile Found</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 6px 0 18px 0;">You haven't added a business yet. Register your store to start selling.</p>
+            <button onclick="openFormForAdd()" class="btn btn-primary" style="display: inline-flex; width: auto; margin: 0 auto; padding: 10px 18px;">
+              <i class="fa-solid fa-plus"></i> Add Business Profile
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // Update Navigation Bar
+      if (userBusinesses.length > 1) {
+        businessNavBar.style.display = "flex";
+        navCounter.textContent = `Business ${currentBizIndex + 1} of ${userBusinesses.length}`;
+        prevBizBtn.disabled = currentBizIndex === 0;
+        nextBizBtn.disabled = currentBizIndex === userBusinesses.length - 1;
+      } else {
+        businessNavBar.style.display = "none";
+      }
+
+      const biz = userBusinesses[currentBizIndex];
+      const isActive = biz.status !== "inactive";
+
+      businessViewContainer.innerHTML = `
+        <div class="business-card">
+          <!-- Cover Banner -->
+          <div class="cover-photo-container">
+            ${biz.coverUrl ? `<img src="${biz.coverUrl}" alt="Cover Image">` : ''}
+            <span class="badge-status ${isActive ? 'badge-active' : 'badge-inactive'}">
+              <i class="fa-solid ${isActive ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+              ${isActive ? 'Active Store' : 'Inactive / Closed'}
+            </span>
+            <div class="logo-avatar-wrapper">
+              <img src="${biz.logoUrl || 'https://via.placeholder.com/150?text=Logo'}" alt="${biz.name}" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
+            </div>
+          </div>
+
+          <!-- Business Header Details -->
+          <div class="business-card-body">
+            <div class="biz-header-row">
+              <div>
+                <div class="biz-title">${biz.name || 'Unnamed Business'}</div>
+                <div class="biz-category"><i class="fa-solid fa-tag"></i> ${biz.category || 'General Merchant'}</div>
+              </div>
+            </div>
+
+            <p class="biz-description">${biz.description || 'No business description provided yet.'}</p>
+
+            <!-- Key Info Grid -->
+            <div class="info-grid">
+              <div class="info-item">
+                <i class="fa-solid fa-phone"></i>
+                <div class="info-item-content">
+                  <span class="info-label">Phone Contact</span>
+                  <span class="info-value">${biz.phone || 'N/A'}</span>
+                </div>
+              </div>
+
+              ${biz.whatsapp ? `
+              <div class="info-item">
+                <i class="fa-brands fa-whatsapp"></i>
+                <div class="info-item-content">
+                  <span class="info-label">WhatsApp Contact</span>
+                  <span class="info-value">${biz.whatsapp}</span>
+                </div>
+              </div>` : ''}
+
+              <div class="info-item">
+                <i class="fa-solid fa-location-dot"></i>
+                <div class="info-item-content">
+                  <span class="info-label">Location / Address</span>
+                  <span class="info-value">${biz.address || 'N/A'}</span>
+                </div>
+              </div>
+
+              ${biz.email ? `
+              <div class="info-item">
+                <i class="fa-solid fa-envelope"></i>
+                <div class="info-item-content">
+                  <span class="info-label">Email Address</span>
+                  <span class="info-value">${biz.email}</span>
+                </div>
+              </div>` : ''}
+
+              ${biz.openingHours ? `
+              <div class="info-item">
+                <i class="fa-solid fa-clock"></i>
+                <div class="info-item-content">
+                  <span class="info-label">Opening Hours</span>
+                  <span class="info-value">${biz.openingHours}</span>
+                </div>
+              </div>` : ''}
+
+              ${biz.mobileMoneyNumber ? `
+              <div class="info-item">
+                <i class="fa-solid fa-wallet"></i>
+                <div class="info-item-content">
+                  <span class="info-label">Mobile Money Payment Info</span>
+                  <span class="info-value">${biz.mobileMoneyNumber} (${biz.mobileMoneyName || 'Account Holder'})</span>
+                </div>
+              </div>` : ''}
+            </div>
+
+            <!-- Action Buttons for Current Business -->
+            <div class="card-actions-bar">
+              <button class="btn-action btn-edit-biz" onclick="openFormForEdit('${biz.id}')">
+                <i class="fa-solid fa-pen-to-square"></i> Edit Details
+              </button>
+              <button class="btn-action btn-toggle-status" onclick="toggleStoreStatus('${biz.id}', '${biz.status || 'active'}')">
+                <i class="fa-solid fa-power-off"></i> ${isActive ? 'Deactivate' : 'Activate'}
+              </button>
+              <button class="btn-action btn-delete-biz" onclick="deleteBusiness('${biz.id}', '${biz.name}')">
+                <i class="fa-solid fa-trash-can"></i> Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- NAVIGATION ARROW LISTENERS ---
+    prevBizBtn.addEventListener("click", () => {
+      if (currentBizIndex > 0) {
+        currentBizIndex--;
+        renderCurrentBusiness();
+      }
+    });
+
+    nextBizBtn.addEventListener("click", () => {
+      if (currentBizIndex < userBusinesses.length - 1) {
+        currentBizIndex++;
+        renderCurrentBusiness();
+      }
+    });
+
+    // --- LIVE FILE PREVIEW HANDLERS ---
+    bizLogoFile.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          logoPreview.src = evt.target.result;
+          logoPreviewContainer.style.display = "flex";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        logoPreviewContainer.style.display = "none";
+      }
+    });
+
+    bizCoverFile.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          coverPreview.src = evt.target.result;
+          coverPreviewContainer.style.display = "flex";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        coverPreviewContainer.style.display = "none";
+      }
+    });
+
+    // --- CLOUDINARY UPLOAD HELPER ---
+    async function uploadToCloudinary(file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: "POST",
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error("Cloudinary upload failed.");
+      }
+
+      const data = await response.json();
+      return data.secure_url;
+    }
+
+    // --- FORM SHOW / HIDE CONTROLS ---
+    window.openFormForAdd = () => {
+      editingBizId = null;
+      existingLogoUrl = "";
+      existingCoverUrl = "";
+      businessForm.reset();
+      logoPreviewContainer.style.display = "none";
+      coverPreviewContainer.style.display = "none";
+
+      formTitle.innerHTML = `<i class="fa-solid fa-store"></i> Add New Business Profile`;
+      saveBizBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Save Business`;
+      businessFormCard.style.display = "block";
+      businessFormCard.scrollIntoView({ behavior: "smooth" });
+    };
+
+    window.openFormForEdit = (bizId) => {
+      const biz = userBusinesses.find(b => b.id === bizId);
+      if (!biz) return;
+
+      editingBizId = bizId;
+      existingLogoUrl = biz.logoUrl || "";
+      existingCoverUrl = biz.coverUrl || "";
+
+      document.getElementById("bizName").value = biz.name || "";
+      document.getElementById("bizCategory").value = biz.category || "";
+      document.getElementById("bizStatus").value = biz.status || "active";
+      document.getElementById("bizDescription").value = biz.description || "";
+      document.getElementById("bizPhone").value = biz.phone || "";
+      document.getElementById("bizWhatsapp").value = biz.whatsapp || "";
+      document.getElementById("bizEmail").value = biz.email || "";
+      document.getElementById("bizAddress").value = biz.address || "";
+      document.getElementById("bizHours").value = biz.openingHours || "";
+      document.getElementById("bizMomoName").value = biz.mobileMoneyName || "";
+      document.getElementById("bizMomoNumber").value = biz.mobileMoneyNumber || "";
+
+      bizLogoFile.value = "";
+      if (existingLogoUrl) {
+        logoPreview.src = existingLogoUrl;
+        logoPreviewContainer.style.display = "flex";
+      } else {
+        logoPreviewContainer.style.display = "none";
+      }
+
+      bizCoverFile.value = "";
+      if (existingCoverUrl) {
+        coverPreview.src = existingCoverUrl;
+        coverPreviewContainer.style.display = "flex";
+      } else {
+        coverPreviewContainer.style.display = "none";
+      }
+
+      formTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Edit Business Details`;
+      saveBizBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Update Business`;
+      businessFormCard.style.display = "block";
+      businessFormCard.scrollIntoView({ behavior: "smooth" });
+    };
+
+    function hideForm() {
+      businessFormCard.style.display = "none";
+      businessForm.reset();
+      logoPreviewContainer.style.display = "none";
+      coverPreviewContainer.style.display = "none";
+      editingBizId = null;
+      existingLogoUrl = "";
+      existingCoverUrl = "";
+    }
+
+    document.getElementById("openAddBusinessBtn").addEventListener("click", window.openFormForAdd);
+    document.getElementById("cancelFormBtn").addEventListener("click", hideForm);
+    document.getElementById("closeFormX").addEventListener("click", hideForm);
+
+    // --- FORM SUBMISSION (ADD / EDIT BUSINESS) ---
+    businessForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      let finalLogoUrl = existingLogoUrl;
+      let finalCoverUrl = existingCoverUrl;
+
+      saveBizBtn.disabled = true;
+
+      try {
+        // Logo Upload
+        if (bizLogoFile.files[0]) {
+          saveBizBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading Logo...`;
+          finalLogoUrl = await uploadToCloudinary(bizLogoFile.files[0]);
+        }
+
+        // Cover Photo Upload
+        if (bizCoverFile.files[0]) {
+          saveBizBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading Cover Photo...`;
+          finalCoverUrl = await uploadToCloudinary(bizCoverFile.files[0]);
+        }
+
+        saveBizBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+        const bizData = {
+          name: document.getElementById("bizName").value.trim(),
+          category: document.getElementById("bizCategory").value,
+          status: document.getElementById("bizStatus").value,
+          description: document.getElementById("bizDescription").value.trim(),
+          phone: document.getElementById("bizPhone").value.trim(),
+          whatsapp: document.getElementById("bizWhatsapp").value.trim(),
+          email: document.getElementById("bizEmail").value.trim(),
+          address: document.getElementById("bizAddress").value.trim(),
+          openingHours: document.getElementById("bizHours").value.trim(),
+          mobileMoneyName: document.getElementById("bizMomoName").value.trim(),
+          mobileMoneyNumber: document.getElementById("bizMomoNumber").value.trim(),
+          logoUrl: finalLogoUrl,
+          coverUrl: finalCoverUrl,
+          userId: currentUserId,
+          updatedAt: serverTimestamp()
+        };
+
+        if (editingBizId) {
+          // Update Existing Business
+          await updateDoc(doc(db, "businesses", editingBizId), bizData);
+          showAlert("Business profile updated successfully!");
+        } else {
+          // Create New Business
+          bizData.createdAt = serverTimestamp();
+          await addDoc(collection(db, "businesses"), bizData);
+          showAlert("New business profile created!");
+        }
+
+        hideForm();
+        await fetchUserBusinesses();
+      } catch (err) {
+        console.error("Error saving business profile:", err);
+        showAlert("Failed to save business profile. " + err.message, "error");
+      } finally {
+        saveBizBtn.disabled = false;
+        saveBizBtn.innerHTML = editingBizId 
+          ? `<i class="fa-solid fa-floppy-disk"></i> Update Business`
+          : `<i class="fa-solid fa-cloud-arrow-up"></i> Save Business`;
+      }
+    });
+
+    // --- TOGGLE STORE STATUS ---
+    window.toggleStoreStatus = async (bizId, currentStatus) => {
+      const newStatus = currentStatus === "inactive" ? "active" : "inactive";
+      try {
+        await updateDoc(doc(db, "businesses", bizId), { status: newStatus });
+        showAlert(`Business is now ${newStatus === 'active' ? 'Active' : 'Inactive'}.`);
+        await fetchUserBusinesses();
+      } catch (err) {
+        console.error("Error toggling status:", err);
+        showAlert("Failed to update status.", "error");
+      }
+    };
+
+    // --- DELETE BUSINESS PROFILE ---
+    window.deleteBusiness = async (bizId, bizName) => {
+      if (confirm(`Are you sure you want to remove business "${bizName}"? This action cannot be undone.`)) {
+        try {
+          await deleteDoc(doc(db, "businesses", bizId));
+          showAlert(`Business "${bizName}" was removed.`);
+          currentBizIndex = 0;
+          await fetchUserBusinesses();
+        } catch (err) {
+          console.error("Error deleting business:", err);
+          showAlert("Failed to remove business profile.", "error");
+        }
+      }
+    };
+  </script>
+</body>
+</html>
