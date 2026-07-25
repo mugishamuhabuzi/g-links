@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: calc(var(--nav-height) + 20px);
+    }
+
+    /* --- Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 14px 16px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    /* --- Container --- */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+
+    /* --- Status Tabs --- */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+
+    .filter-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      background: white;
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    /* --- Orders List --- */
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .order-card {
+      background: white;
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--border-color);
+      margin-bottom: 10px;
+    }
+
+    .order-id {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .order-date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .status-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+    }
+
+    .status-processing {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .status-delivered {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .order-body {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .order-img {
+      width: 65px;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #f8fafc;
+      flex-shrink: 0;
+    }
+
+    .order-details {
+      flex: 1;
+    }
+
+    .order-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .order-seller {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .order-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-action.pay {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .btn-action.pay:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-action.primary {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .btn-action.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    /* --- Empty State --- */
+    .empty-orders {
+      text-align: center;
+      padding: 50px 20px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .empty-orders i {
+      font-size: 48px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .empty-orders p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .btn-shop {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* --- Notification Toast --- */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2c3e50;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 2000;
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .bottom-nav a.active {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .bottom-nav a i {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <a href="categories.html" aria-label="Back to Categories">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <span class="header-title">My Confirmed Orders</span>
+    <a href="cart.html" aria-label="My Cart">
+      <i class="fa-solid fa-cart-shopping"></i>
+    </a>
+  </header>
+
+  <div class="container">
+    
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+      <button class="tab-btn active" onclick="filterOrders('All', this)">All Orders</button>
+      <button class="tab-btn" onclick="filterOrders('Processing', this)">Processing</button>
+      <button class="tab-btn" onclick="filterOrders('Delivered', this)">Delivered</button>
+      <button class="tab-btn" onclick="filterOrders('Cancelled', this)">Cancelled</button>
+    </div>
+
+    <!-- Orders List Container -->
+    <div class="orders-list" id="ordersContainer">
+      <!-- Populated via JavaScript -->
+    </div>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-info" style="color: #3498db;"></i>
+    <span id="toastText">Action completed</span>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></a>
+    <a href="orders.html" class="active"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
+  </nav>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    let currentFilter = "All";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderOrders();
+    });
+
+    // 1. Get orders from localStorage
+    function getOrders() {
+      return JSON.parse(localStorage.getItem("venxOrders") || "[]");
+    }
+
+    // 2. Render Orders List
+    function renderOrders() {
+      const orders = getOrders();
+      const container = document.getElementById("ordersContainer");
+      container.innerHTML = "";
+
+      let filteredOrders = orders.filter(o => {
+        if (currentFilter === "All") return true;
+        return o.status.toLowerCase() === currentFilter.toLowerCase();
+      });
+
+      if (filteredOrders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-orders">
+            <i class="fa-solid fa-box-open"></i>
+            <p>No ${currentFilter === "All" ? "" : currentFilter.toLowerCase()} orders found.</p>
+            <a href="categories.html" class="btn-shop">Explore Categories</a>
+          </div>
+        `;
+        return;
+      }
+
+      filteredOrders.forEach((order) => {
+        const card = document.createElement("div");
+        card.className = "order-card";
+
+        const statusClass = `status-${(order.status || 'processing').toLowerCase()}`;
+
+        card.innerHTML = `
+          <div class="order-header">
+            <div>
+              <span class="order-id">${order.orderId || 'VNX-000000'}</span>
+              <span class="order-date">• ${order.date || 'Recent'}</span>
+            </div>
+            <span class="status-badge ${statusClass}">${order.status || 'Processing'}</span>
+          </div>
+
+          <div class="order-body">
+            <img src="${order.image}" alt="${order.title}" class="order-img">
+            <div class="order-details">
+              <div class="order-title">${order.title}</div>
+              <div class="order-seller"><i class="fa-solid fa-store"></i> ${order.seller}</div>
+            </div>
+          </div>
+
+          <div class="order-footer">
+            <div>
+              <span style="font-size: 10px; color: var(--text-muted); display: block;">Total Amount</span>
+              <span class="order-price">UGX ${(order.price || 0).toLocaleString()}</span>
+            </div>
+            <div class="order-actions">
+              ${order.status === 'Processing' ? `
+                <button class="btn-action pay" onclick="payOrder('${order.orderId}')">
+                  <i class="fa-solid fa-credit-card"></i> Pay Now
+                </button>
+                <button class="btn-action" onclick="cancelOrder('${order.orderId}')">Cancel</button>
+              ` : ''}
+              <button class="btn-action primary" onclick="trackOrder('${order.orderId}')">
+                <i class="fa-solid fa-location-dot"></i> Track
+              </button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // 3. Connect to product-payment.html
+    function payOrder(orderId) {
+      let orders = getOrders();
+      const selectedOrder = orders.find(o => o.orderId === orderId);
+
+      if (selectedOrder) {
+        // Store selected order details for product-payment.html
+        localStorage.setItem("paymentOrder", JSON.stringify(selectedOrder));
+        
+        showToast("Opening Payment Page...");
+        
+        setTimeout(() => {
+          window.location.href = "product-payment.html";
+        }, 500);
+      }
+    }
+
+    // 4. Filter Tabs Switcher
+    function filterOrders(status, btnElement) {
+      currentFilter = status;
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      btnElement.classList.add("active");
+      renderOrders();
+    }
+
+    // 5. Track Order Action
+    function trackOrder(orderId) {
+      showToast(`Tracking ${orderId}: Order is being processed by vendor.`);
+    }
+
+    // 6. Cancel Order
+    function cancelOrder(orderId) {
+      let orders = getOrders();
+      const orderIndex = orders.findIndex(o => o.orderId === orderId);
+
+      if (orderIndex > -1) {
+        orders[orderIndex].status = "Cancelled";
+        localStorage.setItem("venxOrders", JSON.stringify(orders));
+        renderOrders();
+        showToast("Order has been cancelled.");
+      }
+    }
+
+    // Toast Alert Helper
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      document.getElementById("toastText").textContent = message;
+      toast.style.display = "flex";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 2500);
+    }
+  </script>
+
+</body>
+</html>
