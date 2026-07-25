@@ -239,105 +239,6 @@
       background: var(--primary-dark);
     }
 
-    /* --- Payment Modal --- */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-      padding: 16px;
-    }
-
-    .modal-content {
-      background: white;
-      width: 100%;
-      max-width: 450px;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .modal-header h3 {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .close-modal {
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-      color: var(--text-muted);
-    }
-
-    .summary-box {
-      background: var(--bg-color);
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 18px;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .summary-row.total {
-      border-top: 1px dashed var(--border-color);
-      padding-top: 8px;
-      margin-top: 8px;
-      font-weight: 800;
-      font-size: 15px;
-      color: var(--primary-color);
-    }
-
-    .notice-box {
-      background: #fff8e6;
-      border: 1px solid #ffe58f;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 12px;
-      color: #8a6d3b;
-      margin-bottom: 18px;
-      line-height: 1.4;
-    }
-
-    /* --- Alert Messages --- */
-    .alert {
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      margin-bottom: 16px;
-      display: none;
-    }
-
-    .alert-success {
-      background: #e6fffa;
-      color: #234e52;
-      border: 1px solid #b2f5ea;
-    }
-
-    .alert-error {
-      background: #fff5f5;
-      color: #9b2c2c;
-      border: 1px solid #feb2b2;
-    }
-
     /* --- Bottom Navigation --- */
     .bottom-nav {
       position: fixed;
@@ -373,15 +274,14 @@
 
   <!-- Top Header -->
   <header>
-    <a href="add-business.html" class="back-btn" aria-label="Go Back">
+    <a href="index.html" class="back-btn" aria-label="Go Back">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
-    <div class="header-title">Vendor Packages</div>
+    <div class="header-title">Select Vendor Package</div>
   </header>
 
   <!-- Container -->
   <div class="container">
-    <div id="alertBox" class="alert"></div>
 
     <!-- Country & Currency Selector -->
     <div class="country-selector-card">
@@ -400,7 +300,7 @@
     <!-- 1 Year Grace Period Offer Banner -->
     <div class="grace-banner">
       <h3><i class="fa-solid fa-gift"></i> 1-YEAR FREE GRACE PERIOD</h3>
-      <p>All new vendors get 1 Year Free access to monthly package fees! You only pay the one-time registration fee today.</p>
+      <p>All new vendors get 1 Year Free access to monthly package fees! You only pay the one-time registration fee on checkout.</p>
     </div>
 
     <!-- Package Options Grid -->
@@ -416,16 +316,16 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-percent" style="color: #e67e22;"></i> <strong>10% Sales Deduction</strong> on each item sold</li>
-          <li><i class="fa-solid fa-coins"></i> <strong>UGX 0 Monthly Fee</strong> (No upfront subscription)</li>
-          <li><i class="fa-solid fa-boxes-stacked"></i> Flexible Item Limit</li>
+          <li><i class="fa-solid fa-coins"></i> <strong>UGX 0 Monthly Fee</strong></li>
+          <li><i class="fa-solid fa-boxes-stacked"></i> Flexible Item Limit (Up to 10 Items)</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
         </ul>
-        <button class="btn-select" onclick="openCheckout('Pay-As-You-Sell (10% Commission)', 'Flexible', 0, 0.10)">
-          <span>Select 10% Commission Plan</span> <i class="fa-solid fa-arrow-right"></i>
+        <button class="btn-select" onclick="selectPackage('Pay-As-You-Sell (10% Commission)', 10, 0, 0.10)">
+          <span>Select 10% Plan</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
 
-      <!-- OPTION 2: Basic Package (50,000 / 15 Items / 0% Commission) -->
+      <!-- OPTION 2: Basic Package -->
       <div class="package-card">
         <div class="package-header">
           <div class="package-title">Basic Plan</div>
@@ -436,16 +336,16 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>15 Business Items</strong></li>
-          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong> (Keep 100% of sales)</li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong></li>
           <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
         </ul>
-        <button class="btn-select" onclick="openCheckout('Basic Plan', '15 Items', 50000, 0.00)">
+        <button class="btn-select" onclick="selectPackage('Basic Plan', 15, 50000, 0.00)">
           <span>Select Basic Plan</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
 
-      <!-- OPTION 3: Advanced Package (100,000 / 25 Items / 0% Commission) -->
+      <!-- OPTION 3: Advanced Package -->
       <div class="package-card recommended">
         <span class="badge-tag">Most Popular</span>
         <div class="package-header">
@@ -457,17 +357,17 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>25 Business Items</strong></li>
-          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong> (Keep 100% of sales)</li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong></li>
           <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
           <li><i class="fa-solid fa-certificate"></i> Verified Business Badge</li>
         </ul>
-        <button class="btn-select" onclick="openCheckout('Advanced Plan', '25 Items', 100000, 0.00)">
+        <button class="btn-select" onclick="selectPackage('Advanced Plan', 25, 100000, 0.00)">
           <span>Select Advanced Plan</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
 
-      <!-- OPTION 4: Premium Package (150,000 / 35 Items / 0% Commission) -->
+      <!-- OPTION 4: Premium Package -->
       <div class="package-card">
         <div class="package-header">
           <div class="package-title">Premium Plan</div>
@@ -478,12 +378,12 @@
         </div>
         <ul class="features-list">
           <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>35 Business Items</strong></li>
-          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong> (Keep 100% of sales)</li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong></li>
           <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
           <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
           <li><i class="fa-solid fa-star" style="color: var(--accent-gold);"></i> Priority Search Placement</li>
         </ul>
-        <button class="btn-select" onclick="openCheckout('Premium Plan', '35 Items', 150000, 0.00)">
+        <button class="btn-select" onclick="selectPackage('Premium Plan', 35, 150000, 0.00)">
           <span>Select Premium Plan</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
@@ -491,102 +391,24 @@
     </div>
   </div>
 
-  <!-- Registration Payment & Confirmation Modal -->
-  <div id="checkoutModal" class="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Confirm Registration</h3>
-        <button class="close-modal" onclick="closeCheckout()">&times;</button>
-      </div>
-
-      <div class="summary-box">
-        <div class="summary-row">
-          <span>Selected Package:</span>
-          <strong id="modalPackageName">Basic Plan</strong>
-        </div>
-        <div class="summary-row">
-          <span>Item Allowance:</span>
-          <strong id="modalItemLimit">15 Items</strong>
-        </div>
-        <div class="summary-row">
-          <span>Monthly Subscription:</span>
-          <span id="modalMonthlyFee">UGX 50,000</span>
-        </div>
-        <div class="summary-row">
-          <span>Sales Deduction / Commission:</span>
-          <strong id="modalCommissionRate" style="color: var(--primary-color);">0% per sale</strong>
-        </div>
-        <div class="summary-row total">
-          <span>One-Time Reg Fee Due:</span>
-          <span id="modalTotalDue">UGX 3,000</span>
-        </div>
-      </div>
-
-      <div class="notice-box">
-        <i class="fa-solid fa-shield-halved"></i> <strong>Admin Approval Required:</strong><br>
-        Once you pay the registration fee and submit, your business status will be set to <strong>Pending Approval</strong>. It will be reviewed by the admin and put live shortly!
-      </div>
-
-      <button id="payAndSubmitBtn" class="btn-select">
-        <i class="fa-solid fa-lock"></i> Pay Registration & Submit
-      </button>
-    </div>
-  </div>
-
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <a href="index.html">
-      <i class="fa-solid fa-house"></i>
-      <span>Home</span>
-    </a>
-    <a href="categories.html">
-      <i class="fa-solid fa-layer-group"></i>
-      <span>Category</span>
-    </a>
-    <a href="orders.html">
-      <i class="fa-solid fa-box"></i>
-      <span>My Orders</span>
-    </a>
-    <a href="account.html">
-      <i class="fa-solid fa-user"></i>
-      <span>Account</span>
-    </a>
+    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <a href="orders.html"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
+    <a href="account.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
   </nav>
 
-  <!-- Firebase & Package Logic Script -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-    import { getFirestore, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-
-    // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
-      authDomain: "venx-online-market.firebaseapp.com",
-      projectId: "venx-online-market",
-      storageBucket: "venx-online-market.firebasestorage.app",
-      messagingSenderId: "820627929510",
-      appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
-      measurementId: "G-BLH2T3CBVQ"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Dynamic Currency & Country Logic
+  <script>
     const countrySelect = document.getElementById("countrySelect");
-    const alertBox = document.getElementById("alertBox");
-
     let currentCurrency = "UGX";
     let currentRate = 1;
-    let selectedPackageData = null;
 
     function formatAmount(baseUGX) {
-      const converted = Math.round(baseUGX * currentRate);
       if (currentCurrency === "USD") {
         return `$${(baseUGX * currentRate).toFixed(2)}`;
       }
-      return `${currentCurrency} ${converted.toLocaleString()}`;
+      return `${currentCurrency} ${Math.round(baseUGX * currentRate).toLocaleString()}`;
     }
 
     function updatePricesDisplay() {
@@ -598,108 +420,30 @@
       document.getElementById("advOriginalPrice").textContent = `${formatAmount(100000)}/mo`;
       document.getElementById("premOriginalPrice").textContent = `${formatAmount(150000)}/mo`;
 
-      const regFeeTexts = document.querySelectorAll(".regFeeText");
-      regFeeTexts.forEach(el => el.textContent = formatAmount(3000));
+      document.querySelectorAll(".regFeeText").forEach(el => el.textContent = formatAmount(3000));
     }
 
     countrySelect.addEventListener("change", updatePricesDisplay);
-    updatePricesDisplay(); // Initial trigger
+    updatePricesDisplay();
 
-    function showAlert(message, type) {
-      alertBox.textContent = message;
-      alertBox.className = `alert alert-${type}`;
-      alertBox.style.display = "block";
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Modal Control Functions
-    window.openCheckout = function(packageName, itemLimit, baseMonthlyUGX, commissionRate) {
-      selectedPackageData = {
+    // Package Selection Handler -> Redirects to add-business.html
+    function selectPackage(packageName, itemLimit, baseMonthlyUGX, commissionRate) {
+      const packageInfo = {
         packageName,
         itemLimit,
         baseMonthlyUGX,
         commissionRate,
-        regFeeUGX: 3000
+        regFeeUGX: 3000,
+        country: countrySelect.value,
+        currency: currentCurrency
       };
 
-      document.getElementById("modalPackageName").textContent = packageName;
-      document.getElementById("modalItemLimit").textContent = itemLimit;
+      // Save selected package info locally
+      localStorage.setItem("selectedPackage", JSON.stringify(packageInfo));
 
-      if (baseMonthlyUGX > 0) {
-        document.getElementById("modalMonthlyFee").textContent = `${formatAmount(baseMonthlyUGX)}/mo (FREE Year 1)`;
-      } else {
-        document.getElementById("modalMonthlyFee").textContent = "UGX 0 / Month";
-      }
-
-      document.getElementById("modalCommissionRate").textContent = commissionRate > 0 ? `${commissionRate * 100}% Deduction per sale` : "0% (No Deduction)";
-      document.getElementById("modalTotalDue").textContent = formatAmount(3000);
-
-      document.getElementById("checkoutModal").style.display = "flex";
-    };
-
-    window.closeCheckout = function() {
-      document.getElementById("checkoutModal").style.display = "none";
-    };
-
-    // Payment & Submission Handler
-    document.getElementById("payAndSubmitBtn").addEventListener("click", async () => {
-      const businessId = localStorage.getItem("createdBusinessId");
-
-      if (!businessId) {
-        showAlert("No business record found. Please register your business first.", "error");
-        closeCheckout();
-        setTimeout(() => {
-          window.location.href = "add-business.html";
-        }, 2000);
-        return;
-      }
-
-      const payBtn = document.getElementById("payAndSubmitBtn");
-      payBtn.disabled = true;
-      payBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
-
-      try {
-        // Calculate 1 Year Grace Period Expiry Date
-        const gracePeriodEnd = new Date();
-        gracePeriodEnd.setFullYear(gracePeriodEnd.getFullYear() + 1);
-
-        const businessRef = doc(db, "businesses", businessId);
-        
-        // Update Firestore document
-        await updateDoc(businessRef, {
-          package: selectedPackageData.packageName,
-          itemLimit: selectedPackageData.itemLimit,
-          monthlyFeeUGX: selectedPackageData.baseMonthlyUGX,
-          commissionRate: selectedPackageData.commissionRate,
-          country: countrySelect.value,
-          currency: currentCurrency,
-          registrationFeePaid: true,
-          registrationFeeAmount: selectedPackageData.regFeeUGX,
-          gracePeriodActive: true,
-          gracePeriodExpiresAt: gracePeriodEnd,
-          status: "pending_approval", // Pending admin approval
-          isLive: false,               // Admin must set to true
-          updatedAt: serverTimestamp()
-        });
-
-        closeCheckout();
-        showAlert("Registration submitted! Your business is currently PENDING ADMIN APPROVAL. It will go live once verified.", "success");
-
-        // Clear temporary business ID
-        localStorage.removeItem("createdBusinessId");
-
-        // Redirect after 3.5 seconds
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 3500);
-
-      } catch (error) {
-        console.error("Error submitting package payment:", error);
-        showAlert("Failed to record payment and update business status. Please try again.", "error");
-        payBtn.disabled = false;
-        payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay Registration & Submit`;
-      }
-    });
+      // Navigate directly to Add Business Page
+      window.location.href = "add-business.html";
+    }
   </script>
 </body>
 </html>
