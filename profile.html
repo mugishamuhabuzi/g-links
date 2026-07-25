@@ -123,14 +123,8 @@
       font-size: 12px;
       border: 2px solid white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
     }
 
-    .avatar-wrapper:hover .avatar-upload-badge {
-      transform: scale(1.1);
-    }
-
-    /* Loading Overlay */
     .avatar-loader {
       position: absolute;
       inset: 0;
@@ -223,11 +217,6 @@
       text-decoration: none;
       font-size: 13px;
       font-weight: 700;
-      transition: opacity 0.2s;
-    }
-
-    .btn-manage-biz:hover {
-      opacity: 0.9;
     }
 
     /* --- Menu Group --- */
@@ -272,23 +261,49 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      font-size: 14px;
-      font-weight: 600;
     }
 
     .menu-item-left i {
-      font-size: 16px;
-      width: 20px;
+      font-size: 18px;
+      width: 22px;
       text-align: center;
       color: var(--primary-color);
     }
 
+    .menu-item-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .menu-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
     .menu-item-right {
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .pill-counter {
+      background: #e6fffa;
+      color: var(--primary-color);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      border: 1px solid #b2f5ea;
     }
 
     /* --- Logout Button --- */
@@ -306,7 +321,6 @@
       justify-content: center;
       align-items: center;
       gap: 8px;
-      transition: background 0.2s;
     }
 
     .btn-logout:hover {
@@ -361,10 +375,8 @@
 
   <div class="container">
 
-    <!-- User Profile Overview Card -->
+    <!-- User Profile Card -->
     <div class="profile-card">
-      
-      <!-- Interactive Avatar Wrapper -->
       <div class="avatar-wrapper" id="avatarWrapper" title="Click to upload profile picture">
         <div class="avatar" id="avatarDisplay">
           <span id="userInitials">JD</span>
@@ -375,7 +387,6 @@
         <div class="avatar-loader" id="avatarLoader">
           <i class="fa-solid fa-spinner fa-spin"></i>
         </div>
-        <!-- Hidden File Input -->
         <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
       </div>
 
@@ -386,14 +397,14 @@
       </div>
     </div>
 
-    <!-- Active Business Banner -->
+    <!-- Active Business Section -->
     <div id="businessSection">
       <div class="business-card" style="background: linear-gradient(135deg, #2c3e50, #1a252f);">
         <div class="business-card-header">
           <h4><i class="fa-solid fa-store"></i> Become a Seller</h4>
           <span class="status-tag">Get Started</span>
         </div>
-        <p class="business-details">Register your business on Venx Online Market today to start listing products and attracting local buyers.</p>
+        <p class="business-details">Register your business on Venx Online Market today to start listing products and attracting local buyers across Uganda.</p>
         <a href="packages.html" class="btn-manage-biz">
           <span>Register Business</span>
           <i class="fa-solid fa-arrow-right"></i>
@@ -401,60 +412,85 @@
       </div>
     </div>
 
-    <!-- Account Navigation Options -->
+    <!-- MARKETPLACE ACTIVITY BUTTONS -->
     <div class="menu-section">
       <div class="menu-section-title">Marketplace Activity</div>
       
+      <!-- 1. My Orders -->
       <a href="orders.html" class="menu-item">
         <div class="menu-item-left">
           <i class="fa-solid fa-box"></i>
-          <span>My Orders</span>
+          <div class="menu-item-text">
+            <span class="menu-title">My Orders</span>
+            <span class="menu-subtitle" id="ordersSubtitle">Track active purchases, delivery status & past order history</span>
+          </div>
         </div>
         <div class="menu-item-right">
+          <span class="pill-counter" id="ordersCount">0 Active</span>
           <i class="fa-solid fa-chevron-right"></i>
         </div>
       </a>
 
+      <!-- 2. Saved & Favorites -->
       <a href="wishlist.html" class="menu-item">
         <div class="menu-item-left">
           <i class="fa-solid fa-heart"></i>
-          <span>Saved & Favorites</span>
+          <div class="menu-item-text">
+            <span class="menu-title">Saved & Favorites</span>
+            <span class="menu-subtitle" id="wishlistSubtitle">Bookmark favorite goods & local vendors to buy or contact later</span>
+          </div>
         </div>
         <div class="menu-item-right">
+          <span class="pill-counter" id="savedCount">0 Items</span>
           <i class="fa-solid fa-chevron-right"></i>
         </div>
       </a>
 
+      <!-- 3. Vendor Packages -->
       <a href="packages.html" class="menu-item">
         <div class="menu-item-left">
           <i class="fa-solid fa-tags"></i>
-          <span>Vendor Packages</span>
+          <div class="menu-item-text">
+            <span class="menu-title">Vendor Packages</span>
+            <span class="menu-subtitle" id="packageSubtitle">Manage item listing limits, package tiers (UGX 3,000+) & boost shop reach</span>
+          </div>
         </div>
         <div class="menu-item-right">
+          <span class="pill-counter" id="currentPackageTag">Starter Plan</span>
           <i class="fa-solid fa-chevron-right"></i>
         </div>
       </a>
     </div>
 
+    <!-- ACCOUNT SETTINGS BUTTONS -->
     <div class="menu-section">
       <div class="menu-section-title">Account Settings</div>
 
+      <!-- 4. Edit Profile Details -->
       <a href="edit-profile.html" class="menu-item">
         <div class="menu-item-left">
           <i class="fa-solid fa-user-pen"></i>
-          <span>Edit Profile Details</span>
+          <div class="menu-item-text">
+            <span class="menu-title">Edit Profile Details</span>
+            <span class="menu-subtitle">Update display name, WhatsApp phone number, and primary delivery location</span>
+          </div>
         </div>
         <div class="menu-item-right">
           <i class="fa-solid fa-chevron-right"></i>
         </div>
       </a>
 
+      <!-- 5. Help & Support -->
       <a href="support.html" class="menu-item">
         <div class="menu-item-left">
           <i class="fa-solid fa-headset"></i>
-          <span>Help & Support</span>
+          <div class="menu-item-text">
+            <span class="menu-title">Help & Support</span>
+            <span class="menu-subtitle">Get instant WhatsApp assistance, Mobile Money payment guides & FAQs</span>
+          </div>
         </div>
         <div class="menu-item-right">
+          <span class="pill-counter">24/7 Live</span>
           <i class="fa-solid fa-chevron-right"></i>
         </div>
       </a>
@@ -477,12 +513,8 @@
     <a href="profile.html" class="active"><i class="fa-solid fa-user"></i><span>Account</span></a>
   </nav>
 
-  <!-- Script for Cloudinary Upload & Local Storage persistence -->
+  <!-- JavaScript for Cloudinary & Dynamic Button State Updates -->
   <script>
-    // ==========================================
-    // 1. CLOUDINARY CONFIGURATION
-    // Replace these values with your Cloudinary credentials
-    // ==========================================
     const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUD_NAME";
     const CLOUDINARY_UPLOAD_PRESET = "YOUR_UNSIGNED_PRESET";
 
@@ -492,13 +524,22 @@
     const avatarLoader = document.getElementById("avatarLoader");
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Load saved profile picture if available
+      // 1. Load saved profile picture
       const savedImage = localStorage.getItem("userProfilePic");
       if (savedImage) {
         renderAvatarImage(savedImage);
       }
 
-      // Check for registered business data
+      // 2. Load saved wishlist count
+      const savedWishlist = JSON.parse(localStorage.getItem("venxWishlist") || "[]");
+      document.getElementById("savedCount").textContent = `${savedWishlist.length} Items`;
+
+      // 3. Load order count
+      const savedOrders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+      const activeOrders = savedOrders.filter(o => o.status !== 'Delivered').length;
+      document.getElementById("ordersCount").textContent = `${activeOrders} Active`;
+
+      // 4. Check for registered business data & update package badge
       const pendingDetails = localStorage.getItem("pendingBusinessDetails");
       const businessContainer = document.getElementById("businessSection");
 
@@ -510,6 +551,7 @@
         document.getElementById("userPhone").textContent = biz.phone || "+256 700 000 000";
         document.getElementById("userInitials").textContent = (biz.businessName || "VM").substring(0, 2).toUpperCase();
         document.getElementById("accountTypeBadge").innerHTML = `<i class="fa-solid fa-store"></i> Verified Merchant`;
+        document.getElementById("currentPackageTag").textContent = pkgName;
 
         businessContainer.innerHTML = `
           <div class="business-card">
@@ -531,26 +573,19 @@
       }
     });
 
-    // 2. Trigger File Picker on Avatar Click
-    avatarWrapper.addEventListener("click", () => {
-      avatarFileInput.click();
-    });
+    // Cloudinary Upload Triggers
+    avatarWrapper.addEventListener("click", () => avatarFileInput.click());
 
-    // 3. Handle File Selection and Upload to Cloudinary
     avatarFileInput.addEventListener("change", async (event) => {
       const file = event.target.files[0];
       if (!file) return;
 
-      // Ensure credentials are configured
       if (CLOUDINARY_CLOUD_NAME === "YOUR_CLOUD_NAME" || CLOUDINARY_UPLOAD_PRESET === "YOUR_UNSIGNED_PRESET") {
-        alert("Please configure your Cloudinary Cloud Name and Upload Preset in the script section of profile.html.");
+        alert("Please set your Cloudinary Cloud Name and Upload Preset in profile.html script.");
         return;
       }
 
-      // Show Loading State
       avatarLoader.classList.add("active");
-
-      // Prepare Upload Data
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
@@ -562,26 +597,20 @@
         });
 
         const data = await response.json();
-
         if (response.ok && data.secure_url) {
-          // Store Image URL in localStorage
           localStorage.setItem("userProfilePic", data.secure_url);
-          
-          // Render image in avatar
           renderAvatarImage(data.secure_url);
         } else {
-          alert("Image Upload Failed: " + (data.error?.message || "Unknown error"));
+          alert("Image Upload Failed: " + (data.error?.message || "Error"));
         }
       } catch (error) {
-        console.error("Cloudinary Upload Error:", error);
-        alert("An error occurred while uploading your profile picture. Please check your network and try again.");
+        alert("Upload error. Please check your network connection.");
       } finally {
         avatarLoader.classList.remove("active");
-        avatarFileInput.value = ""; // Reset input
+        avatarFileInput.value = "";
       }
     });
 
-    // Helper Function to Render Avatar Image
     function renderAvatarImage(url) {
       avatarDisplay.innerHTML = `<img src="${url}" alt="Profile Picture">`;
     }
