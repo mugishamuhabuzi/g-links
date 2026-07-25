@@ -91,7 +91,7 @@
       font-size: 14px;
     }
 
-    /* --- Jumia-Style Dual Pane Container --- */
+    /* --- Category Layout --- */
     .category-layout {
       display: flex;
       flex: 1;
@@ -174,7 +174,7 @@
       opacity: 0.9;
     }
 
-    /* Subcategory Chips / Grid */
+    /* Subcategory Chips */
     .section-title {
       font-size: 12px;
       font-weight: 700;
@@ -233,6 +233,7 @@
       justify-content: space-between;
       position: relative;
       box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      cursor: pointer;
     }
 
     .wishlist-btn {
@@ -314,7 +315,7 @@
       background: var(--primary-dark);
     }
 
-    /* --- Toast Message --- */
+    /* Toast Message */
     .toast {
       position: fixed;
       bottom: 75px;
@@ -333,7 +334,7 @@
       z-index: 2000;
     }
 
-    /* --- Bottom Navigation --- */
+    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -388,7 +389,7 @@
     </div>
   </header>
 
-  <!-- Jumia-Inspired Category Layout -->
+  <!-- Category Layout -->
   <div class="category-layout">
     
     <!-- Left Sidebar Categories -->
@@ -403,7 +404,7 @@
       <div class="cat-banner" id="categoryBanner">
         <div>
           <h3 id="bannerTitle">Phones & Tablets</h3>
-          <span id="bannerSubtitle">Smartphones, Accessories & More</span>
+          <span id="bannerSubtitle">Smartphones, Tablets & Accessories</span>
         </div>
         <i class="fa-solid fa-mobile-screen-button" style="font-size: 24px; opacity: 0.8;"></i>
       </div>
@@ -427,7 +428,7 @@
   <!-- Notification Toast -->
   <div class="toast" id="toast">
     <i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i>
-    <span id="toastText">Order placed successfully!</span>
+    <span id="toastText">Action successful!</span>
   </div>
 
   <!-- Bottom Navigation -->
@@ -441,7 +442,6 @@
 
   <!-- Interactive JavaScript -->
   <script>
-    // Comprehensive Categories & Products Dataset tailored for Venx Online Market
     const categoriesData = [
       {
         id: "phones",
@@ -632,7 +632,7 @@
         const chip = document.createElement("button");
         chip.className = `subcat-chip ${sub === currentSubcat ? 'active' : ''}`;
         chip.textContent = sub;
-        chip.onclick = (e) => {
+        chip.onclick = () => {
           document.querySelectorAll(".subcat-chip").forEach(c => c.classList.remove("active"));
           chip.classList.add("active");
           currentSubcat = sub;
@@ -670,8 +670,16 @@
 
         const card = document.createElement("div");
         card.className = "product-card";
+        
+        // Save selected product and open product-details.html when clicked
+        card.onclick = (e) => {
+          // Ignore click if wishlist button was clicked
+          if (e.target.closest('.wishlist-btn')) return;
+          openProductDetail(product.id);
+        };
+
         card.innerHTML = `
-          <button class="wishlist-btn ${isSaved ? 'saved' : ''}" onclick="toggleWishlist('${product.id}')" title="Save item">
+          <button class="wishlist-btn ${isSaved ? 'saved' : ''}" onclick="toggleWishlist(event, '${product.id}')" title="Save item">
             <i class="fa-${isSaved ? 'solid' : 'regular'} fa-heart"></i>
           </button>
           <img src="${product.image}" alt="${product.title}" class="product-img">
@@ -680,45 +688,32 @@
             <div class="product-seller">${product.seller}</div>
             <div class="product-price">UGX ${product.price.toLocaleString()}</div>
           </div>
-          <button class="btn-order" onclick="placeOrder('${product.id}')">
-            <i class="fa-solid fa-bag-shopping"></i> Place Order
+          <button class="btn-order">
+            <i class="fa-solid fa-cart-shopping"></i> Order Now
           </button>
         `;
         grid.appendChild(card);
       });
     }
 
-    // 4. Handle Direct Order Placement (Keeps transactions on platform)
-    function placeOrder(productId) {
+    // 4. Redirect to product-details.html with product data saved
+    function openProductDetail(productId) {
       const cat = categoriesData[currentCatIndex];
       const product = cat.products.find(p => p.id === productId);
 
       if (!product) return;
 
-      let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
-      
-      const newOrder = {
-        orderId: "VNX-" + Math.floor(100000 + Math.random() * 900000),
-        title: product.title,
-        price: product.price,
-        seller: product.seller,
-        image: product.image,
-        status: "Processing",
-        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-      };
+      // Save the selected item info to local storage for product-details.html to read
+      localStorage.setItem("selectedProduct", JSON.stringify(product));
 
-      orders.unshift(newOrder);
-      localStorage.setItem("venxOrders", JSON.stringify(orders));
-
-      showToast("Order placed successfully!");
-
-      setTimeout(() => {
-        window.location.href = "orders.html";
-      }, 1000);
+      // Redirect directly to product-details.html
+      window.location.href = `product-details.html?id=${product.id}`;
     }
 
     // 5. Toggle Wishlist Saved State
-    function toggleWishlist(productId) {
+    function toggleWishlist(event, productId) {
+      event.stopPropagation(); // Prevents card redirect trigger
+
       const cat = categoriesData[currentCatIndex];
       const product = cat.products.find(p => p.id === productId);
       if (!product) return;
