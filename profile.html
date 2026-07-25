@@ -78,22 +78,74 @@
       position: relative;
     }
 
+    /* --- Avatar & Upload Overlay --- */
     .avatar-wrapper {
       position: relative;
+      cursor: pointer;
+      width: 75px;
+      height: 75px;
+      flex-shrink: 0;
     }
 
     .avatar {
-      width: 70px;
-      height: 70px;
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
       background: #e6fffa;
       color: var(--primary-color);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 700;
       border: 2px solid var(--primary-color);
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-upload-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: var(--primary-color);
+      color: white;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border: 2px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .avatar-wrapper:hover .avatar-upload-badge {
+      transform: scale(1.1);
+    }
+
+    /* Loading Overlay */
+    .avatar-loader {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      z-index: 5;
+    }
+
+    .avatar-loader.active {
+      display: flex;
     }
 
     .profile-info h3 {
@@ -311,9 +363,22 @@
 
     <!-- User Profile Overview Card -->
     <div class="profile-card">
-      <div class="avatar-wrapper">
-        <div class="avatar" id="userInitials">JD</div>
+      
+      <!-- Interactive Avatar Wrapper -->
+      <div class="avatar-wrapper" id="avatarWrapper" title="Click to upload profile picture">
+        <div class="avatar" id="avatarDisplay">
+          <span id="userInitials">JD</span>
+        </div>
+        <div class="avatar-upload-badge">
+          <i class="fa-solid fa-camera"></i>
+        </div>
+        <div class="avatar-loader" id="avatarLoader">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+        <!-- Hidden File Input -->
+        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
       </div>
+
       <div class="profile-info">
         <h3 id="userName">John Doe</h3>
         <p id="userPhone">+256 700 000 000</p>
@@ -321,9 +386,8 @@
       </div>
     </div>
 
-    <!-- Active Business Banner (Dynamically updated via JS) -->
+    <!-- Active Business Banner -->
     <div id="businessSection">
-      <!-- Default view if user hasn't added a business yet -->
       <div class="business-card" style="background: linear-gradient(135deg, #2c3e50, #1a252f);">
         <div class="business-card-header">
           <h4><i class="fa-solid fa-store"></i> Become a Seller</h4>
@@ -413,10 +477,28 @@
     <a href="profile.html" class="active"><i class="fa-solid fa-user"></i><span>Account</span></a>
   </nav>
 
-  <!-- Script to load profile & dynamic business status -->
+  <!-- Script for Cloudinary Upload & Local Storage persistence -->
   <script>
+    // ==========================================
+    // 1. CLOUDINARY CONFIGURATION
+    // Replace these values with your Cloudinary credentials
+    // ==========================================
+    const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUD_NAME";
+    const CLOUDINARY_UPLOAD_PRESET = "YOUR_UNSIGNED_PRESET";
+
+    const avatarWrapper = document.getElementById("avatarWrapper");
+    const avatarFileInput = document.getElementById("avatarFileInput");
+    const avatarDisplay = document.getElementById("avatarDisplay");
+    const avatarLoader = document.getElementById("avatarLoader");
+
     document.addEventListener("DOMContentLoaded", () => {
-      // 1. Check for registered business data in LocalStorage
+      // Load saved profile picture if available
+      const savedImage = localStorage.getItem("userProfilePic");
+      if (savedImage) {
+        renderAvatarImage(savedImage);
+      }
+
+      // Check for registered business data
       const pendingDetails = localStorage.getItem("pendingBusinessDetails");
       const businessContainer = document.getElementById("businessSection");
 
@@ -424,13 +506,11 @@
         const biz = JSON.parse(pendingDetails);
         const pkgName = biz.package ? biz.package.packageName : 'Standard Package';
         
-        // Update Account Badge & Name dynamically if available
         document.getElementById("userName").textContent = biz.businessName || "Registered Merchant";
         document.getElementById("userPhone").textContent = biz.phone || "+256 700 000 000";
         document.getElementById("userInitials").textContent = (biz.businessName || "VM").substring(0, 2).toUpperCase();
         document.getElementById("accountTypeBadge").innerHTML = `<i class="fa-solid fa-store"></i> Verified Merchant`;
 
-        // Render Active Business Card
         businessContainer.innerHTML = `
           <div class="business-card">
             <div class="business-card-header">
@@ -451,10 +531,65 @@
       }
     });
 
+    // 2. Trigger File Picker on Avatar Click
+    avatarWrapper.addEventListener("click", () => {
+      avatarFileInput.click();
+    });
+
+    // 3. Handle File Selection and Upload to Cloudinary
+    avatarFileInput.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Ensure credentials are configured
+      if (CLOUDINARY_CLOUD_NAME === "YOUR_CLOUD_NAME" || CLOUDINARY_UPLOAD_PRESET === "YOUR_UNSIGNED_PRESET") {
+        alert("Please configure your Cloudinary Cloud Name and Upload Preset in the script section of profile.html.");
+        return;
+      }
+
+      // Show Loading State
+      avatarLoader.classList.add("active");
+
+      // Prepare Upload Data
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+      try {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.secure_url) {
+          // Store Image URL in localStorage
+          localStorage.setItem("userProfilePic", data.secure_url);
+          
+          // Render image in avatar
+          renderAvatarImage(data.secure_url);
+        } else {
+          alert("Image Upload Failed: " + (data.error?.message || "Unknown error"));
+        }
+      } catch (error) {
+        console.error("Cloudinary Upload Error:", error);
+        alert("An error occurred while uploading your profile picture. Please check your network and try again.");
+      } finally {
+        avatarLoader.classList.remove("active");
+        avatarFileInput.value = ""; // Reset input
+      }
+    });
+
+    // Helper Function to Render Avatar Image
+    function renderAvatarImage(url) {
+      avatarDisplay.innerHTML = `<img src="${url}" alt="Profile Picture">`;
+    }
+
     function handleLogout() {
       if (confirm("Are you sure you want to log out of Venx Online Market?")) {
-        // Clear session state if applicable
         localStorage.removeItem("pendingBusinessDetails");
+        localStorage.removeItem("userProfilePic");
         window.location.href = "index.html";
       }
     }
