@@ -16,7 +16,6 @@
       --text-muted: #7f8c8d;
       --border-color: #e2e8f0;
       --danger-color: #e53e3e;
-      --warning-color: #d69e2e;
       --nav-height: 65px;
     }
 
@@ -65,20 +64,22 @@
     }
 
     .add-header-btn {
-      color: white;
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 6px 12px;
+      color: var(--primary-color);
+      background: white;
+      padding: 8px 14px;
       border-radius: 8px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: background 0.2s;
     }
 
     .add-header-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: #e6fffa;
     }
 
     /* --- Main Container --- */
@@ -87,6 +88,83 @@
       margin: 20px auto;
       padding: 0 16px;
     }
+
+    /* --- Cards --- */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    /* --- Form Controls --- */
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      background: #fafafa;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      background: white;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary { background: var(--primary-color); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-cancel { background: #e2e8f0; color: var(--text-main); }
+    .btn-cancel:hover { background: #cbd5e0; }
 
     /* --- Search & Stats Bar --- */
     .search-bar {
@@ -175,7 +253,6 @@
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-bottom: 6px;
     }
 
     .badge {
@@ -187,20 +264,9 @@
       font-weight: 600;
     }
 
-    .badge-stock {
-      background: #e6fffa;
-      color: #234e52;
-    }
-
-    .badge-low {
-      background: #fefcbf;
-      color: #744210;
-    }
-
-    .badge-out {
-      background: #fff5f5;
-      color: #9b2c2c;
-    }
+    .badge-stock { background: #e6fffa; color: #234e52; }
+    .badge-low { background: #fefcbf; color: #744210; }
+    .badge-out { background: #fff5f5; color: #9b2c2c; }
 
     /* --- Stock Controls & Action Footer --- */
     .item-actions {
@@ -233,14 +299,12 @@
       justify-content: center;
     }
 
-    .stock-btn:hover {
-      background: #edf2f7;
-    }
+    .stock-btn:hover { background: #edf2f7; }
 
     .stock-count {
       font-size: 13px;
       font-weight: 700;
-      min-width: 24px;
+      min-width: 20px;
       text-align: center;
     }
 
@@ -259,29 +323,14 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      text-decoration: none;
     }
 
-    .btn-edit {
-      background: #e2e8f0;
-      color: var(--text-main);
-    }
+    .btn-edit { background: #e2e8f0; color: var(--text-main); }
+    .btn-edit:hover { background: #cbd5e0; }
 
-    .btn-edit:hover {
-      background: #cbd5e0;
-    }
+    .btn-delete { background: #fff5f5; color: var(--danger-color); border: 1px solid #feb2b2; }
+    .btn-delete:hover { background: #fed7d7; }
 
-    .btn-delete {
-      background: #fff5f5;
-      color: var(--danger-color);
-      border: 1px solid #feb2b2;
-    }
-
-    .btn-delete:hover {
-      background: #fed7d7;
-    }
-
-    /* Empty state */
     .empty-state {
       text-align: center;
       padding: 40px 20px;
@@ -334,16 +383,8 @@
       width: 20%;
     }
 
-    .bottom-nav a.active {
-      color: var(--primary-color);
-      font-weight: bold;
-    }
-
-    .bottom-nav a.plus-btn {
-      color: var(--primary-color);
-      font-size: 22px;
-      font-weight: bold;
-    }
+    .bottom-nav a.active { color: var(--primary-color); font-weight: bold; }
+    .bottom-nav a.plus-btn { color: var(--primary-color); font-size: 22px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -354,31 +395,90 @@
       <a href="account.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
       <div class="header-title">My Listed Items</div>
     </div>
-    <a href="items.html" class="add-header-btn">
-      <i class="fa-solid fa-plus"></i> Add New
-    </a>
+    <button id="openAddFormBtn" class="add-header-btn">
+      <i class="fa-solid fa-plus"></i> Add Item
+    </button>
   </header>
 
   <div class="container">
     <div id="alertBox" class="alert"></div>
 
-    <!-- Search Input -->
-    <div class="search-bar">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="searchInput" placeholder="Search by item name, brand, or material...">
+    <!-- ADD / EDIT ITEM FORM CARD (Hidden by default) -->
+    <div id="itemFormCard" class="card" style="display: none;">
+      <div class="form-header">
+        <h3 id="formTitle" style="font-size: 16px;"><i class="fa-solid fa-box"></i> Add New Item</h3>
+        <button id="closeFormX" style="background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer;">&times;</button>
+      </div>
+
+      <form id="itemForm">
+        <div class="form-group">
+          <label for="itemName">Item Name *</label>
+          <input type="text" id="itemName" class="form-control" placeholder="e.g. Leather Jacket, Coffee Beans" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label for="itemPrice">Price (UGX) *</label>
+            <input type="number" id="itemPrice" class="form-control" placeholder="e.g. 50000" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label for="itemStock">Stock Units *</label>
+            <input type="number" id="itemStock" class="form-control" placeholder="e.g. 10" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label for="itemBrand">Brand</label>
+            <input type="text" id="itemBrand" class="form-control" placeholder="e.g. Venx, Nike">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label for="itemMaterial">Material</label>
+            <input type="text" id="itemMaterial" class="form-control" placeholder="e.g. Cotton, Wood">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label for="itemSize">Size</label>
+            <input type="text" id="itemSize" class="form-control" placeholder="e.g. Medium, 1Kg, XL">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="itemImageUrl">Image URL</label>
+          <input type="url" id="itemImageUrl" class="form-control" placeholder="https://example.com/item.jpg">
+        </div>
+
+        <div class="btn-group">
+          <button type="button" id="cancelFormBtn" class="btn btn-cancel">Cancel</button>
+          <button type="submit" id="saveItemBtn" class="btn btn-primary">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Save Item
+          </button>
+        </div>
+      </form>
     </div>
 
-    <!-- Summary Stats -->
-    <div class="stats-summary">
-      <span id="totalItemsCount">Total Items: 0</span>
-      <span id="totalStockCount">Total Stock: 0 units</span>
-    </div>
+    <!-- ITEMS LIST VIEW -->
+    <div id="listView">
+      <!-- Search Input -->
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search by item name, brand, or material...">
+      </div>
 
-    <!-- Items List Container -->
-    <div id="itemsContainer">
-      <div style="text-align: center; padding: 30px; color: var(--text-muted);">
-        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-        <p style="margin-top: 10px; font-size: 14px;">Loading your inventory...</p>
+      <!-- Summary Stats -->
+      <div class="stats-summary">
+        <span id="totalItemsCount">Total Items: 0</span>
+        <span id="totalStockCount">Total Stock: 0 units</span>
+      </div>
+
+      <!-- Items List Container -->
+      <div id="itemsContainer">
+        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+          <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+          <p style="margin-top: 10px; font-size: 14px;">Loading your inventory...</p>
+        </div>
       </div>
     </div>
   </div>
@@ -416,9 +516,11 @@
       query, 
       where, 
       getDocs, 
+      addDoc,
       doc, 
       updateDoc, 
-      deleteDoc 
+      deleteDoc,
+      serverTimestamp 
     } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
     // Firebase Config
@@ -436,27 +538,33 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // DOM Elements
+    const itemFormCard = document.getElementById("itemFormCard");
+    const itemForm = document.getElementById("itemForm");
+    const formTitle = document.getElementById("formTitle");
+    const saveItemBtn = document.getElementById("saveItemBtn");
     const itemsContainer = document.getElementById("itemsContainer");
     const searchInput = document.getElementById("searchInput");
     const alertBox = document.getElementById("alertBox");
 
     let userItems = [];
     let currentUserId = null;
+    let editingItemId = null; // Tracks if we are editing an existing item
 
     function showAlert(msg, type = "success") {
       alertBox.textContent = msg;
       alertBox.className = `alert alert-${type}`;
       alertBox.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
       setTimeout(() => alertBox.style.display = "none", 3000);
     }
 
-    // Check Authentication
+    // Check Authentication & Load Items Automatically
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUserId = user.uid;
         await fetchUserItems();
       } else {
-        // Redirect to Account page if logged out
         window.location.href = "account.html";
       }
     });
@@ -479,23 +587,23 @@
           <div class="empty-state">
             <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger-color);"></i>
             <h3>Unable to load items</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Please check your internet connection.</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Please check your connection and try again.</p>
           </div>
         `;
       }
     }
 
-    // Render Items Function
+    // Render Items
     function renderItems(items) {
       if (items.length === 0) {
         itemsContainer.innerHTML = `
           <div class="empty-state">
             <i class="fa-solid fa-box-open"></i>
             <h3>No Items Found</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin: 6px 0 16px 0;">You haven't added any items to your business yet.</p>
-            <a href="items.html" class="btn-icon btn-edit" style="display: inline-flex; background: var(--primary-color); color: white; padding: 10px 16px;">
+            <p style="font-size: 13px; color: var(--text-muted); margin: 6px 0 16px 0;">You haven't listed any items yet.</p>
+            <button onclick="openFormForAdd()" class="btn btn-primary" style="display: inline-flex; width: auto; margin: 0 auto; padding: 10px 16px;">
               <i class="fa-solid fa-plus"></i> Add Your First Item
-            </a>
+            </button>
           </div>
         `;
         document.getElementById("totalItemsCount").textContent = "Total Items: 0";
@@ -503,7 +611,6 @@
         return;
       }
 
-      // Update Header Stats
       let totalStock = 0;
       items.forEach(i => totalStock += Number(i.stock || 0));
       document.getElementById("totalItemsCount").textContent = `Total Items: ${items.length}`;
@@ -552,9 +659,9 @@
             </div>
 
             <div class="action-btns">
-              <a href="items.html?editId=${item.id}" class="btn-icon btn-edit">
+              <button class="btn-icon btn-edit" onclick="openFormForEdit('${item.id}')">
                 <i class="fa-solid fa-pen-to-square"></i> Edit
-              </a>
+              </button>
               <button class="btn-icon btn-delete" onclick="deleteItem('${item.id}', '${item.name}')">
                 <i class="fa-solid fa-trash"></i>
               </button>
@@ -565,28 +672,104 @@
       });
     }
 
-    // Quick Update Stock Function
+    // --- FORM SHOW / HIDE CONTROLS ---
+    window.openFormForAdd = () => {
+      editingItemId = null;
+      itemForm.reset();
+      formTitle.innerHTML = `<i class="fa-solid fa-circle-plus"></i> Add New Item`;
+      saveItemBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Add Item`;
+      itemFormCard.style.display = "block";
+      itemFormCard.scrollIntoView({ behavior: "smooth" });
+    };
+
+    window.openFormForEdit = (itemId) => {
+      const item = userItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      editingItemId = itemId;
+      document.getElementById("itemName").value = item.name || "";
+      document.getElementById("itemPrice").value = item.price || "";
+      document.getElementById("itemStock").value = item.stock || 0;
+      document.getElementById("itemBrand").value = item.brand || "";
+      document.getElementById("itemMaterial").value = item.material || "";
+      document.getElementById("itemSize").value = item.size || "";
+      document.getElementById("itemImageUrl").value = item.imageUrl || "";
+
+      formTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Edit Item`;
+      saveItemBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Update Item`;
+      itemFormCard.style.display = "block";
+      itemFormCard.scrollIntoView({ behavior: "smooth" });
+    };
+
+    function hideForm() {
+      itemFormCard.style.display = "none";
+      itemForm.reset();
+      editingItemId = null;
+    }
+
+    document.getElementById("openAddFormBtn").addEventListener("click", window.openFormForAdd);
+    document.getElementById("cancelFormBtn").addEventListener("click", hideForm);
+    document.getElementById("closeFormX").addEventListener("click", hideForm);
+
+    // --- SAVE ITEM (ADD OR EDIT) ---
+    itemForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const itemData = {
+        name: document.getElementById("itemName").value.trim(),
+        price: Number(document.getElementById("itemPrice").value),
+        stock: Number(document.getElementById("itemStock").value),
+        brand: document.getElementById("itemBrand").value.trim(),
+        material: document.getElementById("itemMaterial").value.trim(),
+        size: document.getElementById("itemSize").value.trim(),
+        imageUrl: document.getElementById("itemImageUrl").value.trim(),
+        userId: currentUserId,
+        updatedAt: serverTimestamp()
+      };
+
+      saveItemBtn.disabled = true;
+      saveItemBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+      try {
+        if (editingItemId) {
+          // Update Existing
+          await updateDoc(doc(db, "items", editingItemId), itemData);
+          showAlert("Item updated successfully!");
+        } else {
+          // Create New
+          itemData.createdAt = serverTimestamp();
+          await addDoc(collection(db, "items"), itemData);
+          showAlert("Item added successfully!");
+        }
+
+        hideForm();
+        await fetchUserItems();
+      } catch (err) {
+        console.error("Error saving item:", err);
+        showAlert("Failed to save item. Please try again.", "error");
+      } finally {
+        saveItemBtn.disabled = false;
+      }
+    });
+
+    // --- QUICK STOCK INCREMENT / DECREMENT ---
     window.updateStock = async (itemId, newStock) => {
       if (newStock < 0) return;
       try {
-        const itemRef = doc(db, "items", itemId);
-        await updateDoc(itemRef, { stock: newStock });
-        
-        // Update local array & re-render
+        await updateDoc(doc(db, "items", itemId), { stock: newStock });
         const localItem = userItems.find(i => i.id === itemId);
         if (localItem) localItem.stock = newStock;
-        
         renderItems(userItems);
-        showAlert("Stock quantity updated!");
+        showAlert("Stock updated!");
       } catch (err) {
         console.error("Error updating stock:", err);
         showAlert("Failed to update stock.", "error");
       }
     };
 
-    // Delete Item Function
+    // --- DELETE ITEM ---
     window.deleteItem = async (itemId, itemName) => {
-      if (confirm(`Are you sure you want to remove "${itemName}" from your inventory?`)) {
+      if (confirm(`Are you sure you want to delete "${itemName}"?`)) {
         try {
           await deleteDoc(doc(db, "items", itemId));
           userItems = userItems.filter(i => i.id !== itemId);
@@ -599,7 +782,7 @@
       }
     };
 
-    // Filter Search
+    // Live Search Filter
     searchInput.addEventListener("input", (e) => {
       const queryStr = e.target.value.toLowerCase().trim();
       const filtered = userItems.filter(item => {
