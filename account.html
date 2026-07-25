@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Account - Venx Online Market</title>
+  <title>Account - Venx Online Market</title>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -15,6 +15,7 @@
       --text-main: #2c3e50;
       --text-muted: #7f8c8d;
       --border-color: #e2e8f0;
+      --danger-color: #e53e3e;
       --nav-height: 65px;
     }
 
@@ -130,11 +131,21 @@
       background: transparent;
       border: 2px solid var(--primary-color);
       color: var(--primary-color);
-      margin-top: 12px;
     }
 
     .btn-outline:hover {
       background: #e6fffa;
+    }
+
+    .btn-danger {
+      background: #fff5f5;
+      color: var(--danger-color);
+      border: 1px solid #feb2b2;
+      margin-top: 16px;
+    }
+
+    .btn-danger:hover {
+      background: #fed7d7;
     }
 
     .divider {
@@ -183,6 +194,42 @@
       border: 1px solid #b2f5ea;
     }
 
+    /* --- Profile Details Styling --- */
+    .profile-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .avatar-icon {
+      font-size: 50px;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .profile-info-list {
+      list-style: none;
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
+    }
+
+    .profile-info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+    }
+
+    .profile-info-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .profile-info-value {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
     /* --- Bottom Navigation --- */
     .bottom-nav {
       position: fixed;
@@ -226,17 +273,49 @@
   <!-- Top Header -->
   <header>
     <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
-    <div class="header-title">Create Account</div>
+    <div class="header-title" id="pageTitle">Account</div>
   </header>
 
   <div class="container">
     <div id="alertBox" class="alert"></div>
 
-    <!-- SIGN UP FORM -->
-    <div class="card">
+    <!-- 1. SIGN IN FORM (Default view when logged out) -->
+    <div id="signInView" class="card" style="display: none;">
+      <h2 style="font-size: 20px; margin-bottom: 6px; text-align: center;">Welcome Back</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center;">
+        Sign in to manage your account and orders
+      </p>
+
+      <form id="signInForm">
+        <div class="form-group">
+          <label for="loginEmailOrPhone"><i class="fa-solid fa-envelope"></i> Email or Phone Number</label>
+          <input type="text" id="loginEmailOrPhone" class="form-control" placeholder="e.g. name@example.com or 0770000000" required>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword"><i class="fa-solid fa-lock"></i> Password</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" id="signInBtn" class="btn btn-primary">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>Don't have an account?</span>
+      </div>
+
+      <button type="button" id="switchToSignUpBtn" class="btn btn-outline">
+        <i class="fa-solid fa-user-plus"></i> Create Account
+      </button>
+    </div>
+
+    <!-- 2. CREATE ACCOUNT FORM (Displayed on clicking Create Account) -->
+    <div id="signUpView" class="card" style="display: none;">
       <h2 style="font-size: 20px; margin-bottom: 6px; text-align: center;">Join Venx Market</h2>
       <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center;">
-        Fill in your details below to register your account
+        Fill in your details below to register
       </p>
 
       <form id="signUpForm">
@@ -246,13 +325,13 @@
         </div>
 
         <div class="form-group">
-          <label for="emailOrPhone"><i class="fa-solid fa-envelope"></i> Email Address / Phone Number</label>
-          <input type="text" id="emailOrPhone" class="form-control" placeholder="e.g. name@example.com or 0770000000" required>
+          <label for="regEmailOrPhone"><i class="fa-solid fa-envelope"></i> Email or Phone Number</label>
+          <input type="text" id="regEmailOrPhone" class="form-control" placeholder="e.g. name@example.com or 0770000000" required>
         </div>
 
         <div class="form-group">
-          <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
-          <input type="password" id="password" class="form-control" placeholder="Min. 6 characters" required>
+          <label for="regPassword"><i class="fa-solid fa-lock"></i> Password</label>
+          <input type="password" id="regPassword" class="form-control" placeholder="Min. 6 characters" required>
         </div>
 
         <div class="form-group">
@@ -260,7 +339,6 @@
           <input type="password" id="confirmPassword" class="form-control" placeholder="Re-enter password" required>
         </div>
 
-        <!-- CREATE ACCOUNT BUTTON: Directs to sign-in.html upon creation -->
         <button type="submit" id="createAccountBtn" class="btn btn-primary">
           <i class="fa-solid fa-user-plus"></i> Create Account
         </button>
@@ -270,10 +348,37 @@
         <span>Already have an account?</span>
       </div>
 
-      <!-- SIGN IN BUTTON: Directs to sign-in.html -->
-      <a href="sign-in.html" class="btn btn-outline">
+      <button type="button" id="switchToSignInBtn" class="btn btn-outline">
         <i class="fa-solid fa-right-to-bracket"></i> Sign In
-      </a>
+      </button>
+    </div>
+
+    <!-- 3. USER CREDENTIALS & PROFILE (Displayed when logged in) -->
+    <div id="profileView" class="card" style="display: none;">
+      <div class="profile-header">
+        <div class="avatar-icon"><i class="fa-solid fa-circle-user"></i></div>
+        <h2 id="userDisplayName" style="font-size: 20px; margin-bottom: 4px;">User Profile</h2>
+        <p style="font-size: 12px; color: var(--text-muted);">Active Account</p>
+      </div>
+
+      <ul class="profile-info-list">
+        <li class="profile-info-item">
+          <span class="profile-info-label">Full Name</span>
+          <span class="profile-info-value" id="profileFullName">-</span>
+        </li>
+        <li class="profile-info-item">
+          <span class="profile-info-label">Email / Phone</span>
+          <span class="profile-info-value" id="profileContact">-</span>
+        </li>
+        <li class="profile-info-item">
+          <span class="profile-info-label">Account ID</span>
+          <span class="profile-info-value" id="profileUid" style="font-size: 11px;">-</span>
+        </li>
+      </ul>
+
+      <button type="button" id="signOutBtn" class="btn btn-danger">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
     </div>
   </div>
 
@@ -287,7 +392,7 @@
       <i class="fa-solid fa-layer-group"></i>
       <span>Category</span>
     </a>
-    <a href="add-business.html?fromPlus=true" class="plus-btn">
+    <a href="packages.html" class="plus-btn">
       <i class="fa-solid fa-circle-plus"></i>
     </a>
     <a href="orders.html">
@@ -300,12 +405,19 @@
     </a>
   </nav>
 
-  <!-- Firebase Auth Script -->
+  <!-- Firebase Authentication Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      createUserWithEmailAndPassword, 
+      updateProfile, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
-    // Firebase Configuration
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
       authDomain: "venx-online-market.firebaseapp.com",
@@ -316,12 +428,17 @@
       measurementId: "G-BLH2T3CBVQ"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    // DOM Views & Elements
+    const signInView = document.getElementById("signInView");
+    const signUpView = document.getElementById("signUpView");
+    const profileView = document.getElementById("profileView");
     const alertBox = document.getElementById("alertBox");
+    const pageTitle = document.getElementById("pageTitle");
 
+    // Display Alert Helper
     function showAlert(message, type = "error") {
       alertBox.textContent = message;
       alertBox.className = `alert alert-${type}`;
@@ -329,29 +446,118 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Form Submission Logic
+    function clearAlert() {
+      alertBox.style.display = "none";
+      alertBox.textContent = "";
+    }
+
+    // View Switching Helpers
+    function showSignInForm() {
+      clearAlert();
+      signInView.style.display = "block";
+      signUpView.style.display = "none";
+      profileView.style.display = "none";
+      pageTitle.textContent = "Sign In";
+    }
+
+    function showSignUpForm() {
+      clearAlert();
+      signInView.style.display = "none";
+      signUpView.style.display = "block";
+      profileView.style.display = "none";
+      pageTitle.textContent = "Create Account";
+    }
+
+    function showProfileView(user) {
+      clearAlert();
+      signInView.style.display = "none";
+      signUpView.style.display = "none";
+      profileView.style.display = "block";
+      pageTitle.textContent = "My Account";
+
+      // Display User Credentials
+      const name = user.displayName || "Valued User";
+      const rawContact = user.email || "";
+      const displayContact = rawContact.endsWith("@venxmarket.com") 
+        ? rawContact.replace("@venxmarket.com", "") 
+        : rawContact;
+
+      document.getElementById("userDisplayName").textContent = name;
+      document.getElementById("profileFullName").textContent = name;
+      document.getElementById("profileContact").textContent = displayContact;
+      document.getElementById("profileUid").textContent = user.uid;
+    }
+
+    // --- Firebase Auth State Listener ---
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        showProfileView(user);
+      } else {
+        showSignInForm();
+      }
+    });
+
+    // View Switch Event Listeners
+    document.getElementById("switchToSignUpBtn").addEventListener("click", showSignUpForm);
+    document.getElementById("switchToSignInBtn").addEventListener("click", showSignInForm);
+
+    // --- 1. SIGN IN SUBMISSION LOGIC ---
+    document.getElementById("signInForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlert();
+
+      let emailOrPhone = document.getElementById("loginEmailOrPhone").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const signInBtn = document.getElementById("signInBtn");
+
+      // Format Phone to Email format if necessary
+      if (!emailOrPhone.includes("@")) {
+        emailOrPhone = `${emailOrPhone.replace(/[^0-9]/g, '')}@venxmarket.com`;
+      }
+
+      signInBtn.disabled = true;
+      signInBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Signing In...`;
+
+      try {
+        await signInWithEmailAndPassword(auth, emailOrPhone, password);
+        showAlert("Signed in successfully!", "success");
+
+        // Smooth transition in 1.5 seconds (1500ms)
+        setTimeout(() => {
+          clearAlert();
+        }, 1500);
+
+      } catch (error) {
+        console.error("Sign In Error:", error);
+        showAlert("Invalid email/phone or password. Please try again.");
+        signInBtn.disabled = false;
+        signInBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In`;
+      }
+    });
+
+    // --- 2. CREATE ACCOUNT SUBMISSION LOGIC ---
     document.getElementById("signUpForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      clearAlert();
 
       const fullName = document.getElementById("fullName").value.trim();
-      let emailOrPhone = document.getElementById("emailOrPhone").value.trim();
-      const password = document.getElementById("password").value;
+      let emailOrPhone = document.getElementById("regEmailOrPhone").value.trim();
+      const password = document.getElementById("regPassword").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
       const createBtn = document.getElementById("createAccountBtn");
 
-      // 1. Password Confirmation Match Validation
+      // Password Validation
       if (password !== confirmPassword) {
-        showAlert("Passwords do not match. Please make sure both passwords match.");
+        showAlert("Passwords do not match. Please verify both passwords.");
         return;
       }
 
-      // 2. Minimum Password Length Check
       if (password.length < 6) {
         showAlert("Password must be at least 6 characters long.");
         return;
       }
 
-      // If user inputs a phone number instead of an email, format it to an internal email string for Firebase Auth
+      // Format Phone to internal email if necessary
       if (!emailOrPhone.includes("@")) {
         emailOrPhone = `${emailOrPhone.replace(/[^0-9]/g, '')}@venxmarket.com`;
       }
@@ -360,23 +566,19 @@
       createBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...`;
 
       try {
-        // Create user in Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, emailOrPhone, password);
-        const user = userCredential.user;
-
-        // Save Full Name to User Profile
-        await updateProfile(user, {
+        
+        // Save Full Name
+        await updateProfile(userCredential.user, {
           displayName: fullName
         });
 
-        // Sign out briefly so they log in through sign-in.html
-        await signOut(auth);
+        showAlert("Account created successfully! Loading your profile...", "success");
 
-        showAlert("Account created successfully! Redirecting to Sign In...", "success");
-
-        // Redirect to sign-in.html after 1.5 seconds
+        // Smooth 1.5 second delay before displaying credentials view
         setTimeout(() => {
-          window.location.href = "sign-in.html";
+          clearAlert();
+          showProfileView(auth.currentUser);
         }, 1500);
 
       } catch (error) {
@@ -388,6 +590,19 @@
         }
         createBtn.disabled = false;
         createBtn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Create Account`;
+      }
+    });
+
+    // --- 3. SIGN OUT LOGIC ---
+    document.getElementById("signOutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        showAlert("Signed out successfully.", "success");
+        setTimeout(() => {
+          showSignInForm();
+        }, 1500);
+      } catch (error) {
+        showAlert("Error signing out: " + error.message);
       }
     });
   </script>
