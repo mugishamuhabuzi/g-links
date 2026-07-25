@@ -230,6 +230,14 @@
       color: var(--text-main);
     }
 
+    /* --- Action Menu Section --- */
+    .profile-menu {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
     /* --- Bottom Navigation --- */
     .bottom-nav {
       position: fixed;
@@ -375,6 +383,19 @@
           <span class="profile-info-value" id="profileUid" style="font-size: 11px;">-</span>
         </li>
       </ul>
+
+      <!-- NEW ACCOUNT ACTION NAVIGATION BUTTONS -->
+      <div class="profile-menu">
+        <a href="my-items.html" class="btn btn-outline">
+          <i class="fa-solid fa-boxes-stacked"></i> My Items
+        </a>
+        <a href="edit-my-business.html" class="btn btn-outline">
+          <i class="fa-solid fa-store"></i> Edit My Business
+        </a>
+        <a href="profile.html" class="btn btn-outline">
+          <i class="fa-solid fa-user-pen"></i> Edit Profile
+        </a>
+      </div>
 
       <button type="button" id="signOutBtn" class="btn btn-danger">
         <i class="fa-solid fa-right-from-bracket"></i> Sign Out
