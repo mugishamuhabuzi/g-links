@@ -196,7 +196,7 @@
       background: #fff;
     }
 
-    .btn-pay, .btn-finish, .btn-print {
+    .btn-pay, .btn-finish, .btn-print, .btn-items {
       width: 100%;
       padding: 14px;
       background: var(--primary-color);
@@ -214,8 +214,12 @@
       transition: background 0.2s;
     }
 
-    .btn-pay:hover, .btn-finish:hover {
+    .btn-pay:hover, .btn-finish:hover, .btn-items:hover {
       background: var(--primary-dark);
+    }
+
+    .btn-finish {
+      background: #475569;
     }
 
     .btn-print {
@@ -456,9 +460,15 @@
 
       <!-- Action Buttons -->
       <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;" class="no-print">
+        <!-- Add Items Button -->
+        <a href="items.html" class="btn-items">
+          <i class="fa-solid fa-plus-circle"></i> Add Items to Your Business
+        </a>
+
         <a href="index.html" class="btn-finish">
           <i class="fa-solid fa-house"></i> Confirm & Return to Home
         </a>
+
         <button class="btn-print" onclick="window.print()">
           <i class="fa-solid fa-print"></i> Print / Download Receipt PDF
         </button>
