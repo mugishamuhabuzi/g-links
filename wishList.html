@@ -17,7 +17,6 @@
       --border-color: #e2e8f0;
       --nav-height: 65px;
       --danger-color: #e74c3c;
-      --whatsapp-color: #25d366;
     }
 
     * {
@@ -289,38 +288,33 @@
 
     .item-actions {
       display: flex;
-      gap: 8px;
+      width: 100%;
     }
 
-    .btn-action {
-      flex: 1;
-      padding: 8px 10px;
+    .btn-cart {
+      width: 100%;
+      padding: 10px 14px;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       border: none;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .btn-whatsapp {
-      background: #e6f9ed;
-      color: #075e54;
-      border: 1px solid #b7edd0;
-    }
-
-    .btn-cart {
       background: var(--primary-color);
       color: white;
+      cursor: pointer;
+      transition: background 0.2s;
     }
 
-    .btn-action:active {
-      opacity: 0.8;
+    .btn-cart:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-cart:active {
+      opacity: 0.9;
     }
 
     /* --- Empty State --- */
@@ -456,7 +450,7 @@
     <div class="filter-section">
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="searchInput" placeholder="Search saved items or seller location..." onkeyup="filterWishlist()">
+        <input type="text" id="searchInput" placeholder="Search saved items or sellers..." onkeyup="filterWishlist()">
       </div>
       
       <div class="category-pills">
@@ -490,7 +484,7 @@
 
   <!-- Notification Toast -->
   <div class="toast" id="toast">
-    <i class="fa-solid fa-circle-check" style="color: var(--whatsapp-color);"></i>
+    <i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i>
     <span id="toastText">Action successful!</span>
   </div>
 
@@ -505,7 +499,7 @@
 
   <!-- Interactive JavaScript -->
   <script>
-    // Sample Initial Data if localStorage is empty (for demo purposes)
+    // Sample Initial Data if localStorage is empty
     const sampleWishlist = [
       {
         id: "w1",
@@ -514,7 +508,6 @@
         category: "Agriculture",
         seller: "Kampala Organic Hub",
         location: "Wandegeya Plaza, Kampala",
-        phone: "256700000000",
         image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=300&q=80",
         stock: "In Stock"
       },
@@ -525,7 +518,6 @@
         category: "Electronics",
         seller: "Venx Tech World",
         location: "Central Arcade, Jinja",
-        phone: "256700000000",
         image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=300&q=80",
         stock: "In Stock"
       },
@@ -536,7 +528,6 @@
         category: "Fashion",
         seller: "Pearl Fashions Uganda",
         location: "Equatoria Shopping Mall",
-        phone: "256700000000",
         image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=300&q=80",
         stock: "Limited"
       }
@@ -545,7 +536,6 @@
     let currentCategory = "All";
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Initialize localStorage if empty
       if (!localStorage.getItem("venxWishlist")) {
         localStorage.setItem("venxWishlist", JSON.stringify(sampleWishlist));
       }
@@ -553,7 +543,7 @@
       renderWishlist();
     });
 
-    // 1. Render Items Function
+    // Render Wishlist Items
     function renderWishlist() {
       const wishlist = JSON.parse(localStorage.getItem("venxWishlist") || "[]");
       const container = document.getElementById("wishlistContainer");
@@ -577,11 +567,10 @@
       const query = document.getElementById("searchInput").value.toLowerCase();
 
       wishlist.forEach(item => {
-        // Filter checks
         const matchesCategory = (currentCategory === "All" || item.category === currentCategory);
         const matchesQuery = item.title.toLowerCase().includes(query) || 
                              item.seller.toLowerCase().includes(query) || 
-                             item.location.toLowerCase().includes(query);
+                             (item.location && item.location.toLowerCase().includes(query));
 
         if (matchesCategory && matchesQuery) {
           totalUGX += item.price;
@@ -590,10 +579,6 @@
           const card = document.createElement("div");
           card.className = "wishlist-item";
           card.id = `item-${item.id}`;
-
-          // Format WhatsApp Link
-          const waMsg = encodeURIComponent(`Hello ${item.seller}, I saw your listing "${item.title}" (UGX ${item.price.toLocaleString()}) on Venx Online Market and I would like to make an inquiry.`);
-          const waUrl = `https://wa.me/${item.phone}?text=${waMsg}`;
 
           card.innerHTML = `
             <div class="item-img-wrapper">
@@ -610,18 +595,15 @@
                 </div>
                 <div class="item-seller">
                   <i class="fa-solid fa-store" style="color: var(--primary-color);"></i>
-                  <span>${item.seller} • ${item.location}</span>
+                  <span>${item.seller}</span>
                 </div>
               </div>
 
               <div>
                 <div class="item-price">UGX ${item.price.toLocaleString()}</div>
                 <div class="item-actions">
-                  <a href="${waUrl}" target="_blank" class="btn-action btn-whatsapp">
-                    <i class="fa-brands fa-whatsapp"></i> Chat Seller
-                  </a>
                   <button onclick="moveToOrders('${item.id}')" class="btn-action btn-cart">
-                    <i class="fa-solid fa-bag-shopping"></i> Order
+                    <i class="fa-solid fa-bag-shopping"></i> Place Order
                   </button>
                 </div>
               </div>
@@ -631,16 +613,16 @@
         }
       });
 
-      // Update Summary Info
+      // Update Summary Header
       document.getElementById("totalValue").textContent = `UGX ${totalUGX.toLocaleString()}`;
       document.getElementById("totalItemsBadge").textContent = `${visibleCount} ${visibleCount === 1 ? 'Item' : 'Items'}`;
 
       if (visibleCount === 0 && wishlist.length > 0) {
-        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 30px 0; font-size: 13px;">No items match your filter criteria.</p>`;
+        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 30px 0; font-size: 13px;">No saved items match your search.</p>`;
       }
     }
 
-    // 2. Remove Single Item
+    // Remove Single Item
     function removeItem(id) {
       let wishlist = JSON.parse(localStorage.getItem("venxWishlist") || "[]");
       wishlist = wishlist.filter(item => item.id !== id);
@@ -650,7 +632,7 @@
       renderWishlist();
     }
 
-    // 3. Clear Entire Wishlist
+    // Clear All Items
     function clearWishlist() {
       const wishlist = JSON.parse(localStorage.getItem("venxWishlist") || "[]");
       if (wishlist.length === 0) return;
@@ -662,14 +644,13 @@
       }
     }
 
-    // 4. Move Item to Orders (Simulated Cart Transfer)
+    // Move Item directly into Venx Orders flow
     function moveToOrders(id) {
       const wishlist = JSON.parse(localStorage.getItem("venxWishlist") || "[]");
       const itemToMove = wishlist.find(item => item.id === id);
 
       if (!itemToMove) return;
 
-      // Add to venxOrders
       let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
       const newOrder = {
         orderId: "VNX-" + Math.floor(100000 + Math.random() * 900000),
@@ -684,14 +665,14 @@
       orders.unshift(newOrder);
       localStorage.setItem("venxOrders", JSON.stringify(orders));
 
-      showToast("Item added to My Orders!");
+      showToast("Order placed successfully!");
       
       setTimeout(() => {
         window.location.href = "orders.html";
       }, 1000);
     }
 
-    // 5. Search & Filter Handlers
+    // Search and Category Filter triggers
     function filterWishlist() {
       renderWishlist();
     }
@@ -703,7 +684,7 @@
       renderWishlist();
     }
 
-    // 6. Toast Notification Trigger
+    // Toast Alert Trigger
     function showToast(message) {
       const toast = document.getElementById("toast");
       document.getElementById("toastText").textContent = message;
