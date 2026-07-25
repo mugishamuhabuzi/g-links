@@ -345,7 +345,7 @@
 
     /* Variations */
     .variation-section {
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       padding-top: 10px;
       border-top: 1px solid var(--border-color);
     }
@@ -384,6 +384,62 @@
       border-color: var(--primary-color);
       background: #e6fffa;
       color: var(--primary-color);
+    }
+
+    /* --- NEW: Quantity Selector Styles --- */
+    .quantity-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-top: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .qty-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .qty-btn {
+      width: 36px;
+      height: 36px;
+      background: #f0f4f2;
+      border: none;
+      font-size: 12px;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .qty-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .qty-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .qty-number {
+      width: 44px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
     }
 
     /* Main CTA Button */
@@ -631,7 +687,7 @@
         </div>
         
         <div class="price-row">
-          <span class="current-price">UGX 19,800</span>
+          <span class="current-price" id="displayPrice">UGX 19,800</span>
           <span class="old-price">UGX 38,800</span>
           <span class="discount-badge">-49%</span>
         </div>
@@ -653,6 +709,16 @@
           <button class="size-btn" onclick="selectSize(this, 'L')">L</button>
           <button class="size-btn" onclick="selectSize(this, 'XL')">XL</button>
           <button class="size-btn" onclick="selectSize(this, 'XXL')">XXL</button>
+        </div>
+      </div>
+
+      <!-- NEW: Quantity Selector -->
+      <div class="quantity-section">
+        <div class="qty-title">QUANTITY:</div>
+        <div class="qty-controls">
+          <button class="qty-btn" id="btnMinus" onclick="decreaseQty()"><i class="fa-solid fa-minus"></i></button>
+          <span class="qty-number" id="qtyDisplay">1</span>
+          <button class="qty-btn" id="btnPlus" onclick="increaseQty()"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
 
@@ -744,17 +810,49 @@
     const currentProduct = {
       id: "p-boxers-01",
       title: "3 Pack Men’s Boxers, Comfortable & Breathable Checkered Underwear",
-      price: 19800,
+      unitPrice: 19800,
+      maxStock: 9, // From flash sale stock count
       seller: "Venx Official Store",
       image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=300&q=80"
     };
 
     let selectedSize = "M";
+    let quantity = 1;
 
     document.addEventListener("DOMContentLoaded", () => {
       checkWishlistState();
       startFlashTimer();
+      updateQtyDisplay();
     });
+
+    // Quantity Handlers
+    function increaseQty() {
+      if (quantity < currentProduct.maxStock) {
+        quantity++;
+        updateQtyDisplay();
+      } else {
+        showToast(`Only ${currentProduct.maxStock} items available in stock!`);
+      }
+    }
+
+    function decreaseQty() {
+      if (quantity > 1) {
+        quantity--;
+        updateQtyDisplay();
+      }
+    }
+
+    function updateQtyDisplay() {
+      document.getElementById("qtyDisplay").textContent = quantity;
+      
+      // Update UI total price dynamically based on quantity
+      const totalPrice = currentProduct.unitPrice * quantity;
+      document.getElementById("displayPrice").textContent = `UGX ${totalPrice.toLocaleString()}`;
+
+      // Toggle button states
+      document.getElementById("btnMinus").disabled = (quantity <= 1);
+      document.getElementById("btnPlus").disabled = (quantity >= currentProduct.maxStock);
+    }
 
     // Thumbnail Switching
     function switchImage(element) {
@@ -771,7 +869,7 @@
       document.getElementById("selectedSizeText").textContent = size;
     }
 
-    // Dynamic Delivery Cost calculation based on Location Selection
+    // Delivery Fees
     function updateDeliveryFees() {
       const region = document.getElementById("regionSelect").value;
       const pickupFeeEl = document.getElementById("pickupFee");
@@ -815,7 +913,7 @@
         wishlist.push({
           id: currentProduct.id,
           title: currentProduct.title,
-          price: currentProduct.price,
+          price: currentProduct.unitPrice,
           seller: currentProduct.seller,
           image: currentProduct.image
         });
@@ -826,14 +924,16 @@
       checkWishlistState();
     }
 
-    // Place Order Directly on Platform
+    // Place Order Directly on Platform with Quantity and Calculated Total Price
     function placeProductOrder() {
       let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+      const totalPrice = currentProduct.unitPrice * quantity;
 
       const newOrder = {
         orderId: "VNX-" + Math.floor(100000 + Math.random() * 900000),
-        title: `${currentProduct.title} (${selectedSize})`,
-        price: currentProduct.price,
+        title: `${currentProduct.title} (${selectedSize}) x${quantity}`,
+        price: totalPrice,
+        quantity: quantity,
         seller: currentProduct.seller,
         image: currentProduct.image,
         status: "Processing",
