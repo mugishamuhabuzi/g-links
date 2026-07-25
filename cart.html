@@ -29,7 +29,7 @@
     body {
       background: var(--bg-color);
       color: var(--text-main);
-      padding-bottom: calc(var(--nav-height) + 90px);
+      padding-bottom: calc(var(--nav-height) + 100px);
     }
 
     /* --- Top Header --- */
@@ -138,7 +138,17 @@
     .item-seller {
       font-size: 11px;
       color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .item-location {
+      font-size: 10px;
+      color: #3b82f6;
+      font-weight: 600;
       margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .item-unit-price {
@@ -224,28 +234,33 @@
     }
 
     .address-box {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       background: var(--bg-color);
       padding: 10px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
     }
 
-    .address-details {
+    .address-select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
       font-size: 12px;
+      font-weight: 600;
       color: var(--text-main);
-      line-height: 1.4;
+      background: white;
+      outline: none;
+      margin-top: 6px;
+      cursor: pointer;
     }
 
-    .btn-edit-addr {
-      background: none;
-      border: none;
-      color: var(--primary-color);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
+    .delivery-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     /* --- Promo Code Box --- */
@@ -480,20 +495,26 @@
       <!-- Populated dynamically via JS -->
     </div>
 
-    <!-- Extra Feature 1: Delivery Location Summary -->
+    <!-- Feature 1: Location-Based Delivery Address Selector -->
     <div class="section-card" id="addressCard" style="display: none;">
       <div class="section-card-title">
-        <i class="fa-solid fa-location-dot" style="color: var(--primary-color);"></i> Delivery Address
+        <i class="fa-solid fa-location-dot" style="color: var(--primary-color);"></i> Delivery Destination
       </div>
       <div class="address-box">
-        <div class="address-details" id="deliveryAddressText">
-          <strong>Kampala Central</strong> — Main Campus / Hostel Zone
+        <div style="font-size: 12px; font-weight: 700;">Select Delivery Location:</div>
+        <select id="userLocationSelect" class="address-select" onchange="onLocationChange()">
+          <option value="kyambogo_campus">Kyambogo University (Main Campus / Hostels)</option>
+          <option value="banda_nakawa">Banda / Nakawa / Ntinda</option>
+          <option value="kampala_central">Kampala Central Business District</option>
+          <option value="kampala_outskirts">Kampala Outskirts (Entebbe / Wakiso / Mukono)</option>
+        </select>
+        <div class="delivery-note" id="deliveryNoteText">
+          <i class="fa-solid fa-truck-fast"></i> Delivery rate auto-calculated based on vendor distance.
         </div>
-        <button class="btn-edit-addr" onclick="changeAddress()">Change</button>
       </div>
     </div>
 
-    <!-- Extra Feature 2: Promo / Discount Code -->
+    <!-- Feature 2: Promo / Discount Code -->
     <div class="section-card" id="promoCard" style="display: none;">
       <div class="section-card-title">
         <i class="fa-solid fa-ticket" style="color: var(--primary-color);"></i> Promo Code
@@ -511,12 +532,12 @@
         <i class="fa-solid fa-receipt" style="color: var(--primary-color);"></i> Payment Summary
       </div>
       <div class="summary-row">
-        <span>Subtotal</span>
+        <span>Items Subtotal</span>
         <span id="subtotalDisplay">UGX 0</span>
       </div>
       <div class="summary-row">
-        <span>Delivery Fee</span>
-        <span style="color: var(--primary-color); font-weight: 600;">FREE</span>
+        <span>Distance Delivery Fee</span>
+        <span id="deliveryFeeDisplay" style="font-weight: 700; color: var(--primary-color);">UGX 0</span>
       </div>
       <div class="summary-row discount" id="discountRow" style="display: none;">
         <span>Promo Discount (10%)</span>
@@ -560,16 +581,78 @@
   <script>
     let discountPercent = 0;
 
-    document.addEventListener("DOMContentLoaded", renderCart);
+    // Delivery Fee Rate Matrix (UGX) based on Vendor Origin vs Buyer Destination
+    const distanceFeeMatrix = {
+      "kyambogo_campus": { "kyambogo_campus": 1500, "banda_nakawa": 3000, "kampala_central": 5000, "kampala_outskirts": 8000 },
+      "banda_nakawa":     { "kyambogo_campus": 3000, "banda_nakawa": 2000, "kampala_central": 4500, "kampala_outskirts": 7500 },
+      "kampala_central":  { "kyambogo_campus": 5000, "banda_nakawa": 4500, "kampala_central": 2500, "kampala_outskirts": 6000 },
+      "default":          { "kyambogo_campus": 2500, "banda_nakawa": 3500, "kampala_central": 5000, "kampala_outskirts": 8000 }
+    };
 
-    // Retrieve cart items from localStorage
+    // Mapping sellers to business locations
+    function getSellerLocation(sellerName) {
+      if (!sellerName) return "kyambogo_campus";
+      const name = sellerName.toLowerCase();
+      if (name.includes("campus") || name.includes("kyambogo") || name.includes("hostel")) return "kyambogo_campus";
+      if (name.includes("nakawa") || name.includes("banda") || name.includes("ntinda")) return "banda_nakawa";
+      if (name.includes("central") || name.includes("plaza") || name.includes("market")) return "kampala_central";
+      return "default";
+    }
+
+    function getReadableLocationName(locKey) {
+      const names = {
+        "kyambogo_campus": "Kyambogo Campus",
+        "banda_nakawa": "Banda / Nakawa",
+        "kampala_central": "Kampala Central",
+        "default": "Partner Vendor Hub"
+      };
+      return names[locKey] || "Vendor Store";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Restore selected destination from local storage if saved
+      const savedLoc = localStorage.getItem("userDeliveryLocation");
+      if (savedLoc) {
+        const select = document.getElementById("userLocationSelect");
+        if (select) select.value = savedLoc;
+      }
+      renderCart();
+    });
+
     function getCart() {
       return JSON.parse(localStorage.getItem("venxCart") || "[]");
     }
 
-    // Save cart items to localStorage
     function saveCart(cart) {
       localStorage.setItem("venxCart", JSON.stringify(cart));
+    }
+
+    function onLocationChange() {
+      const selectedLoc = document.getElementById("userLocationSelect").value;
+      localStorage.setItem("userDeliveryLocation", selectedLoc);
+      renderCart();
+      showToast("Delivery fee recalculated");
+    }
+
+    // Calculate total delivery fee based on vendor locations and chosen buyer destination
+    function calculateTotalDeliveryFee(cart, buyerLocation) {
+      if (cart.length === 0) return 0;
+
+      // Find unique seller locations present in current cart
+      const sellerLocations = new Set();
+      cart.forEach(item => {
+        const origin = item.sellerLocation || getSellerLocation(item.seller);
+        sellerLocations.add(origin);
+      });
+
+      let totalFee = 0;
+      sellerLocations.forEach(origin => {
+        const originMatrix = distanceFeeMatrix[origin] || distanceFeeMatrix["default"];
+        const feeForThisOrigin = originMatrix[buyerLocation] || 3500;
+        totalFee += feeForThisOrigin;
+      });
+
+      return totalFee;
     }
 
     // Main render function
@@ -582,8 +665,8 @@
       const summaryCard = document.getElementById("summaryCard");
       const bottomBar = document.getElementById("bottomBar");
       const itemCountLabel = document.getElementById("itemCountLabel");
+      const userLocation = document.getElementById("userLocationSelect").value;
 
-      // Handle empty cart view
       if (cart.length === 0) {
         cartList.innerHTML = `
           <div class="empty-cart">
@@ -601,7 +684,6 @@
         return;
       }
 
-      // Show operational UI elements
       cartHeaderRow.style.display = "flex";
       addressCard.style.display = "block";
       promoCard.style.display = "block";
@@ -614,10 +696,12 @@
       cartList.innerHTML = "";
       let subtotal = 0;
 
-      // Render individual order cards
       cart.forEach((item, index) => {
         const itemTotal = item.price * item.quantity;
         subtotal += itemTotal;
+
+        const vendorLocKey = item.sellerLocation || getSellerLocation(item.seller);
+        const vendorLocName = getReadableLocationName(vendorLocKey);
 
         const card = document.createElement("div");
         card.className = "cart-card";
@@ -630,6 +714,7 @@
             <div>
               <div class="item-title">${item.title}</div>
               <div class="item-seller"><i class="fa-solid fa-store"></i> ${item.seller}</div>
+              <div class="item-location"><i class="fa-solid fa-map-pin"></i> Ships from: ${vendorLocName}</div>
               <div class="item-unit-price">UGX ${item.price.toLocaleString()} each</div>
             </div>
             <div class="item-controls-row">
@@ -645,11 +730,13 @@
         cartList.appendChild(card);
       });
 
-      // Calculate totals
+      // Compute final calculations
+      const deliveryFee = calculateTotalDeliveryFee(cart, userLocation);
       const discountAmount = Math.round((subtotal * discountPercent) / 100);
-      const grandTotal = subtotal - discountAmount;
+      const grandTotal = subtotal - discountAmount + deliveryFee;
 
       document.getElementById("subtotalDisplay").textContent = `UGX ${subtotal.toLocaleString()}`;
+      document.getElementById("deliveryFeeDisplay").textContent = `UGX ${deliveryFee.toLocaleString()}`;
       
       const discountRow = document.getElementById("discountRow");
       if (discountPercent > 0) {
@@ -663,7 +750,7 @@
       document.getElementById("barTotalDisplay").textContent = `UGX ${grandTotal.toLocaleString()}`;
     }
 
-    // Update Quantity
+    // Quantity controller
     function updateQty(index, delta) {
       let cart = getCart();
       if (cart[index].quantity + delta >= 1) {
@@ -682,7 +769,7 @@
       showToast("Item removed from cart");
     }
 
-    // Clear entire cart
+    // Clear cart
     function clearCart() {
       if (confirm("Are you sure you want to clear all unconfirmed orders?")) {
         localStorage.removeItem("venxCart");
@@ -713,23 +800,15 @@
       }
     }
 
-    // Change address prompt
-    function changeAddress() {
-      const newAddr = prompt("Enter new delivery location / campus hostel:");
-      if (newAddr) {
-        document.getElementById("deliveryAddressText").innerHTML = `<strong>${newAddr}</strong>`;
-        showToast("Delivery address updated");
-      }
-    }
-
-    // Confirm Orders -> Send to orders.html
+    // Confirm Order -> Send to orders.html
     function confirmAndCheckout() {
       const cart = getCart();
       if (cart.length === 0) return;
 
+      const userLocation = document.getElementById("userLocationSelect").value;
+      const deliveryFee = calculateTotalDeliveryFee(cart, userLocation);
       let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
 
-      // Move each cart item to confirmed orders list
       cart.forEach(item => {
         const itemPriceAfterDiscount = discountPercent > 0 
           ? (item.price * item.quantity) * (1 - discountPercent / 100)
@@ -738,7 +817,7 @@
         const confirmedOrder = {
           orderId: "VNX-" + Math.floor(100000 + Math.random() * 900000),
           title: item.title + (item.quantity > 1 ? ` (x${item.quantity})` : ""),
-          price: Math.round(itemPriceAfterDiscount),
+          price: Math.round(itemPriceAfterDiscount) + Math.round(deliveryFee / cart.length),
           seller: item.seller,
           image: item.image,
           quantity: item.quantity,
@@ -749,7 +828,6 @@
         orders.unshift(confirmedOrder);
       });
 
-      // Save confirmed orders & clear unconfirmed cart
       localStorage.setItem("venxOrders", JSON.stringify(orders));
       localStorage.removeItem("venxCart");
 
@@ -760,7 +838,7 @@
       }, 1000);
     }
 
-    // Toast helper
+    // Toast Alert Helper
     function showToast(message) {
       const toast = document.getElementById("toast");
       document.getElementById("toastText").textContent = message;
