@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3 Pack Men's Boxers - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --flash-red: #db2828;
+      --flash-bg: #fff0f0;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --nav-height: 65px;
+      --badge-yellow: #f1c40f;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Top Header & Navigation --- */
+    header {
+      background: var(--primary-color);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 18px;
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      font-size: 18px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 16px;
+      font-size: 18px;
+    }
+
+    .header-icons a {
+      color: white;
+      text-decoration: none;
+      position: relative;
+    }
+
+    /* --- Breadcrumbs --- */
+    .breadcrumb-wrapper {
+      max-width: 1200px;
+      margin: 10px auto;
+      padding: 0 16px;
+    }
+
+    .breadcrumbs {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .breadcrumbs a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .breadcrumbs a:hover {
+      color: var(--primary-color);
+    }
+
+    /* --- Main Product Layout Grid --- */
+    .product-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .product-container {
+        grid-template-columns: 360px 1fr 300px;
+      }
+    }
+
+    /* --- Section 1: Image Gallery --- */
+    .gallery-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .main-img-box {
+      width: 100%;
+      height: 300px;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .main-img-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .thumbnail-list {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 6px;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      object-fit: cover;
+      transition: border-color 0.2s;
+    }
+
+    .thumb.active {
+      border-color: var(--primary-color);
+    }
+
+    .share-box {
+      width: 100%;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .share-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f0f4f2;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    /* --- Section 2: Product Info & Flash Banner --- */
+    .info-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .store-badge {
+      display: inline-block;
+      background: #003366;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .product-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .product-title {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .btn-wishlist {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .btn-wishlist.saved {
+      color: var(--flash-red);
+    }
+
+    /* Ratings */
+    .rating-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    .stars {
+      color: var(--badge-yellow);
+    }
+
+    .rating-count {
+      color: var(--primary-color);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* Flash Sale Box */
+    .flash-sale-box {
+      background: linear-gradient(135deg, var(--flash-red), #b91c1c);
+      color: white;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+
+    .flash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .flash-timer {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .current-price {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .old-price {
+      font-size: 14px;
+      text-decoration: line-through;
+      opacity: 0.8;
+    }
+
+    .discount-badge {
+      background: #ffffff;
+      color: var(--flash-red);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .stock-progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .stock-progress-fill {
+      height: 100%;
+      width: 25%;
+      background: #ffffff;
+    }
+
+    .stock-text {
+      font-size: 10px;
+      margin-top: 4px;
+      opacity: 0.9;
+    }
+
+    /* Variations */
+    .variation-section {
+      margin-bottom: 20px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .variation-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .size-guide-link {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    .size-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .size-btn {
+      min-width: 42px;
+      height: 38px;
+      border: 1px solid var(--border-color);
+      background: white;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .size-btn.active {
+      border-color: var(--primary-color);
+      background: #e6fffa;
+      color: var(--primary-color);
+    }
+
+    /* Main CTA Button */
+    .btn-main-order {
+      width: 100%;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(11, 143, 77, 0.2);
+      transition: background 0.2s;
+    }
+
+    .btn-main-order:hover {
+      background: var(--primary-dark);
+    }
+
+    /* --- Section 3: Delivery & Returns Sidebar --- */
+    .delivery-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .delivery-header {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .express-badge {
+      color: var(--primary-color);
+      font-weight: 800;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .location-picker {
+      margin-bottom: 14px;
+    }
+
+    .location-picker label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .location-picker select {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 12px;
+      background: white;
+      outline: none;
+      margin-bottom: 8px;
+    }
+
+    .delivery-option {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f4f2;
+    }
+
+    .delivery-option i {
+      font-size: 18px;
+      color: var(--primary-color);
+      margin-top: 2px;
+    }
+
+    .delivery-info {
+      font-size: 12px;
+    }
+
+    .delivery-title {
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .delivery-fee {
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .delivery-subtext {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2c3e50;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 2000;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .bottom-nav a.active {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .bottom-nav a i {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-content">
+      <div class="header-left">
+        <a href="categories.html" class="back-btn" aria-label="Back">
+          <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <div class="brand-logo">
+          <i class="fa-solid fa-shop"></i>
+          <span>Venx Market</span>
+        </div>
+      </div>
+      <div class="header-icons">
+        <a href="wishList.html" aria-label="Wishlist"><i class="fa-regular fa-heart"></i></a>
+        <a href="orders.html" aria-label="Orders"><i class="fa-solid fa-box"></i></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Breadcrumbs Bar -->
+  <div class="breadcrumb-wrapper">
+    <div class="breadcrumbs">
+      <a href="index.html">Home</a> <i class="fa-solid fa-chevron-right" style="font-size: 8px;"></i>
+      <a href="categories.html">Fashion</a> <i class="fa-solid fa-chevron-right" style="font-size: 8px;"></i>
+      <a href="categories.html">Underwear</a> <i class="fa-solid fa-chevron-right" style="font-size: 8px;"></i>
+      <span>3 Pack Men's Boxers</span>
+    </div>
+  </div>
+
+  <!-- Product Layout Grid -->
+  <main class="product-container">
+
+    <!-- Column 1: Image Gallery -->
+    <section class="gallery-card">
+      <div class="main-img-box">
+        <img id="mainImage" src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=600&q=80" alt="3 Pack Boxers">
+      </div>
+      
+      <div class="thumbnail-list">
+        <img src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=300&q=80" class="thumb active" onclick="switchImage(this)" alt="Thumb 1">
+        <img src="https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=300&q=80" class="thumb" onclick="switchImage(this)" alt="Thumb 2">
+        <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80" class="thumb" onclick="switchImage(this)" alt="Thumb 3">
+      </div>
+
+      <div class="share-box">
+        <span>SHARE THIS PRODUCT:</span>
+        <a href="#" class="share-btn"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" class="share-btn"><i class="fa-brands fa-x-twitter"></i></a>
+        <a href="#" class="share-btn"><i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+    </section>
+
+    <!-- Column 2: Product Details & Price -->
+    <section class="info-card">
+      <span class="store-badge">Official Store</span>
+      
+      <div class="product-title-row">
+        <h1 class="product-title">3 Pack Men’s Boxers, Comfortable & Breathable Checkered Underwear (Multi-Color)</h1>
+        <button class="btn-wishlist" id="wishlistToggleBtn" onclick="toggleWishlist()"><i class="fa-regular fa-heart"></i></button>
+      </div>
+
+      <div class="rating-box">
+        <div class="stars">
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star-half-stroke"></i>
+        </div>
+        <a href="#" class="rating-count">(1,702 verified ratings)</a>
+      </div>
+
+      <!-- Flash Sales Banner -->
+      <div class="flash-sale-box">
+        <div class="flash-header">
+          <span><i class="fa-solid fa-bolt"></i> Flash Sales</span>
+          <div class="flash-timer">Time Left: <span id="countdown">05d : 14h : 07m</span></div>
+        </div>
+        
+        <div class="price-row">
+          <span class="current-price">UGX 19,800</span>
+          <span class="old-price">UGX 38,800</span>
+          <span class="discount-badge">-49%</span>
+        </div>
+
+        <div class="stock-progress-bar">
+          <div class="stock-progress-fill"></div>
+        </div>
+        <div class="stock-text">9 items left</div>
+      </div>
+
+      <!-- Variations Selector -->
+      <div class="variation-section">
+        <div class="variation-header">
+          <span>VARIATION AVAILABLE: <strong id="selectedSizeText">M</strong></span>
+          <a href="#" class="size-guide-link">Size Guide</a>
+        </div>
+        <div class="size-options">
+          <button class="size-btn active" onclick="selectSize(this, 'M')">M</button>
+          <button class="size-btn" onclick="selectSize(this, 'L')">L</button>
+          <button class="size-btn" onclick="selectSize(this, 'XL')">XL</button>
+          <button class="size-btn" onclick="selectSize(this, 'XXL')">XXL</button>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button class="btn-main-order" onclick="placeProductOrder()">
+        <i class="fa-solid fa-cart-shopping"></i> Place Order Now
+      </button>
+    </section>
+
+    <!-- Column 3: Delivery & Returns -->
+    <section class="delivery-card">
+      <div class="delivery-header">Delivery & Returns</div>
+
+      <div class="express-badge">
+        <i class="fa-solid fa-truck-fast"></i>
+        <span>Venx Express Delivery</span>
+      </div>
+
+      <div class="location-picker">
+        <label>Choose your location</label>
+        <select id="regionSelect" onchange="updateDeliveryFees()">
+          <option value="Kampala Region">Kampala Region</option>
+          <option value="Central Region">Central Region</option>
+          <option value="Western Region">Western Region</option>
+          <option value="Eastern Region">Eastern Region</option>
+        </select>
+
+        <select id="subRegionSelect" onchange="updateDeliveryFees()">
+          <option value="Banda">Banda / Nakawa</option>
+          <option value="Wandegeya">Wandegeya / Makerere</option>
+          <option value="Central Market">Kampala Central</option>
+        </select>
+      </div>
+
+      <!-- Pickup Station -->
+      <div class="delivery-option">
+        <i class="fa-solid fa-box-archive"></i>
+        <div class="delivery-info">
+          <div class="delivery-title">
+            <span>Pickup Station</span>
+            <span class="delivery-fee" id="pickupFee">UGX 2,400</span>
+          </div>
+          <div class="delivery-subtext">Ready for pickup within 24 hours if placed today.</div>
+        </div>
+      </div>
+
+      <!-- Door Delivery -->
+      <div class="delivery-option">
+        <i class="fa-solid fa-truck"></i>
+        <div class="delivery-info">
+          <div class="delivery-title">
+            <span>Door Delivery</span>
+            <span class="delivery-fee" id="doorFee">UGX 3,500</span>
+          </div>
+          <div class="delivery-subtext">Delivered to your doorstep tomorrow afternoon.</div>
+        </div>
+      </div>
+
+      <!-- Return Policy -->
+      <div class="delivery-option" style="border: none;">
+        <i class="fa-solid fa-rotate-left"></i>
+        <div class="delivery-info">
+          <div class="delivery-title">
+            <span>Return Policy</span>
+          </div>
+          <div class="delivery-subtext">Free return within 7 days for eligible items.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i>
+    <span id="toastText">Action successful</span>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html" class="active"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <a href="add-business.html"><i class="fa-solid fa-plus-circle"></i><span>Add Business</span></a>
+    <a href="orders.html"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
+  </nav>
+
+  <script>
+    const currentProduct = {
+      id: "p-boxers-01",
+      title: "3 Pack Men’s Boxers, Comfortable & Breathable Checkered Underwear",
+      price: 19800,
+      seller: "Venx Official Store",
+      image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=300&q=80"
+    };
+
+    let selectedSize = "M";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      checkWishlistState();
+      startFlashTimer();
+    });
+
+    // Thumbnail Switching
+    function switchImage(element) {
+      document.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
+      element.classList.add("active");
+      document.getElementById("mainImage").src = element.src;
+    }
+
+    // Size Selection
+    function selectSize(btn, size) {
+      document.querySelectorAll(".size-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedSize = size;
+      document.getElementById("selectedSizeText").textContent = size;
+    }
+
+    // Dynamic Delivery Cost calculation based on Location Selection
+    function updateDeliveryFees() {
+      const region = document.getElementById("regionSelect").value;
+      const pickupFeeEl = document.getElementById("pickupFee");
+      const doorFeeEl = document.getElementById("doorFee");
+
+      if (region === "Kampala Region") {
+        pickupFeeEl.textContent = "UGX 2,400";
+        doorFeeEl.textContent = "UGX 3,500";
+      } else if (region === "Central Region") {
+        pickupFeeEl.textContent = "UGX 4,000";
+        doorFeeEl.textContent = "UGX 6,000";
+      } else {
+        pickupFeeEl.textContent = "UGX 7,000";
+        doorFeeEl.textContent = "UGX 10,000";
+      }
+    }
+
+    // Wishlist Toggle
+    function checkWishlistState() {
+      const wishlist = JSON.parse(localStorage.getItem("venxWishlist") || "[]");
+      const isSaved = wishlist.some(i => i.id === currentProduct.id);
+      const btn = document.getElementById("wishlistToggleBtn");
+      
+      if (isSaved) {
+        btn.classList.add("saved");
+        btn.innerHTML = `<i class="fa-solid fa-heart"></i>`;
+      } else {
+        btn.classList.remove("saved");
+        btn.innerHTML = `<i class="fa-regular fa-heart"></i>`;
+      }
+    }
+
+    function toggleWishlist() {
+      let wishlist = JSON.parse(localStorage.getItem("venxWishlist") || "[]");
+      const index = wishlist.findIndex(i => i.id === currentProduct.id);
+
+      if (index > -1) {
+        wishlist.splice(index, 1);
+        showToast("Removed from Wishlist");
+      } else {
+        wishlist.push({
+          id: currentProduct.id,
+          title: currentProduct.title,
+          price: currentProduct.price,
+          seller: currentProduct.seller,
+          image: currentProduct.image
+        });
+        showToast("Saved to Wishlist!");
+      }
+
+      localStorage.setItem("venxWishlist", JSON.stringify(wishlist));
+      checkWishlistState();
+    }
+
+    // Place Order Directly on Platform
+    function placeProductOrder() {
+      let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+
+      const newOrder = {
+        orderId: "VNX-" + Math.floor(100000 + Math.random() * 900000),
+        title: `${currentProduct.title} (${selectedSize})`,
+        price: currentProduct.price,
+        seller: currentProduct.seller,
+        image: currentProduct.image,
+        status: "Processing",
+        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+      };
+
+      orders.unshift(newOrder);
+      localStorage.setItem("venxOrders", JSON.stringify(orders));
+
+      showToast("Order placed successfully!");
+
+      setTimeout(() => {
+        window.location.href = "orders.html";
+      }, 1000);
+    }
+
+    // Countdown Timer Logic
+    function startFlashTimer() {
+      let totalSeconds = 5 * 86400 + 14 * 3600 + 7 * 60;
+      const display = document.getElementById("countdown");
+
+      setInterval(() => {
+        totalSeconds--;
+        if (totalSeconds < 0) return;
+
+        const d = Math.floor(totalSeconds / 86400);
+        const h = Math.floor((totalSeconds % 86400) / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+
+        display.textContent = `${String(d).padStart(2, '0')}d : ${String(h).padStart(2, '0')}h : ${String(m).padStart(2, '0')}m`;
+      }, 1000);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      document.getElementById("toastText").textContent = msg;
+      toast.style.display = "flex";
+      setTimeout(() => { toast.style.display = "none"; }, 2500);
+    }
+  </script>
+
+</body>
+</html>
