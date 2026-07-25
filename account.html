@@ -74,7 +74,7 @@
       margin-bottom: 20px;
     }
 
-    /* --- Form Controls --- */
+    /* --- Form Controls & Buttons --- */
     .form-group {
       margin-bottom: 16px;
     }
@@ -115,7 +115,7 @@
       align-items: center;
       gap: 8px;
       text-decoration: none;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
 
     .btn-primary {
@@ -135,6 +135,19 @@
 
     .btn-outline:hover {
       background: #e6fffa;
+    }
+
+    .btn-secondary-action {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      justify-content: flex-start;
+      padding: 12px 16px;
+    }
+
+    .btn-secondary-action:hover {
+      background: #edf2f7;
+      border-color: #cbd5e0;
     }
 
     .btn-danger {
@@ -210,6 +223,7 @@
       list-style: none;
       border-top: 1px solid var(--border-color);
       padding-top: 10px;
+      margin-bottom: 20px;
     }
 
     .profile-info-item {
@@ -230,12 +244,11 @@
       color: var(--text-main);
     }
 
-    /* --- Action Menu Section --- */
-    .profile-menu {
-      margin-top: 20px;
+    .account-actions {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      margin-top: 15px;
     }
 
     /* --- Bottom Navigation --- */
@@ -384,16 +397,24 @@
         </li>
       </ul>
 
-      <!-- NEW ACCOUNT ACTION NAVIGATION BUTTONS -->
-      <div class="profile-menu">
-        <a href="my-items.html" class="btn btn-outline">
-          <i class="fa-solid fa-boxes-stacked"></i> My Items
+      <!-- 🟢 MANAGEMENT & NAVIGATION BUTTONS FOR EXISTING USERS -->
+      <div class="account-actions">
+        <a href="my-items.html" class="btn btn-secondary-action">
+          <i class="fa-solid fa-boxes-stacked" style="color: var(--primary-color); width: 20px;"></i> 
+          <span>My Listed Items</span>
+          <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted); font-size: 12px;"></i>
         </a>
-        <a href="edit-my-business.html" class="btn btn-outline">
-          <i class="fa-solid fa-store"></i> Edit My Business
+
+        <a href="edit-my-business.html" class="btn btn-secondary-action">
+          <i class="fa-solid fa-store" style="color: var(--primary-color); width: 20px;"></i> 
+          <span>Edit My Business</span>
+          <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted); font-size: 12px;"></i>
         </a>
-        <a href="profile.html" class="btn btn-outline">
-          <i class="fa-solid fa-user-pen"></i> Edit Profile
+
+        <a href="profile.html" class="btn btn-secondary-action">
+          <i class="fa-solid fa-user-pen" style="color: var(--primary-color); width: 20px;"></i> 
+          <span>Edit Profile Settings</span>
+          <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted); font-size: 12px;"></i>
         </a>
       </div>
 
