@@ -15,6 +15,8 @@
       --text-main: #2c3e50;
       --text-muted: #7f8c8d;
       --border-color: #e2e8f0;
+      --danger-color: #e74c3c;
+      --warning-color: #f39c12;
       --nav-height: 65px;
     }
 
@@ -31,7 +33,7 @@
       padding-bottom: calc(var(--nav-height) + 20px);
     }
 
-    /* --- Header --- */
+    /* --- Top Header --- */
     header {
       background: var(--primary-color);
       padding: 14px 16px;
@@ -63,60 +65,63 @@
       padding: 12px;
     }
 
-    /* --- Status Tabs --- */
+    /* --- Filter Tab Bar --- */
     .filter-tabs {
       display: flex;
       gap: 8px;
-      margin-bottom: 14px;
       overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 4px;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      scrollbar-width: none; /* Hide scrollbar Firefox */
     }
 
     .filter-tabs::-webkit-scrollbar {
-      display: none;
+      display: none; /* Hide scrollbar Chrome/Safari */
     }
 
     .tab-btn {
       background: white;
       border: 1px solid var(--border-color);
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 20px;
       font-size: 12px;
-      font-weight: 600;
-      color: var(--text-main);
-      cursor: pointer;
+      font-weight: 700;
+      color: var(--text-muted);
       white-space: nowrap;
-      transition: all 0.2s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
     }
 
     .tab-btn.active {
       background: var(--primary-color);
       color: white;
       border-color: var(--primary-color);
+      box-shadow: 0 2px 6px rgba(11, 143, 77, 0.3);
     }
 
-    /* --- Orders List --- */
-    .orders-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .tab-btn i {
+      font-size: 13px;
     }
 
+    /* --- Order Cards --- */
     .order-card {
       background: white;
       border-radius: 12px;
       padding: 14px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      margin-bottom: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
     .order-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 10px;
       border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 8px;
       margin-bottom: 10px;
     }
 
@@ -131,148 +136,131 @@
       color: var(--text-muted);
     }
 
-    .status-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 10px;
-      text-transform: uppercase;
-    }
-
-    .status-processing {
-      background: #fef3c7;
-      color: #d97706;
-    }
-
-    .status-delivered {
-      background: #dcfce7;
-      color: #15803d;
-    }
-
-    .status-cancelled {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-
     .order-body {
       display: flex;
       gap: 12px;
-      align-items: center;
+      margin-bottom: 10px;
     }
 
     .order-img {
-      width: 65px;
-      height: 65px;
-      object-fit: cover;
+      width: 70px;
+      height: 70px;
       border-radius: 8px;
-      background: #f8fafc;
-      flex-shrink: 0;
+      object-fit: cover;
+      background: #eee;
     }
 
     .order-details {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .order-title {
       font-size: 13px;
       font-weight: 700;
-      color: var(--text-main);
       margin-bottom: 4px;
       line-height: 1.3;
     }
 
-    .order-seller {
+    .order-merchant {
       font-size: 11px;
       color: var(--text-muted);
       margin-bottom: 6px;
+    }
+
+    .badges-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-paid {
+      background: #eaf5ee;
+      color: var(--primary-color);
+    }
+
+    .badge-cod {
+      background: #fff8e6;
+      color: #d97706;
+    }
+
+    .badge-status {
+      background: #eff6ff;
+      color: #2563eb;
     }
 
     .order-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
+      border-top: 1px dashed var(--border-color);
       padding-top: 10px;
-      border-top: 1px solid var(--border-color);
-      flex-wrap: wrap;
-      gap: 8px;
     }
 
-    .order-price {
+    .order-total {
       font-size: 14px;
       font-weight: 800;
       color: var(--primary-color);
     }
 
-    .order-actions {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .btn-action {
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      padding: 6px 10px;
+    .btn-receipt {
+      background: white;
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+      padding: 6px 12px;
       border-radius: 6px;
       font-size: 11px;
-      font-weight: 600;
-      color: var(--text-main);
+      font-weight: 700;
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 4px;
-      text-decoration: none;
-      transition: background 0.2s;
     }
 
-    .btn-action:hover {
-      background: #e2e8f0;
-    }
-
-    .btn-action.pay {
-      background: #2563eb;
-      color: white;
-      border-color: #2563eb;
-    }
-
-    .btn-action.pay:hover {
-      background: #1d4ed8;
-    }
-
-    .btn-action.primary {
+    .btn-receipt:hover {
       background: var(--primary-color);
       color: white;
-      border-color: var(--primary-color);
     }
 
-    .btn-action.primary:hover {
-      background: var(--primary-dark);
-    }
-
-    /* --- Empty State --- */
-    .empty-orders {
+    /* Empty State */
+    .empty-state {
       text-align: center;
-      padding: 50px 20px;
+      padding: 40px 20px;
       background: white;
       border-radius: 12px;
       border: 1px solid var(--border-color);
     }
 
-    .empty-orders i {
-      font-size: 48px;
+    .empty-state i {
+      font-size: 45px;
       color: var(--text-muted);
       margin-bottom: 12px;
     }
 
-    .empty-orders p {
-      font-size: 13px;
+    .empty-state h3 {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .empty-state p {
+      font-size: 12px;
       color: var(--text-muted);
       margin-bottom: 16px;
     }
 
-    .btn-shop {
-      display: inline-block;
+    .btn-shop-now {
       background: var(--primary-color);
       color: white;
       padding: 10px 20px;
@@ -280,33 +268,69 @@
       text-decoration: none;
       font-size: 12px;
       font-weight: 700;
+      display: inline-block;
     }
 
-    /* --- Notification Toast --- */
-    .toast {
+    /* --- Receipt View Modal --- */
+    .receipt-modal-overlay {
       position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #2c3e50;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
       display: none;
+      justify-content: center;
       align-items: center;
-      gap: 8px;
-      z-index: 2000;
+      z-index: 3000;
+      padding: 16px;
     }
 
-    /* --- Bottom Navigation --- */
+    .receipt-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .receipt-header {
+      text-align: center;
+      border-bottom: 2px dashed var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+    }
+
+    .receipt-logo {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
+    .receipt-table {
+      width: 100%;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .receipt-table td {
+      padding: 4px 0;
+    }
+
+    .btn-close-receipt {
+      background: var(--text-main);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: var(--nav-height);
       background: white;
       display: flex;
@@ -327,50 +351,86 @@
       flex: 1;
     }
 
-    .bottom-nav a.active {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
-
-    .bottom-nav a i {
-      font-size: 18px;
-    }
+    .bottom-nav a.active { color: var(--primary-color); font-weight: 600; }
+    .bottom-nav a i { font-size: 18px; }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Header -->
   <header>
-    <a href="categories.html" aria-label="Back to Categories">
-      <i class="fa-solid fa-arrow-left"></i>
-    </a>
-    <span class="header-title">My Confirmed Orders</span>
-    <a href="cart.html" aria-label="My Cart">
-      <i class="fa-solid fa-cart-shopping"></i>
-    </a>
+    <a href="index.html"><i class="fa-solid fa-arrow-left"></i></a>
+    <span class="header-title">My Orders</span>
+    <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
   </header>
 
   <div class="container">
-    
-    <!-- Filter Tabs -->
+
+    <!-- Filter Buttons Bar -->
     <div class="filter-tabs">
-      <button class="tab-btn active" onclick="filterOrders('All', this)">All Orders</button>
-      <button class="tab-btn" onclick="filterOrders('Processing', this)">Processing</button>
-      <button class="tab-btn" onclick="filterOrders('Delivered', this)">Delivered</button>
-      <button class="tab-btn" onclick="filterOrders('Cancelled', this)">Cancelled</button>
+      <button class="tab-btn active" onclick="filterOrders('all', this)">
+        <i class="fa-solid fa-list-check"></i> All Orders
+      </button>
+
+      <!-- DEDICATED PAID ORDERS BUTTON -->
+      <button class="tab-btn" id="paidOrdersBtn" onclick="filterOrders('paid', this)">
+        <i class="fa-solid fa-circle-check"></i> Paid Orders
+      </button>
+
+      <button class="tab-btn" onclick="filterOrders('cod', this)">
+        <i class="fa-solid fa-hand-holding-dollar"></i> Cash on Delivery
+      </button>
+
+      <button class="tab-btn" onclick="filterOrders('processing', this)">
+        <i class="fa-solid fa-truck-fast"></i> In Transit
+      </button>
     </div>
 
-    <!-- Orders List Container -->
-    <div class="orders-list" id="ordersContainer">
-      <!-- Populated via JavaScript -->
+    <!-- Orders Container -->
+    <div id="ordersList">
+      <!-- Dynamically generated via JavaScript -->
     </div>
 
   </div>
 
-  <!-- Toast Notification -->
-  <div class="toast" id="toast">
-    <i class="fa-solid fa-circle-info" style="color: #3498db;"></i>
-    <span id="toastText">Action completed</span>
+  <!-- Printable / Re-viewable Receipt Modal -->
+  <div class="receipt-modal-overlay" id="receiptModal">
+    <div class="receipt-card">
+      <div class="receipt-header">
+        <div class="receipt-logo"><i class="fa-solid fa-bag-shopping"></i> VENX MARKET</div>
+        <div style="font-size:11px; color:var(--text-muted);">Official Payment Receipt</div>
+        <div style="font-size:10px; margin-top:4px;" id="rcptTxnId">TXN: #VNX-000000</div>
+      </div>
+
+      <table class="receipt-table">
+        <tr><td><strong>Date:</strong></td><td id="rcptDate" style="text-align:right;">---</td></tr>
+        <tr><td><strong>Merchant:</strong></td><td id="rcptSeller" style="text-align:right;">---</td></tr>
+        <tr><td><strong>Payment Type:</strong></td><td id="rcptMethod" style="text-align:right;">---</td></tr>
+        <tr><td><strong>Status:</strong></td><td id="rcptStatus" style="text-align:right;">---</td></tr>
+      </table>
+
+      <hr style="border:none; border-top:1px dashed var(--border-color); margin:8px 0;">
+
+      <table class="receipt-table" id="rcptSplitDetails">
+        <tr style="color:var(--text-muted);">
+          <td>Platform Fee (10% -> 0777364587):</td>
+          <td id="rcptCommVal" style="text-align:right;">UGX 0</td>
+        </tr>
+        <tr style="color:var(--text-muted);">
+          <td>Vendor Payout (90%):</td>
+          <td id="rcptVendorVal" style="text-align:right;">UGX 0</td>
+        </tr>
+      </table>
+
+      <hr style="border:none; border-top:1px dashed var(--border-color); margin:8px 0;">
+
+      <div style="display:flex; justify-content:space-between; font-weight:800; font-size:14px;">
+        <span>Total Paid:</span>
+        <span id="rcptTotalVal" style="color:var(--primary-color);">UGX 0</span>
+      </div>
+
+      <button class="btn-close-receipt" onclick="closeReceiptModal()"><i class="fa-solid fa-xmark"></i> Close</button>
+    </div>
   </div>
 
   <!-- Bottom Navigation Bar -->
@@ -382,80 +442,95 @@
     <a href="profile.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
   </nav>
 
-  <!-- Interactive JavaScript -->
+  <!-- JavaScript Logic -->
   <script>
-    let currentFilter = "All";
+    let allOrders = [];
 
     document.addEventListener("DOMContentLoaded", () => {
-      renderOrders();
+      loadOrders();
+      
+      // Check if URL parameter requested paid orders directly (e.g., orders.html?filter=paid)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('filter') === 'paid') {
+        document.getElementById("paidOrdersBtn").click();
+      }
     });
 
-    // 1. Get orders from localStorage
-    function getOrders() {
-      return JSON.parse(localStorage.getItem("venxOrders") || "[]");
+    function loadOrders() {
+      allOrders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+
+      // Seed dummy initial order if empty for visual demo
+      if (allOrders.length === 0) {
+        allOrders = [
+          {
+            orderId: "VNX-893120",
+            title: "Sausage Processing Ingredient Kit",
+            price: 37500,
+            seller: "Kyambogo Food Tech Hub",
+            image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop",
+            quantity: 1,
+            paymentMethod: "Online Mobile Money",
+            status: "Processing",
+            date: "26 Jul 2026",
+            commissionFee: 3750,
+            vendorShare: 33750
+          }
+        ];
+        localStorage.setItem("venxOrders", JSON.stringify(allOrders));
+      }
+
+      renderOrders(allOrders);
     }
 
-    // 2. Render Orders List
-    function renderOrders() {
-      const orders = getOrders();
-      const container = document.getElementById("ordersContainer");
+    function renderOrders(ordersToDisplay) {
+      const container = document.getElementById("ordersList");
       container.innerHTML = "";
 
-      let filteredOrders = orders.filter(o => {
-        if (currentFilter === "All") return true;
-        return o.status.toLowerCase() === currentFilter.toLowerCase();
-      });
-
-      if (filteredOrders.length === 0) {
+      if (ordersToDisplay.length === 0) {
         container.innerHTML = `
-          <div class="empty-orders">
+          <div class="empty-state">
             <i class="fa-solid fa-box-open"></i>
-            <p>No ${currentFilter === "All" ? "" : currentFilter.toLowerCase()} orders found.</p>
-            <a href="categories.html" class="btn-shop">Explore Categories</a>
+            <h3>No Orders Found</h3>
+            <p>You haven't placed any orders under this filter section yet.</p>
+            <a href="index.html" class="btn-shop-now">Explore Products</a>
           </div>
         `;
         return;
       }
 
-      filteredOrders.forEach((order) => {
+      ordersToDisplay.forEach((order, index) => {
+        const isOnlinePaid = order.paymentMethod.toLowerCase().includes("online");
+        
         const card = document.createElement("div");
         card.className = "order-card";
-
-        const statusClass = `status-${(order.status || 'processing').toLowerCase()}`;
-
         card.innerHTML = `
           <div class="order-header">
-            <div>
-              <span class="order-id">${order.orderId || 'VNX-000000'}</span>
-              <span class="order-date">• ${order.date || 'Recent'}</span>
-            </div>
-            <span class="status-badge ${statusClass}">${order.status || 'Processing'}</span>
+            <span class="order-id"><i class="fa-solid fa-hashtag"></i> ${order.orderId}</span>
+            <span class="order-date">${order.date}</span>
           </div>
 
           <div class="order-body">
-            <img src="${order.image}" alt="${order.title}" class="order-img">
+            <img src="${order.image}" class="order-img" alt="${order.title}">
             <div class="order-details">
               <div class="order-title">${order.title}</div>
-              <div class="order-seller"><i class="fa-solid fa-store"></i> ${order.seller}</div>
+              <div class="order-merchant"><i class="fa-solid fa-store"></i> ${order.seller}</div>
+              <div class="badges-row">
+                <span class="badge ${isOnlinePaid ? 'badge-paid' : 'badge-cod'}">
+                  <i class="fa-solid ${isOnlinePaid ? 'fa-circle-check' : 'fa-hand-holding-dollar'}"></i>
+                  ${isOnlinePaid ? 'Paid Online' : 'Cash on Delivery'}
+                </span>
+                <span class="badge badge-status">
+                  <i class="fa-solid fa-truck-ramps"></i> ${order.status || 'Processing'}
+                </span>
+              </div>
             </div>
           </div>
 
           <div class="order-footer">
-            <div>
-              <span style="font-size: 10px; color: var(--text-muted); display: block;">Total Amount</span>
-              <span class="order-price">UGX ${(order.price || 0).toLocaleString()}</span>
-            </div>
-            <div class="order-actions">
-              ${order.status === 'Processing' ? `
-                <button class="btn-action pay" onclick="payOrder('${order.orderId}')">
-                  <i class="fa-solid fa-credit-card"></i> Pay Now
-                </button>
-                <button class="btn-action" onclick="cancelOrder('${order.orderId}')">Cancel</button>
-              ` : ''}
-              <button class="btn-action primary" onclick="trackOrder('${order.orderId}')">
-                <i class="fa-solid fa-location-dot"></i> Track
-              </button>
-            </div>
+            <div class="order-total">UGX ${(order.price || 0).toLocaleString()}</div>
+            <button class="btn-receipt" onclick="openReceipt(${index})">
+              <i class="fa-solid fa-receipt"></i> View Receipt
+            </button>
           </div>
         `;
 
@@ -463,57 +538,51 @@
       });
     }
 
-    // 3. Connect to product-payment.html
-    function payOrder(orderId) {
-      let orders = getOrders();
-      const selectedOrder = orders.find(o => o.orderId === orderId);
+    function filterOrders(filterType, element) {
+      // Update active tab highlight
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      if (element) element.classList.add("active");
 
-      if (selectedOrder) {
-        // Store selected order details for product-payment.html
-        localStorage.setItem("paymentOrder", JSON.stringify(selectedOrder));
-        
-        showToast("Opening Payment Page...");
-        
-        setTimeout(() => {
-          window.location.href = "product-payment.html";
-        }, 500);
+      if (filterType === "all") {
+        renderOrders(allOrders);
+      } else if (filterType === "paid") {
+        // Filter strictly for Online Mobile Money / Paid Orders
+        const paidOnly = allOrders.filter(o => o.paymentMethod.toLowerCase().includes("online"));
+        renderOrders(paidOnly);
+      } else if (filterType === "cod") {
+        // Filter for Cash on Delivery
+        const codOnly = allOrders.filter(o => o.paymentMethod.toLowerCase().includes("cash"));
+        renderOrders(codOnly);
+      } else if (filterType === "processing") {
+        const processingOnly = allOrders.filter(o => (o.status || "").toLowerCase().includes("processing"));
+        renderOrders(processingOnly);
       }
     }
 
-    // 4. Filter Tabs Switcher
-    function filterOrders(status, btnElement) {
-      currentFilter = status;
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      btnElement.classList.add("active");
-      renderOrders();
-    }
+    function openReceipt(index) {
+      const order = allOrders[index];
+      const isOnlinePaid = order.paymentMethod.toLowerCase().includes("online");
 
-    // 5. Track Order Action
-    function trackOrder(orderId) {
-      showToast(`Tracking ${orderId}: Order is being processed by vendor.`);
-    }
+      document.getElementById("rcptTxnId").textContent = `TXN: #${order.orderId}`;
+      document.getElementById("rcptDate").textContent = order.date;
+      document.getElementById("rcptSeller").textContent = order.seller;
+      document.getElementById("rcptMethod").textContent = order.paymentMethod;
+      document.getElementById("rcptStatus").textContent = order.status || "Processing";
+      document.getElementById("rcptTotalVal").textContent = `UGX ${(order.price || 0).toLocaleString()}`;
 
-    // 6. Cancel Order
-    function cancelOrder(orderId) {
-      let orders = getOrders();
-      const orderIndex = orders.findIndex(o => o.orderId === orderId);
-
-      if (orderIndex > -1) {
-        orders[orderIndex].status = "Cancelled";
-        localStorage.setItem("venxOrders", JSON.stringify(orders));
-        renderOrders();
-        showToast("Order has been cancelled.");
+      if (isOnlinePaid && order.commissionFee) {
+        document.getElementById("rcptSplitDetails").style.display = "table";
+        document.getElementById("rcptCommVal").textContent = `UGX ${order.commissionFee.toLocaleString()}`;
+        document.getElementById("rcptVendorVal").textContent = `UGX ${order.vendorShare.toLocaleString()}`;
+      } else {
+        document.getElementById("rcptSplitDetails").style.display = "none";
       }
+
+      document.getElementById("receiptModal").style.display = "flex";
     }
 
-    // Toast Alert Helper
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      document.getElementById("toastText").textContent = message;
-      toast.style.display = "flex";
-      setTimeout(() => {
-        toast.style.display = "none";
-      }, 2500);
+    function closeReceiptModal() {
+      document.getElementById("receiptModal").style.display = "none";
     }
   </script>
 
