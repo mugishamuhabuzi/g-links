@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Top Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* --- Container --- */
+    .container {
+      max-width: 600px;
+      margin: 16px auto;
+      padding: 0 16px;
+    }
+
+    /* --- Notice Banner --- */
+    .info-banner {
+      background: #e6fffa;
+      border: 1px solid #b2f5ea;
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #234e52;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.4;
+    }
+
+    .info-banner i {
+      color: var(--primary-color);
+      font-size: 16px;
+      margin-top: 2px;
+    }
+
+    /* --- Form Styling --- */
+    .form-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    .form-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 14px;
+      outline: none;
+      background: #fafafa;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      background: #fff;
+    }
+
+    textarea.form-control {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-dark);
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .bottom-nav a.active {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .bottom-nav a i {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="profile.html" class="back-btn" aria-label="Back to Profile">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div class="header-title">Edit Profile Details</div>
+  </header>
+
+  <div class="container">
+
+    <!-- Information Banner -->
+    <div class="info-banner">
+      <i class="fa-solid fa-circle-info"></i>
+      <div>Your phone number and primary location are used by buyers and dispatchers on Venx Online Market to fulfill your orders.</div>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div class="form-card">
+      <form id="editProfileForm">
+
+        <!-- Personal Details Section -->
+        <div class="form-section-title">
+          <i class="fa-solid fa-user" style="color: var(--primary-color);"></i>
+          <span>Personal Information</span>
+        </div>
+
+        <div class="form-group">
+          <label for="fullName"><i class="fa-solid fa-id-card"></i> Full Name / Business Owner *</label>
+          <input type="text" id="fullName" class="form-control" placeholder="e.g. John Doe" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone"><i class="fa-solid fa-phone"></i> WhatsApp / Phone Number *</label>
+          <input type="tel" id="phone" class="form-control" placeholder="e.g. +256 700 000000" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email"><i class="fa-solid fa-envelope"></i> Email Address (Optional)</label>
+          <input type="email" id="email" class="form-control" placeholder="e.g. johndoe@example.com">
+        </div>
+
+        <!-- Location & Contact Preferences -->
+        <div class="form-section-title" style="margin-top: 24px;">
+          <i class="fa-solid fa-location-dot" style="color: var(--primary-color);"></i>
+          <span>Address & Preferences</span>
+        </div>
+
+        <div class="form-group">
+          <label for="district"><i class="fa-solid fa-map-pin"></i> Primary Region / District *</label>
+          <select id="district" class="form-control" required>
+            <option value="" disabled selected>Select District</option>
+            <option value="Kampala">Kampala</option>
+            <option value="Wakiso">Wakiso</option>
+            <option value="Mukono">Mukono</option>
+            <option value="Jinja">Jinja</option>
+            <option value="Mbarara">Mbarara</option>
+            <option value="Gulu">Gulu</option>
+            <option value="Other">Other District</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="address"><i class="fa-solid fa-building"></i> Detailed Delivery Address / Shop Location *</label>
+          <input type="text" id="address" class="form-control" placeholder="e.g. Shop 12, Wandegeya Plaza, Kampala" required>
+        </div>
+
+        <div class="form-group">
+          <label for="contactPref"><i class="fa-solid fa-comments"></i> Preferred Contact Method *</label>
+          <select id="contactPref" class="form-control" required>
+            <option value="WhatsApp">WhatsApp Message</option>
+            <option value="Phone Call">Direct Phone Call</option>
+            <option value="Both">Both WhatsApp & Phone Call</option>
+          </select>
+        </div>
+
+        <!-- Shop Information (Optional) -->
+        <div class="form-section-title" style="margin-top: 24px;">
+          <i class="fa-solid fa-store" style="color: var(--primary-color);"></i>
+          <span>Shop & Bio Information</span>
+        </div>
+
+        <div class="form-group">
+          <label for="businessName"><i class="fa-solid fa-shop"></i> Registered Business Name (If Seller)</label>
+          <input type="text" id="businessName" class="form-control" placeholder="e.g. Kampala Fresh Organics">
+        </div>
+
+        <div class="form-group">
+          <label for="bio"><i class="fa-solid fa-align-left"></i> Short Bio / Shop Tagline</label>
+          <textarea id="bio" class="form-control" placeholder="Briefly describe what you buy or sell..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span>Save Changes</span>
+        </button>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <a href="add-business.html"><i class="fa-solid fa-plus-circle"></i><span>Add Business</span></a>
+    <a href="orders.html"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
+    <a href="profile.html" class="active"><i class="fa-solid fa-user"></i><span>Account</span></a>
+  </nav>
+
+  <!-- JavaScript Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Fetch saved profile details from localStorage
+      const pendingDetails = localStorage.getItem("pendingBusinessDetails");
+      
+      if (pendingDetails) {
+        const user = JSON.parse(pendingDetails);
+        
+        if (user.fullName) document.getElementById("fullName").value = user.fullName;
+        if (user.phone) document.getElementById("phone").value = user.phone;
+        if (user.email) document.getElementById("email").value = user.email;
+        if (user.district) document.getElementById("district").value = user.district;
+        if (user.address) document.getElementById("address").value = user.address;
+        if (user.contactPref) document.getElementById("contactPref").value = user.contactPref;
+        if (user.businessName) document.getElementById("businessName").value = user.businessName;
+        if (user.description) document.getElementById("bio").value = user.description;
+      }
+    });
+
+    // Handle Form Submit -> Save to LocalStorage -> Trigger Toast Flag -> Redirect to index.html
+    document.getElementById("editProfileForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      // Retrieve existing stored object or initialize a new one
+      let existingDetails = JSON.parse(localStorage.getItem("pendingBusinessDetails") || "{}");
+
+      // Update values from input fields
+      existingDetails.fullName = document.getElementById("fullName").value;
+      existingDetails.businessName = document.getElementById("businessName").value || document.getElementById("fullName").value;
+      existingDetails.phone = document.getElementById("phone").value;
+      existingDetails.email = document.getElementById("email").value;
+      existingDetails.district = document.getElementById("district").value;
+      existingDetails.address = document.getElementById("address").value;
+      existingDetails.contactPref = document.getElementById("contactPref").value;
+      existingDetails.description = document.getElementById("bio").value;
+
+      // Save updated data object to localStorage
+      localStorage.setItem("pendingBusinessDetails", JSON.stringify(existingDetails));
+
+      // Set trigger flag so index.html displays the confirmation message
+      localStorage.setItem("showProfileUpdatedMsg", "true");
+
+      // Redirect immediately back to index.html
+      window.location.href = "index.html";
+    });
+  </script>
+
+</body>
+</html>
