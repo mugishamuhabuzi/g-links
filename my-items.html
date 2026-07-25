@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Listed Items - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --danger-color: #e53e3e;
+      --warning-color: #d69e2e;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Top Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .add-header-btn {
+      color: white;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .add-header-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* --- Main Container --- */
+    .container {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    /* --- Search & Stats Bar --- */
+    .search-bar {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 12px 16px 12px 40px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      background: white;
+    }
+
+    .search-bar i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .stats-summary {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    /* --- Item Cards --- */
+    .item-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .item-main {
+      display: flex;
+      padding: 14px;
+      gap: 14px;
+    }
+
+    .item-img {
+      width: 90px;
+      height: 90px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #f0f0f0;
+      flex-shrink: 0;
+    }
+
+    .item-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .item-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .item-price {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary-color);
+      margin-bottom: 6px;
+    }
+
+    .meta-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #edf2f7;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .badge-stock {
+      background: #e6fffa;
+      color: #234e52;
+    }
+
+    .badge-low {
+      background: #fefcbf;
+      color: #744210;
+    }
+
+    .badge-out {
+      background: #fff5f5;
+      color: #9b2c2c;
+    }
+
+    /* --- Stock Controls & Action Footer --- */
+    .item-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #fafafa;
+      border-top: 1px solid var(--border-color);
+      gap: 10px;
+    }
+
+    .stock-counter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stock-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: white;
+      color: var(--text-main);
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stock-btn:hover {
+      background: #edf2f7;
+    }
+
+    .stock-count {
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+    }
+
+    .btn-edit {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    .btn-edit:hover {
+      background: #cbd5e0;
+    }
+
+    .btn-delete {
+      background: #fff5f5;
+      color: var(--danger-color);
+      border: 1px solid #feb2b2;
+    }
+
+    .btn-delete:hover {
+      background: #fed7d7;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* --- Alerts --- */
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-success { background: #e6fffa; color: #234e52; border: 1px solid #b2f5ea; }
+    .alert-error { background: #fff5f5; color: #9b2c2c; border: 1px solid #feb2b2; }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 20%;
+    }
+
+    .bottom-nav a.active {
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .bottom-nav a.plus-btn {
+      color: var(--primary-color);
+      font-size: 22px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-left">
+      <a href="account.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+      <div class="header-title">My Listed Items</div>
+    </div>
+    <a href="items.html" class="add-header-btn">
+      <i class="fa-solid fa-plus"></i> Add New
+    </a>
+  </header>
+
+  <div class="container">
+    <div id="alertBox" class="alert"></div>
+
+    <!-- Search Input -->
+    <div class="search-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Search by item name, brand, or material...">
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="stats-summary">
+      <span id="totalItemsCount">Total Items: 0</span>
+      <span id="totalStockCount">Total Stock: 0 units</span>
+    </div>
+
+    <!-- Items List Container -->
+    <div id="itemsContainer">
+      <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top: 10px; font-size: 14px;">Loading your inventory...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <a href="index.html">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="categories.html">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Category</span>
+    </a>
+    <a href="packages.html" class="plus-btn">
+      <i class="fa-solid fa-circle-plus"></i>
+    </a>
+    <a href="orders.html">
+      <i class="fa-solid fa-box"></i>
+      <span>Orders</span>
+    </a>
+    <a href="account.html" class="active">
+      <i class="fa-solid fa-user"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      query, 
+      where, 
+      getDocs, 
+      doc, 
+      updateDoc, 
+      deleteDoc 
+    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
+      measurementId: "G-BLH2T3CBVQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const itemsContainer = document.getElementById("itemsContainer");
+    const searchInput = document.getElementById("searchInput");
+    const alertBox = document.getElementById("alertBox");
+
+    let userItems = [];
+    let currentUserId = null;
+
+    function showAlert(msg, type = "success") {
+      alertBox.textContent = msg;
+      alertBox.className = `alert alert-${type}`;
+      alertBox.style.display = "block";
+      setTimeout(() => alertBox.style.display = "none", 3000);
+    }
+
+    // Check Authentication
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUserId = user.uid;
+        await fetchUserItems();
+      } else {
+        // Redirect to Account page if logged out
+        window.location.href = "account.html";
+      }
+    });
+
+    // Fetch Items from Firestore
+    async function fetchUserItems() {
+      try {
+        const q = query(collection(db, "items"), where("userId", "==", currentUserId));
+        const querySnapshot = await getDocs(q);
+
+        userItems = [];
+        querySnapshot.forEach((docSnap) => {
+          userItems.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        renderItems(userItems);
+      } catch (err) {
+        console.error("Error fetching items:", err);
+        itemsContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger-color);"></i>
+            <h3>Unable to load items</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Please check your internet connection.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Render Items Function
+    function renderItems(items) {
+      if (items.length === 0) {
+        itemsContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-box-open"></i>
+            <h3>No Items Found</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 6px 0 16px 0;">You haven't added any items to your business yet.</p>
+            <a href="items.html" class="btn-icon btn-edit" style="display: inline-flex; background: var(--primary-color); color: white; padding: 10px 16px;">
+              <i class="fa-solid fa-plus"></i> Add Your First Item
+            </a>
+          </div>
+        `;
+        document.getElementById("totalItemsCount").textContent = "Total Items: 0";
+        document.getElementById("totalStockCount").textContent = "Total Stock: 0 units";
+        return;
+      }
+
+      // Update Header Stats
+      let totalStock = 0;
+      items.forEach(i => totalStock += Number(i.stock || 0));
+      document.getElementById("totalItemsCount").textContent = `Total Items: ${items.length}`;
+      document.getElementById("totalStockCount").textContent = `Total Stock: ${totalStock} units`;
+
+      itemsContainer.innerHTML = "";
+
+      items.forEach((item) => {
+        const stockNum = Number(item.stock || 0);
+        let stockBadgeClass = "badge-stock";
+        let stockBadgeText = `${stockNum} in Stock`;
+
+        if (stockNum === 0) {
+          stockBadgeClass = "badge-out";
+          stockBadgeText = "Out of Stock";
+        } else if (stockNum <= 5) {
+          stockBadgeClass = "badge-low";
+          stockBadgeText = `Low Stock (${stockNum})`;
+        }
+
+        const card = document.createElement("div");
+        card.className = "item-card";
+        card.innerHTML = `
+          <div class="item-main">
+            <img src="${item.imageUrl || 'https://via.placeholder.com/150'}" alt="${item.name}" class="item-img" onerror="this.src='https://via.placeholder.com/150'">
+            <div class="item-details">
+              <div>
+                <div class="item-title">${item.name || 'Unnamed Item'}</div>
+                <div class="item-price">UGX ${Number(item.price || 0).toLocaleString()}</div>
+              </div>
+              <div class="meta-badges">
+                ${item.brand ? `<span class="badge"><i class="fa-solid fa-tag"></i> ${item.brand}</span>` : ''}
+                ${item.material ? `<span class="badge"><i class="fa-solid fa-shirt"></i> ${item.material}</span>` : ''}
+                ${item.size ? `<span class="badge"><i class="fa-solid fa-ruler-combined"></i> ${item.size}</span>` : ''}
+                <span class="badge ${stockBadgeClass}">${stockBadgeText}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="item-actions">
+            <div class="stock-counter">
+              <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Stock:</span>
+              <button class="stock-btn" onclick="updateStock('${item.id}', ${stockNum - 1})">-</button>
+              <span class="stock-count">${stockNum}</span>
+              <button class="stock-btn" onclick="updateStock('${item.id}', ${stockNum + 1})">+</button>
+            </div>
+
+            <div class="action-btns">
+              <a href="items.html?editId=${item.id}" class="btn-icon btn-edit">
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+              </a>
+              <button class="btn-icon btn-delete" onclick="deleteItem('${item.id}', '${item.name}')">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        itemsContainer.appendChild(card);
+      });
+    }
+
+    // Quick Update Stock Function
+    window.updateStock = async (itemId, newStock) => {
+      if (newStock < 0) return;
+      try {
+        const itemRef = doc(db, "items", itemId);
+        await updateDoc(itemRef, { stock: newStock });
+        
+        // Update local array & re-render
+        const localItem = userItems.find(i => i.id === itemId);
+        if (localItem) localItem.stock = newStock;
+        
+        renderItems(userItems);
+        showAlert("Stock quantity updated!");
+      } catch (err) {
+        console.error("Error updating stock:", err);
+        showAlert("Failed to update stock.", "error");
+      }
+    };
+
+    // Delete Item Function
+    window.deleteItem = async (itemId, itemName) => {
+      if (confirm(`Are you sure you want to remove "${itemName}" from your inventory?`)) {
+        try {
+          await deleteDoc(doc(db, "items", itemId));
+          userItems = userItems.filter(i => i.id !== itemId);
+          renderItems(userItems);
+          showAlert("Item removed successfully.");
+        } catch (err) {
+          console.error("Error deleting item:", err);
+          showAlert("Could not delete item.", "error");
+        }
+      }
+    };
+
+    // Filter Search
+    searchInput.addEventListener("input", (e) => {
+      const queryStr = e.target.value.toLowerCase().trim();
+      const filtered = userItems.filter(item => {
+        return (
+          (item.name && item.name.toLowerCase().includes(queryStr)) ||
+          (item.brand && item.brand.toLowerCase().includes(queryStr)) ||
+          (item.material && item.material.toLowerCase().includes(queryStr)) ||
+          (item.size && item.size.toLowerCase().includes(queryStr))
+        );
+      });
+      renderItems(filtered);
+    });
+  </script>
+</body>
+</html>
