@@ -146,6 +146,47 @@
       outline: none;
     }
 
+    /* --- Order Item Cards --- */
+    .mini-item-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .mini-item-row:last-child {
+      border-bottom: none;
+    }
+
+    .item-thumb {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #f1f5f9;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-title {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .item-seller {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .item-price {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
     /* --- Payment Options --- */
     .payment-option {
       border: 2px solid var(--border-color);
@@ -175,7 +216,7 @@
       color: var(--primary-color);
     }
 
-    /* --- Split Breakdown Box --- */
+    /* --- Commission Split Box --- */
     .split-box {
       background: #fff8e6;
       border: 1px dashed var(--warning-color);
@@ -189,20 +230,6 @@
       display: flex;
       justify-content: space-between;
       margin-bottom: 4px;
-    }
-
-    /* --- Order Item Mini List --- */
-    .mini-item-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px dashed var(--border-color);
-      font-size: 12px;
-    }
-
-    .mini-item-row:last-child {
-      border-bottom: none;
     }
 
     /* --- Summary Rows --- */
@@ -253,10 +280,6 @@
       gap: 8px;
     }
 
-    .btn-pay-now:hover {
-      background: var(--primary-dark);
-    }
-
     /* --- Ringing Modal Overlay --- */
     .ringing-modal-overlay {
       position: fixed;
@@ -287,31 +310,13 @@
     }
 
     @keyframes pulseRing {
-      0% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(11, 143, 77, 0.7);
-      }
-      70% {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 25px rgba(11, 143, 77, 0);
-      }
-      100% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(11, 143, 77, 0);
-      }
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(11, 143, 77, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 25px rgba(11, 143, 77, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(11, 143, 77, 0); }
     }
 
-    .ringing-title {
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .ringing-subtitle {
-      font-size: 13px;
-      color: #cbd5e1;
-      margin-bottom: 16px;
-    }
+    .ringing-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .ringing-subtitle { font-size: 13px; color: #cbd5e1; margin-bottom: 16px; }
 
     .ringing-badge-box {
       display: flex;
@@ -330,7 +335,7 @@
       gap: 6px;
     }
 
-    /* --- Printable Receipt Modal --- */
+    /* --- Receipt Modal --- */
     .receipt-modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -358,21 +363,10 @@
       margin-bottom: 12px;
     }
 
-    .receipt-logo {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--primary-color);
-    }
+    .receipt-logo { font-size: 20px; font-weight: 800; color: var(--primary-color); }
 
-    .receipt-table {
-      width: 100%;
-      font-size: 12px;
-      margin-bottom: 12px;
-    }
-
-    .receipt-table td {
-      padding: 4px 0;
-    }
+    .receipt-table { width: 100%; font-size: 12px; margin-bottom: 12px; }
+    .receipt-table td { padding: 4px 0; }
 
     .btn-done-receipt {
       background: var(--primary-color);
@@ -386,7 +380,7 @@
       cursor: pointer;
     }
 
-    /* --- Bottom Navigation --- */
+    /* Bottom Nav */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -416,20 +410,30 @@
 </head>
 <body>
 
-  <!-- Top Header -->
+  <!-- Header -->
   <header>
-    <a href="cart.html"><i class="fa-solid fa-arrow-left"></i></a>
+    <a href="javascript:history.back()"><i class="fa-solid fa-arrow-left"></i></a>
     <span class="header-title">Checkout & Payment</span>
     <span style="width: 18px;"></span>
   </header>
 
   <div class="container">
 
-    <!-- Step Tracker -->
+    <!-- Step Progress -->
     <div class="checkout-steps">
-      <div class="step-item"><span class="step-number">1</span> Cart</div>
+      <div class="step-item"><span class="step-number">1</span> Cart / Selection</div>
       <div class="step-item active"><span class="step-number">2</span> Payment & Dispatch</div>
       <div class="step-item"><span class="step-number">3</span> Order Placed</div>
+    </div>
+
+    <!-- Selected Items Container -->
+    <div class="section-card">
+      <div class="section-title">
+        <i class="fa-solid fa-bag-shopping" style="color:var(--primary-color);"></i> Selected Items
+      </div>
+      <div id="miniItemList">
+        <!-- Dynamically populated from localStorage -->
+      </div>
     </div>
 
     <!-- Recipient & Delivery Info -->
@@ -438,7 +442,7 @@
         <i class="fa-solid fa-truck-ramp-box" style="color:var(--primary-color);"></i> Recipient Details
       </div>
       <div class="form-group">
-        <label>Active Phone Number (For Driver & Payment Prompt)</label>
+        <label>Active Phone Number (For Driver & Payment Alert)</label>
         <input type="tel" id="recipientPhone" placeholder="e.g. 0771234567" value="0771234567">
       </div>
       <div class="form-group">
@@ -446,34 +450,24 @@
         <input type="text" id="recipientAddress" placeholder="e.g. West End Hostel, Room B4, Kyambogo" value="Kyambogo Main Campus">
       </div>
       <div class="form-group">
-        <label>Special Instructions (Optional)</label>
+        <label>Delivery Notes (Optional)</label>
         <textarea id="deliveryNotes" rows="2" placeholder="e.g. Call me when at the main gate."></textarea>
       </div>
     </div>
 
-    <!-- Order Items Mini Preview -->
-    <div class="section-card">
-      <div class="section-title">
-        <i class="fa-solid fa-basket-shopping" style="color:var(--primary-color);"></i> Order Items
-      </div>
-      <div id="miniItemList">
-        <!-- Dynamically populated -->
-      </div>
-    </div>
-
-    <!-- Payment Method Selector -->
+    <!-- Payment Selector -->
     <div class="section-card">
       <div class="section-title">
         <i class="fa-solid fa-wallet" style="color:var(--primary-color);"></i> Payment Method
       </div>
 
-      <!-- Option 1: Mobile Money -->
+      <!-- Option 1: Online Mobile Money -->
       <div class="payment-option selected" id="optOnline" onclick="selectPayment('online')">
         <div class="payment-left">
           <i class="fa-solid fa-mobile-screen-button"></i>
           <div>
             <div style="font-size:13px; font-weight:700;">Online Payment (MTN / Airtel MoMo)</div>
-            <div style="font-size:11px; color:var(--text-muted);">Triggers instant ringing alert & auto-settlement</div>
+            <div style="font-size:11px; color:var(--text-muted);">Triggers instant ringing alert: "you have a paid order"</div>
           </div>
         </div>
         <input type="radio" name="payType" checked style="accent-color:var(--primary-color);">
@@ -485,16 +479,16 @@
           <i class="fa-solid fa-hand-holding-dollar"></i>
           <div>
             <div style="font-size:13px; font-weight:700;">Cash on Delivery (COD)</div>
-            <div style="font-size:11px; color:var(--text-muted);">Rings delivery system to collect cash upon arrival</div>
+            <div style="font-size:11px; color:var(--text-muted);">Triggers instant ringing alert: "you have a COD order"</div>
           </div>
         </div>
         <input type="radio" name="payType" style="accent-color:var(--primary-color);">
       </div>
 
-      <!-- Automated Split Info Box (For PAYS Online Sellers) -->
+      <!-- Automated Commission Split Box -->
       <div class="split-box" id="splitInfoBox">
         <div style="font-weight:700; color:#d97706; margin-bottom:4px;">
-          <i class="fa-solid fa-diagram-project"></i> Automated PAYS Commission Split:
+          <i class="fa-solid fa-diagram-project"></i> Venx Platform Commission Split:
         </div>
         <div class="split-row">
           <span>Venx Platform Share (10% to 0777364587):</span>
@@ -507,7 +501,7 @@
       </div>
     </div>
 
-    <!-- Price Summary Breakdown -->
+    <!-- Payment Summary Breakdown -->
     <div class="section-card">
       <div class="section-title">
         <i class="fa-solid fa-receipt" style="color:var(--primary-color);"></i> Payment Summary
@@ -528,24 +522,23 @@
 
   </div>
 
-  <!-- Fixed Bottom Bar -->
+  <!-- Bottom Bar -->
   <div class="bottom-bar">
     <button class="btn-pay-now" onclick="executeOrderAndNotify()">
       <i class="fa-solid fa-bell"></i>
-      <span id="btnPayLabel">Confirm Order & Send Ringing Alert</span>
+      <span id="btnPayLabel">Confirm & Send Ringing Alert</span>
     </button>
   </div>
 
-  <!-- Ringing Notification Overlay Modal -->
+  <!-- Ringing Modal -->
   <div class="ringing-modal-overlay" id="ringingModal">
     <div class="ringing-bell-box">
       <i class="fa-solid fa-bell-concierge"></i>
     </div>
-    <div class="ringing-title" id="ringingModalTitle">Ringing System...</div>
-    <div class="ringing-subtitle" id="ringingModalSub">Sending live sound notification to Business Owner & Delivery Drivers...</div>
-    
+    <div class="ringing-title" id="ringingModalTitle">Sending Alert...</div>
+    <div class="ringing-subtitle" id="ringingModalSub">Notifying Business Owner & Delivery Team in real time...</div>
     <div class="ringing-badge-box">
-      <div class="notify-badge"><i class="fa-solid fa-store" style="color:#10b981;"></i> Business Owner Alerted</div>
+      <div class="notify-badge"><i class="fa-solid fa-store" style="color:#10b981;"></i> Business Alerted</div>
       <div class="notify-badge"><i class="fa-solid fa-motorcycle" style="color:#3b82f6;"></i> Delivery System Alerted</div>
     </div>
   </div>
@@ -562,15 +555,15 @@
       <table class="receipt-table">
         <tr><td><strong>Date:</strong></td><td id="rcptDate" style="text-align:right;">---</td></tr>
         <tr><td><strong>Customer Phone:</strong></td><td id="rcptPhone" style="text-align:right;">---</td></tr>
-        <tr><td><strong>Payment Type:</strong></td><td id="rcptMethod" style="text-align:right;">---</td></tr>
-        <tr><td><strong>Destination:</strong></td><td id="rcptAddress" style="text-align:right;">---</td></tr>
+        <tr><td><strong>Payment Method:</strong></td><td id="rcptMethod" style="text-align:right;">---</td></tr>
+        <tr><td><strong>Delivery Address:</strong></td><td id="rcptAddress" style="text-align:right;">---</td></tr>
       </table>
 
       <hr style="border:none; border-top:1px dashed var(--border-color); margin:8px 0;">
 
       <table class="receipt-table" id="rcptSplitDetails">
         <tr style="color:var(--text-muted);">
-          <td>Venx Commission (10% -> 0777364587):</td>
+          <td>Platform Fee (10% -> 0777364587):</td>
           <td id="rcptCommVal" style="text-align:right;">UGX 0</td>
         </tr>
         <tr style="color:var(--text-muted);">
@@ -582,7 +575,7 @@
       <hr style="border:none; border-top:1px dashed var(--border-color); margin:8px 0;">
 
       <div style="display:flex; justify-content:space-between; font-weight:800; font-size:14px;">
-        <span>Total Paid:</span>
+        <span>Total Amount:</span>
         <span id="rcptTotalVal" style="color:var(--primary-color);">UGX 0</span>
       </div>
 
@@ -599,11 +592,11 @@
     <a href="profile.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
   </nav>
 
-  <!-- Logic & Audio Ringing Controller -->
+  <!-- Logic & Audio Engine -->
   <script>
     const PLATFORM_COMMISSION_PHONE = "0777364587";
-    let selectedPaymentMethod = "online"; // 'online' or 'cod'
-    let cartItems = [];
+    let selectedPaymentMethod = "online";
+    let checkoutItems = [];
     let deliveryFee = 2500;
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -611,35 +604,51 @@
     });
 
     function loadCheckoutItems() {
-      cartItems = JSON.parse(localStorage.getItem("venxCart") || "[]");
-      const itemListContainer = document.getElementById("miniItemList");
+      // 1. First check for item explicitly passed from orders.html or product details page
+      let directItems = JSON.parse(localStorage.getItem("venxCheckoutItems") || "null");
 
-      if (cartItems.length === 0) {
-        // Fallback sample item if opened directly
-        cartItems = [{
+      if (directItems && Array.isArray(directItems) && directItems.length > 0) {
+        checkoutItems = directItems;
+      } else if (directItems && typeof directItems === "object") {
+        checkoutItems = [directItems]; // Wrap single object into array
+      } else {
+        // 2. Fall back to entire active cart
+        checkoutItems = JSON.parse(localStorage.getItem("venxCart") || "[]");
+      }
+
+      // 3. Absolute fallback demo item if local storage is empty
+      if (checkoutItems.length === 0) {
+        checkoutItems = [{
           title: "Sausage Processing Ingredient Kit",
           price: 35000,
           quantity: 1,
           seller: "Kyambogo Food Tech Hub",
-          sellerPhone: "0782123456"
+          image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop"
         }];
       }
 
+      renderItemList();
+    }
+
+    function renderItemList() {
+      const itemListContainer = document.getElementById("miniItemList");
       itemListContainer.innerHTML = "";
       let subtotal = 0;
 
-      cartItems.forEach(item => {
-        const itemTotal = item.price * item.quantity;
+      checkoutItems.forEach(item => {
+        const qty = item.quantity || 1;
+        const itemTotal = (item.price || 0) * qty;
         subtotal += itemTotal;
 
         const row = document.createElement("div");
         row.className = "mini-item-row";
         row.innerHTML = `
-          <div>
-            <div style="font-weight:700;">${item.title} (x${item.quantity})</div>
-            <div style="font-size:10px; color:var(--text-muted);"><i class="fa-solid fa-store"></i> ${item.seller}</div>
+          <img src="${item.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop'}" class="item-thumb" alt="${item.title}">
+          <div class="item-info">
+            <div class="item-title">${item.title} (x${qty})</div>
+            <div class="item-seller"><i class="fa-solid fa-store"></i> ${item.seller || 'Venx Seller'}</div>
+            <div class="item-price">UGX ${itemTotal.toLocaleString()}</div>
           </div>
-          <div style="font-weight:700;">UGX ${itemTotal.toLocaleString()}</div>
         `;
         itemListContainer.appendChild(row);
       });
@@ -675,7 +684,7 @@
       }
     }
 
-    // Web Audio API Ringing Tone Synthesizer
+    // Web Audio Ringtone Generator
     function playRingingSound() {
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -698,13 +707,12 @@
           }, delay);
         }
 
-        // Play dual telephone ring effect
         ringPulse(0);
         ringPulse(150);
         ringPulse(800);
         ringPulse(950);
       } catch(e) {
-        console.log("Audio play blocked or unsupported:", e);
+        console.log("Audio blocked or unsupported:", e);
       }
     }
 
@@ -714,34 +722,32 @@
       const notes = document.getElementById("deliveryNotes").value.trim();
 
       if (!phone || !address) {
-        alert("Please complete recipient phone number and delivery location.");
+        alert("Please enter recipient phone number and delivery location.");
         return;
       }
 
-      // Calculate totals
-      const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const subtotal = checkoutItems.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
       const grandTotal = subtotal + deliveryFee;
       const commission = Math.round(subtotal * 0.10);
       const vendorShare = subtotal - commission;
       const orderId = "VNX-" + Math.floor(100000 + Math.random() * 900000);
 
-      // Determine notification message based on payment type
       const notificationMessage = selectedPaymentMethod === "online" 
         ? "you have a paid order" 
         : "you have a COD order";
 
-      // 1. Show Ringing Modal & Play Sound Effect
+      // 1. Show Ringing Modal & Play Audio
       const ringingModal = document.getElementById("ringingModal");
       const modalTitle = document.getElementById("ringingModalTitle");
       const modalSub = document.getElementById("ringingModalSub");
 
       modalTitle.textContent = selectedPaymentMethod === "online" ? "Processing Online Payment..." : "Registering COD Order...";
-      modalSub.textContent = `Triggering ringing alert: "${notificationMessage.toUpperCase()}" to Business & Delivery Team`;
+      modalSub.textContent = `Sending notification: "${notificationMessage.toUpperCase()}"`;
       ringingModal.style.display = "flex";
 
       playRingingSound();
 
-      // 2. Dispatch Ringing Notifications to Delivery Queue & Vendor Queue
+      // 2. Dispatch payloads to shared localStorage Queues
       const deliveryPayload = {
         orderId: orderId,
         message: notificationMessage,
@@ -758,11 +764,10 @@
         message: notificationMessage,
         paymentType: selectedPaymentMethod === "online" ? "Paid Online" : "Cash on Delivery",
         vendorEarnings: selectedPaymentMethod === "online" ? vendorShare : grandTotal,
-        items: cartItems,
+        items: checkoutItems,
         timestamp: new Date().toISOString()
       };
 
-      // Save to shared localStorage queues for the upcoming Delivery & Vendor pages
       let deliveryQueue = JSON.parse(localStorage.getItem("venx_delivery_queue") || "[]");
       deliveryQueue.unshift(deliveryPayload);
       localStorage.setItem("venx_delivery_queue", JSON.stringify(deliveryQueue));
@@ -775,11 +780,11 @@
       let confirmedOrders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
       const newOrder = {
         orderId: orderId,
-        title: cartItems[0].title + (cartItems.length > 1 ? ` + ${cartItems.length - 1} more` : ""),
+        title: checkoutItems[0].title + (checkoutItems.length > 1 ? ` + ${checkoutItems.length - 1} more` : ""),
         price: grandTotal,
-        seller: cartItems[0].seller || "Venx Merchant",
-        image: cartItems[0].image || "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop",
-        quantity: cartItems.reduce((a, b) => a + b.quantity, 0),
+        seller: checkoutItems[0].seller || "Venx Merchant",
+        image: checkoutItems[0].image || "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop",
+        quantity: checkoutItems.reduce((a, b) => a + (b.quantity || 1), 0),
         status: "Processing",
         paymentMethod: selectedPaymentMethod === "online" ? "Online Mobile Money" : "Cash on Delivery",
         date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
@@ -789,13 +794,15 @@
 
       confirmedOrders.unshift(newOrder);
       localStorage.setItem("venxOrders", JSON.stringify(confirmedOrders));
-      localStorage.removeItem("venxCart"); // Clear cart after order placement
 
-      // 4. Transition to Receipt Screen after ringing effect
+      // Clean up temporary direct checkout memory
+      localStorage.removeItem("venxCheckoutItems");
+
+      // 4. Show Receipt after ring duration
       setTimeout(() => {
         ringingModal.style.display = "none";
         showReceipt(newOrder, phone, address);
-      }, 2500);
+      }, 2400);
     }
 
     function showReceipt(order, phone, address) {
