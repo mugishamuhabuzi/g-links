@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Orders - Venx Online Market</title>
+  <title>My Confirmed Orders - Venx Online Market</title>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -15,6 +15,7 @@
       --text-main: #2c3e50;
       --text-muted: #7f8c8d;
       --border-color: #e2e8f0;
+      --blue-btn: #2563eb;
       --nav-height: 65px;
     }
 
@@ -31,7 +32,7 @@
       padding-bottom: calc(var(--nav-height) + 20px);
     }
 
-    /* --- Header --- */
+    /* --- Top Header --- */
     header {
       background: var(--primary-color);
       padding: 14px 16px;
@@ -58,57 +59,19 @@
 
     /* --- Container --- */
     .container {
-      max-width: 600px;
+      max-width: 700px;
       margin: 0 auto;
-      padding: 12px;
+      padding: 14px;
     }
 
-    /* --- Status Tabs --- */
-    .filter-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 4px;
-    }
-
-    .filter-tabs::-webkit-scrollbar {
-      display: none;
-    }
-
-    .tab-btn {
-      background: white;
-      border: 1px solid var(--border-color);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-main);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-
-    .tab-btn.active {
-      background: var(--primary-color);
-      color: white;
-      border-color: var(--primary-color);
-    }
-
-    /* --- Orders List --- */
-    .orders-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
+    /* --- Order Card --- */
     .order-card {
       background: white;
       border-radius: 12px;
-      padding: 14px;
+      padding: 16px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
 
     .order-header {
@@ -117,56 +80,47 @@
       align-items: center;
       padding-bottom: 10px;
       border-bottom: 1px dashed var(--border-color);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
     }
 
-    .order-id {
-      font-size: 12px;
+    .order-id-date {
       font-weight: 800;
-      color: var(--text-main);
+      color: #1e293b;
     }
 
     .order-date {
-      font-size: 11px;
+      font-weight: 400;
       color: var(--text-muted);
+      font-size: 12px;
+      margin-left: 6px;
     }
 
-    .status-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 10px;
-      text-transform: uppercase;
-    }
-
-    .status-processing {
+    .badge-processing {
       background: #fef3c7;
       color: #d97706;
-    }
-
-    .status-delivered {
-      background: #dcfce7;
-      color: #15803d;
-    }
-
-    .status-cancelled {
-      background: #fee2e2;
-      color: #b91c1c;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .order-body {
       display: flex;
-      gap: 12px;
+      gap: 14px;
       align-items: center;
+      margin-bottom: 14px;
     }
 
-    .order-img {
-      width: 65px;
-      height: 65px;
-      object-fit: cover;
+    .order-thumb {
+      width: 75px;
+      height: 75px;
       border-radius: 8px;
-      background: #f8fafc;
-      flex-shrink: 0;
+      object-fit: cover;
+      background: #f1f5f9;
+      border: 1px solid var(--border-color);
     }
 
     .order-details {
@@ -174,7 +128,7 @@
     }
 
     .order-title {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 4px;
@@ -182,76 +136,73 @@
     }
 
     .order-seller {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .order-footer {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
+      align-items: flex-end;
       padding-top: 10px;
-      border-top: 1px solid var(--border-color);
-      flex-wrap: wrap;
-      gap: 8px;
+      border-top: 1px dashed var(--border-color);
     }
 
-    .order-price {
-      font-size: 14px;
+    .total-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .total-price {
+      font-size: 15px;
       font-weight: 800;
       color: var(--primary-color);
     }
 
-    .order-actions {
+    .action-buttons {
       display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .btn-action {
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      padding: 6px 10px;
+      padding: 8px 14px;
       border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      border: none;
       text-decoration: none;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
 
-    .btn-action:hover {
-      background: #e2e8f0;
-    }
-
-    .btn-action.pay {
-      background: #2563eb;
+    .btn-pay-now {
+      background: var(--blue-btn);
       color: white;
-      border-color: #2563eb;
     }
 
-    .btn-action.pay:hover {
+    .btn-pay-now:hover {
       background: #1d4ed8;
     }
 
-    .btn-action.primary {
+    .btn-cancel {
+      background: white;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-track {
       background: var(--primary-color);
       color: white;
-      border-color: var(--primary-color);
     }
 
-    .btn-action.primary:hover {
-      background: var(--primary-dark);
-    }
-
-    /* --- Empty State --- */
-    .empty-orders {
+    .empty-state {
       text-align: center;
       padding: 50px 20px;
       background: white;
@@ -259,54 +210,16 @@
       border: 1px solid var(--border-color);
     }
 
-    .empty-orders i {
+    .empty-state i {
       font-size: 48px;
       color: var(--text-muted);
       margin-bottom: 12px;
     }
 
-    .empty-orders p {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-
-    .btn-shop {
-      display: inline-block;
-      background: var(--primary-color);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    /* --- Notification Toast --- */
-    .toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #2c3e50;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: none;
-      align-items: center;
-      gap: 8px;
-      z-index: 2000;
-    }
-
     /* --- Bottom Navigation --- */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: var(--nav-height);
       background: white;
       display: flex;
@@ -327,53 +240,26 @@
       flex: 1;
     }
 
-    .bottom-nav a.active {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
-
-    .bottom-nav a i {
-      font-size: 18px;
-    }
+    .bottom-nav a.active { color: var(--primary-color); font-weight: 700; }
+    .bottom-nav a i { font-size: 18px; }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Header -->
   <header>
-    <a href="categories.html" aria-label="Back to Categories">
-      <i class="fa-solid fa-arrow-left"></i>
-    </a>
+    <a href="index.html"><i class="fa-solid fa-arrow-left"></i></a>
     <span class="header-title">My Confirmed Orders</span>
-    <a href="cart.html" aria-label="My Cart">
-      <i class="fa-solid fa-cart-shopping"></i>
-    </a>
+    <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
   </header>
 
   <div class="container">
-    
-    <!-- Filter Tabs -->
-    <div class="filter-tabs">
-      <button class="tab-btn active" onclick="filterOrders('All', this)">All Orders</button>
-      <button class="tab-btn" onclick="filterOrders('Processing', this)">Processing</button>
-      <button class="tab-btn" onclick="filterOrders('Delivered', this)">Delivered</button>
-      <button class="tab-btn" onclick="filterOrders('Cancelled', this)">Cancelled</button>
+    <div id="ordersList">
+      <!-- Dynamically populated orders -->
     </div>
-
-    <!-- Orders List Container -->
-    <div class="orders-list" id="ordersContainer">
-      <!-- Populated via JavaScript -->
-    </div>
-
   </div>
 
-  <!-- Toast Notification -->
-  <div class="toast" id="toast">
-    <i class="fa-solid fa-circle-info" style="color: #3498db;"></i>
-    <span id="toastText">Action completed</span>
-  </div>
-
-  <!-- Bottom Navigation Bar -->
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
     <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
@@ -382,77 +268,99 @@
     <a href="profile.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
   </nav>
 
-  <!-- Interactive JavaScript -->
   <script>
-    let currentFilter = "All";
-
     document.addEventListener("DOMContentLoaded", () => {
-      renderOrders();
+      loadOrders();
     });
 
-    // 1. Get orders from localStorage
-    function getOrders() {
-      return JSON.parse(localStorage.getItem("venxOrders") || "[]");
+    function loadOrders() {
+      let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+
+      // Seed default items matching your exact screenshot if local storage is empty
+      if (orders.length === 0) {
+        orders = [
+          {
+            orderId: "VNX-837793",
+            date: "26 Jul 2026",
+            status: "PROCESSING",
+            title: "Sausage Processing Ingredient Kit",
+            seller: "Kyambogo Food Tech Hub",
+            price: 37500,
+            image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop"
+          },
+          {
+            orderId: "VNX-549996",
+            date: "26 Jul 2026",
+            status: "PROCESSING",
+            title: "Samsung Galaxy A15 (128GB)",
+            seller: "Venx Digital Hub",
+            price: 522500,
+            image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop"
+          },
+          {
+            orderId: "VNX-686984",
+            date: "26 Jul 2026",
+            status: "PROCESSING",
+            title: "Redmi Note 13 4G",
+            seller: "Kampala Electronics",
+            price: 680000,
+            image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop"
+          }
+        ];
+        localStorage.setItem("venxOrders", JSON.stringify(orders));
+      }
+
+      renderOrders(orders);
     }
 
-    // 2. Render Orders List
-    function renderOrders() {
-      const orders = getOrders();
-      const container = document.getElementById("ordersContainer");
+    function renderOrders(orders) {
+      const container = document.getElementById("ordersList");
       container.innerHTML = "";
 
-      let filteredOrders = orders.filter(o => {
-        if (currentFilter === "All") return true;
-        return o.status.toLowerCase() === currentFilter.toLowerCase();
-      });
-
-      if (filteredOrders.length === 0) {
+      if (orders.length === 0) {
         container.innerHTML = `
-          <div class="empty-orders">
+          <div class="empty-state">
             <i class="fa-solid fa-box-open"></i>
-            <p>No ${currentFilter === "All" ? "" : currentFilter.toLowerCase()} orders found.</p>
-            <a href="categories.html" class="btn-shop">Explore Categories</a>
+            <h3>No Orders Found</h3>
+            <p>You have no active or confirmed orders right now.</p>
           </div>
         `;
         return;
       }
 
-      filteredOrders.forEach((order) => {
+      orders.forEach((order, index) => {
         const card = document.createElement("div");
         card.className = "order-card";
 
-        const statusClass = `status-${(order.status || 'processing').toLowerCase()}`;
-
         card.innerHTML = `
           <div class="order-header">
-            <div>
-              <span class="order-id">${order.orderId || 'VNX-000000'}</span>
-              <span class="order-date">• ${order.date || 'Recent'}</span>
+            <div class="order-id-date">
+              ${order.orderId || ('VNX-' + (100000 + index))} 
+              <span class="order-date">• ${order.date || '26 Jul 2026'}</span>
             </div>
-            <span class="status-badge ${statusClass}">${order.status || 'Processing'}</span>
+            <span class="badge-processing">${order.status || 'PROCESSING'}</span>
           </div>
 
           <div class="order-body">
-            <img src="${order.image}" alt="${order.title}" class="order-img">
+            <img src="${order.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop'}" class="order-thumb" alt="${order.title}">
             <div class="order-details">
               <div class="order-title">${order.title}</div>
-              <div class="order-seller"><i class="fa-solid fa-store"></i> ${order.seller}</div>
+              <div class="order-seller"><i class="fa-solid fa-store"></i> ${order.seller || 'Venx Merchant'}</div>
             </div>
           </div>
 
           <div class="order-footer">
             <div>
-              <span style="font-size: 10px; color: var(--text-muted); display: block;">Total Amount</span>
-              <span class="order-price">UGX ${(order.price || 0).toLocaleString()}</span>
+              <div class="total-label">Total Amount</div>
+              <div class="total-price">UGX ${Number(order.price || 0).toLocaleString()}</div>
             </div>
-            <div class="order-actions">
-              ${order.status === 'Processing' ? `
-                <button class="btn-action pay" onclick="payOrder('${order.orderId}')">
-                  <i class="fa-solid fa-credit-card"></i> Pay Now
-                </button>
-                <button class="btn-action" onclick="cancelOrder('${order.orderId}')">Cancel</button>
-              ` : ''}
-              <button class="btn-action primary" onclick="trackOrder('${order.orderId}')">
+            <div class="action-buttons">
+              <!-- Direct Index Selection to avoid ID mismatches -->
+              <button class="btn-action btn-pay-now" onclick="payNowByIndex(${index})">
+                <i class="fa-solid fa-credit-card"></i> Pay Now
+              </button>
+              <button class="btn-action btn-cancel" onclick="cancelOrder(${index})">Cancel</button>
+              <button class="btn-action btn-track" onclick="trackOrder('${order.orderId}')">
                 <i class="fa-solid fa-location-dot"></i> Track
               </button>
             </div>
@@ -463,59 +371,47 @@
       });
     }
 
-    // 3. Connect to product-payment.html
-    function payOrder(orderId) {
-      let orders = getOrders();
-      const selectedOrder = orders.find(o => o.orderId === orderId);
+    /**
+     * Directly reads the item at array index `index`, stores it into 
+     * `venxCheckoutItems` in localStorage, and opens product-payment.html
+     */
+    function payNowByIndex(index) {
+      const orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+      const selectedOrder = orders[index];
 
-      if (selectedOrder) {
-        // Store selected order details for product-payment.html
-        localStorage.setItem("paymentOrder", JSON.stringify(selectedOrder));
-        
-        showToast("Opening Payment Page...");
-        
-        setTimeout(() => {
-          window.location.href = "product-payment.html";
-        }, 500);
+      if (!selectedOrder) {
+        alert("Selected order item was not found!");
+        return;
       }
+
+      // Format payload specifically for product-payment.html
+      const checkoutItem = [{
+        title: selectedOrder.title,
+        price: selectedOrder.price,
+        quantity: selectedOrder.quantity || 1,
+        seller: selectedOrder.seller || "Venx Merchant",
+        image: selectedOrder.image
+      }];
+
+      // Write directly to localStorage key read by product-payment.html
+      localStorage.setItem("venxCheckoutItems", JSON.stringify(checkoutItem));
+
+      // Redirect to payment page
+      window.location.href = "product-payment.html";
     }
 
-    // 4. Filter Tabs Switcher
-    function filterOrders(status, btnElement) {
-      currentFilter = status;
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      btnElement.classList.add("active");
-      renderOrders();
-    }
-
-    // 5. Track Order Action
-    function trackOrder(orderId) {
-      showToast(`Tracking ${orderId}: Order is being processed by vendor.`);
-    }
-
-    // 6. Cancel Order
-    function cancelOrder(orderId) {
-      let orders = getOrders();
-      const orderIndex = orders.findIndex(o => o.orderId === orderId);
-
-      if (orderIndex > -1) {
-        orders[orderIndex].status = "Cancelled";
+    function cancelOrder(index) {
+      if (confirm("Are you sure you want to cancel this order?")) {
+        let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+        orders.splice(index, 1);
         localStorage.setItem("venxOrders", JSON.stringify(orders));
-        renderOrders();
-        showToast("Order has been cancelled.");
+        loadOrders();
       }
     }
 
-    // Toast Alert Helper
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      document.getElementById("toastText").textContent = message;
-      toast.style.display = "flex";
-      setTimeout(() => {
-        toast.style.display = "none";
-      }, 2500);
+    function trackOrder(orderId) {
+      alert("Tracking order: #" + orderId + "\nStatus: Package in transit to Kyambogo Hub.");
     }
   </script>
-
 </body>
 </html>
