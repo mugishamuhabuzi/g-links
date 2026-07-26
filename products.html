@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approved Business Listings - Venx Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --accent-gold: #f39c12;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 85px;
+    }
+
+    /* --- Header & G-LINKS Description --- */
+    header {
+      background: var(--primary-color);
+      padding: 14px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .header-top a { color: white; text-decoration: none; font-size: 18px; }
+
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header-title { font-size: 16px; font-weight: 800; }
+    .header-subtitle { font-size: 10px; color: #e2f7ed; letter-spacing: 0.5px; }
+
+    .glinks-header-desc {
+      background: rgba(0, 0, 0, 0.18);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11px;
+      line-height: 1.35;
+      color: #f0fdf4;
+      border-left: 3px solid var(--accent-gold);
+      margin-bottom: 10px;
+    }
+
+    .glinks-header-desc strong { color: var(--accent-gold); }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 10px;
+      padding: 8px 14px;
+    }
+
+    .search-box i { color: var(--text-muted); margin-right: 8px; }
+    .search-box input { border: none; outline: none; width: 100%; font-size: 14px; background: transparent; }
+
+    /* --- Container --- */
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* --- Business Listing Cards --- */
+    .product-list-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      padding: 14px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .product-thumb {
+      width: 95px;
+      height: 95px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #f1f5f9;
+      flex-shrink: 0;
+    }
+
+    .product-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 3px;
+    }
+
+    .business-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .location-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .spec-pill {
+      display: inline-block;
+      font-size: 10px;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+
+    .product-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
+    .btn-buy {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .loading-box {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 20%;
+    }
+
+    .bottom-nav a.active { color: var(--primary-color); font-weight: bold; }
+    .bottom-nav a.plus-btn { color: var(--primary-color); font-size: 24px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+      <a href="index.html"><i class="fa-solid fa-arrow-left"></i></a>
+      <div class="brand-title-wrap">
+        <span class="header-title">Venx Market</span>
+        <span class="header-subtitle">POWERED BY G-LINKS SERVICES</span>
+      </div>
+      <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+    </div>
+
+    <!-- Detailed G-LINKS Platform Description -->
+    <div class="glinks-header-desc">
+      <strong>G-LINKS Network:</strong> Verified business catalog. Seller contacts are protected & masked to ensure safe platform transactions.
+    </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="productSearch" placeholder="Search products, sizes, businesses..." onkeyup="filterListings()">
+    </div>
+  </header>
+
+  <div class="container">
+    <div id="productsList">
+      <div class="loading-box"><i class="fa-solid fa-spinner fa-spin"></i> Loading approved business listings from database...</div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <a href="packages.html" class="plus-btn"><i class="fa-solid fa-circle-plus"></i></a>
+    <a href="orders.html"><i class="fa-solid fa-box"></i><span>Orders</span></a>
+    <a href="account.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
+  </nav>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let productsCache = [];
+
+    async function loadProducts() {
+      try {
+        // Query Firestore specifically for listings where approved == true
+        const q = query(collection(db, "products"), where("approved", "==", true));
+        const snapshot = await getDocs(q);
+
+        productsCache = [];
+        snapshot.forEach(doc => {
+          productsCache.push({ id: doc.id, ...doc.data() });
+        });
+
+        if (productsCache.length === 0) {
+          productsCache = getFallbackProducts();
+        }
+
+        renderProductCards(productsCache);
+      } catch (err) {
+        console.warn("Database load failed, rendering fallback products:", err);
+        productsCache = getFallbackProducts();
+        renderProductCards(productsCache);
+      }
+    }
+
+    function renderProductCards(items) {
+      const container = document.getElementById("productsList");
+      container.innerHTML = "";
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="loading-box">No approved business listings match your search.</div>`;
+        return;
+      }
+
+      items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "product-list-card";
+
+        // Direct phone numbers, emails, and WhatsApp handles are completely omitted
+        card.innerHTML = `
+          <img src="${item.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop'}" class="product-thumb" alt="${item.title}">
+          <div class="product-info">
+            <div>
+              <div class="product-title">${item.title}</div>
+              <div class="business-badge"><i class="fa-solid fa-store"></i> ${item.businessName || 'Approved Merchant'}</div>
+              <div class="location-text"><i class="fa-solid fa-location-dot"></i> ${item.location || 'Kampala, Uganda'}</div>
+              ${item.size ? `<span class="spec-pill">Size / Specs: ${item.size}</span>` : ''}
+            </div>
+            <div class="price-row">
+              <div class="product-price">UGX ${Number(item.price || 0).toLocaleString()}</div>
+              <button class="btn-buy" onclick="addToCart('${encodeURIComponent(JSON.stringify(item))}')">
+                <i class="fa-solid fa-cart-plus"></i> Order
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.filterListings = function() {
+      const term = document.getElementById("productSearch").value.toLowerCase();
+      const filtered = productsCache.filter(item => 
+        item.title.toLowerCase().includes(term) ||
+        (item.businessName && item.businessName.toLowerCase().includes(term)) ||
+        (item.location && item.location.toLowerCase().includes(term)) ||
+        (item.size && item.size.toLowerCase().includes(term))
+      );
+      renderProductCards(filtered);
+    };
+
+    window.addToCart = function(encodedData) {
+      const item = JSON.parse(decodeURIComponent(encodedData));
+      let cart = JSON.parse(localStorage.getItem("venxCart") || "[]");
+      cart.push({
+        id: item.id || Date.now().toString(),
+        title: item.title,
+        price: item.price,
+        seller: item.businessName || "Venx Merchant",
+        image: item.image,
+        quantity: 1
+      });
+      localStorage.setItem("venxCart", JSON.stringify(cart));
+      window.location.href = "cart.html";
+    };
+
+    function getFallbackProducts() {
+      return [
+        { id: "p1", title: "Sausage Processing Ingredient Kit", businessName: "Kyambogo Food Tech Hub", location: "Kyambogo, Kampala", size: "10 Kg Batch Unit", price: 37500, image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop" },
+        { id: "p2", title: "Samsung Galaxy A15 (128GB)", businessName: "Venx Digital Hub", location: "Kampala Central", size: "128GB / 6GB RAM", price: 522500, image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop" },
+        { id: "p3", title: "Redmi Note 13 4G", businessName: "Kampala Electronics", location: "Wandegeya, Kampala", size: "256GB / 8GB RAM", price: 680000, image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop" },
+        { id: "p4", title: "Natural Hibiscus Extract Powder", businessName: "Bio-Preserve Uganda", location: "Nakawa Industrial Area", size: "1 Kg Pack", price: 45000, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop" }
+      ];
+    }
+
+    document.addEventListener("DOMContentLoaded", loadProducts);
+  </script>
+</body>
+</html>
