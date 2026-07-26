@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --blue-accent: #2563eb;
+      --warning-color: #f59e0b;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: calc(var(--nav-height) + 20px);
+    }
+
+    /* --- Top Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 14px 16px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* --- Container --- */
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+
+    /* --- Filter Tabs --- */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .filter-tab {
+      background: white;
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .filter-tab.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    /* --- Controls Bar --- */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 0 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    /* --- Notification Item --- */
+    .notification-card {
+      background: white;
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 10px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .notification-card.unread {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .icon-order { background: #dbeafe; color: var(--blue-accent); }
+    .icon-payment { background: #dcfce7; color: var(--primary-color); }
+    .icon-delivery { background: #fef3c7; color: var(--warning-color); }
+    .icon-promo { background: #f3e8ff; color: #9333ea; }
+
+    .notif-content {
+      flex: 1;
+    }
+
+    .notif-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 3px;
+      padding-right: 18px;
+    }
+
+    .notif-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .notif-time {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .unread-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      position: absolute;
+      top: 14px;
+      right: 14px;
+    }
+
+    /* --- Empty State --- */
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      position: relative;
+    }
+
+    .bottom-nav a.active { color: var(--primary-color); font-weight: 700; }
+    .bottom-nav a i { font-size: 18px; }
+
+    .nav-badge {
+      position: absolute;
+      top: 2px;
+      right: 28%;
+      background: #e74c3c;
+      color: white;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 5px;
+      border-radius: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="javascript:history.back()"><i class="fa-solid fa-arrow-left"></i></a>
+    <span class="header-title">Notifications</span>
+    <div class="header-actions">
+      <i class="fa-solid fa-check-double" title="Mark all read" onclick="markAllAsRead()"></i>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Filter Tabs -->
+    <div class="filter-bar">
+      <button class="filter-tab active" onclick="filterNotifs('all', this)">All Alerts</button>
+      <button class="filter-tab" onclick="filterNotifs('orders', this)">Orders</button>
+      <button class="filter-tab" onclick="filterNotifs('payments', this)">Payments</button>
+      <button class="filter-tab" onclick="filterNotifs('promos', this)">Promotions</button>
+    </div>
+
+    <!-- Sub Controls -->
+    <div class="controls-bar">
+      <span id="unreadCountText">0 unread alerts</span>
+      <div>
+        <button class="btn-link" onclick="markAllAsRead()">Mark all read</button>
+        <span style="margin: 0 4px; color: var(--border-color);">|</span>
+        <button class="btn-link" style="color: var(--text-muted);" onclick="clearAllNotifs()">Clear all</button>
+      </div>
+    </div>
+
+    <!-- Notification Cards List -->
+    <div id="notificationsList">
+      <!-- Dynamically rendered -->
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></a>
+    <a href="orders.html"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
+  </nav>
+
+  <!-- Script Logic -->
+  <script>
+    let activeFilter = 'all';
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadNotifications();
+    });
+
+    function loadNotifications() {
+      let notifications = JSON.parse(localStorage.getItem("venxNotifications") || "[]");
+
+      // Seed realistic initial notifications if empty
+      if (notifications.length === 0) {
+        notifications = [
+          {
+            id: 1,
+            type: "orders",
+            iconClass: "icon-order fa-solid fa-bag-shopping",
+            title: "Order Placed: Samsung Galaxy A15",
+            desc: "Your order #VNX-549996 has been received and is waiting for payment confirmation.",
+            time: "10 mins ago",
+            unread: true,
+            link: "orders.html"
+          },
+          {
+            id: 2,
+            type: "payments",
+            iconClass: "icon-payment fa-solid fa-receipt",
+            title: "Payment Received - UGX 37,500",
+            desc: "Payment for Sausage Processing Ingredient Kit (#VNX-837793) was successfully processed.",
+            time: "1 hour ago",
+            unread: true,
+            link: "orders.html"
+          },
+          {
+            id: 3,
+            type: "orders",
+            iconClass: "icon-delivery fa-solid fa-motorcycle",
+            title: "Driver Assigned",
+            desc: "A Venx Express driver is en route to Kyambogo Main Campus for delivery #VNX-837793.",
+            time: "3 hours ago",
+            unread: false,
+            link: "orders.html"
+          },
+          {
+            id: 4,
+            type: "promos",
+            iconClass: "icon-promo fa-solid fa-bullhorn",
+            title: "Campus Special Offer!",
+            desc: "Get 10% discount on food science processing kits & lab materials this week.",
+            time: "1 day ago",
+            unread: false,
+            link: "categories.html"
+          }
+        ];
+        localStorage.setItem("venxNotifications", JSON.stringify(notifications));
+      }
+
+      renderNotifications();
+    }
+
+    function renderNotifications() {
+      const container = document.getElementById("notificationsList");
+      let notifications = JSON.parse(localStorage.getItem("venxNotifications") || "[]");
+
+      // Filter logic
+      if (activeFilter !== 'all') {
+        notifications = notifications.filter(n => n.type === activeFilter);
+      }
+
+      // Unread tally across all items
+      const allNotifs = JSON.parse(localStorage.getItem("venxNotifications") || "[]");
+      const unreadCount = allNotifs.filter(n => n.unread).length;
+      document.getElementById("unreadCountText").textContent = `${unreadCount} unread alert${unreadCount === 1 ? '' : 's'}`;
+
+      container.innerHTML = "";
+
+      if (notifications.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-regular fa-bell-slash"></i>
+            <h3>No Notifications</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">You're all caught up! There are no alerts in this section.</p>
+          </div>
+        `;
+        return;
+      }
+
+      notifications.forEach(notif => {
+        const card = document.createElement("div");
+        card.className = `notification-card ${notif.unread ? 'unread' : ''}`;
+        card.onclick = () => handleNotificationClick(notif.id, notif.link);
+
+        card.innerHTML = `
+          <div class="icon-box ${notif.iconClass}"></div>
+          <div class="notif-content">
+            <div class="notif-title">${notif.title}</div>
+            <div class="notif-desc">${notif.desc}</div>
+            <div class="notif-time"><i class="fa-regular fa-clock"></i> ${notif.time}</div>
+          </div>
+          ${notif.unread ? '<div class="unread-dot"></div>' : ''}
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function filterNotifs(category, btnElement) {
+      activeFilter = category;
+      document.querySelectorAll(".filter-tab").forEach(tab => tab.classList.remove("active"));
+      btnElement.classList.add("active");
+      renderNotifications();
+    }
+
+    function handleNotificationClick(id, targetLink) {
+      let notifications = JSON.parse(localStorage.getItem("venxNotifications") || "[]");
+      notifications = notifications.map(n => n.id === id ? { ...n, unread: false } : n);
+      localStorage.setItem("venxNotifications", JSON.stringify(notifications));
+
+      if (targetLink) {
+        window.location.href = targetLink;
+      } else {
+        renderNotifications();
+      }
+    }
+
+    function markAllAsRead() {
+      let notifications = JSON.parse(localStorage.getItem("venxNotifications") || "[]");
+      notifications = notifications.map(n => ({ ...n, unread: false }));
+      localStorage.setItem("venxNotifications", JSON.stringify(notifications));
+      renderNotifications();
+    }
+
+    function clearAllNotifs() {
+      if (confirm("Are you sure you want to clear all notifications?")) {
+        localStorage.setItem("venxNotifications", JSON.stringify([]));
+        renderNotifications();
+      }
+    }
+  </script>
+</body>
+</html>
