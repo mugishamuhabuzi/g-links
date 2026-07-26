@@ -15,6 +15,7 @@
       --text-main: #2c3e50;
       --text-muted: #7f8c8d;
       --border-color: #e2e8f0;
+      --accent-gold: #f39c12;
       --nav-height: 65px;
     }
 
@@ -34,7 +35,7 @@
     /* --- Top Header & Search --- */
     header {
       background: var(--primary-color);
-      padding: 16px;
+      padding: 14px 16px;
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -47,6 +48,27 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-avatar-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid white;
+      object-fit: cover;
+      cursor: pointer;
+      background: white;
+      transition: transform 0.2s;
+    }
+
+    .profile-avatar-btn:active {
+      transform: scale(0.92);
     }
 
     .logo-text {
@@ -89,29 +111,85 @@
 
     /* --- Main Container --- */
     .container {
-      max-width: 600px;
+      max-width: 650px;
       margin: 0 auto;
       padding: 16px;
     }
 
-    /* --- Hero Banner --- */
-    .hero-banner {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    /* --- G-LINKS Animated Marquee Advert Banner --- */
+    .glinks-banner {
+      background: linear-gradient(135deg, var(--primary-dark), #044b25);
       border-radius: 16px;
-      padding: 20px;
+      padding: 14px 0;
       color: white;
       margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(11, 143, 77, 0.2);
+      box-shadow: 0 4px 14px rgba(11, 143, 77, 0.25);
+      overflow: hidden;
+      position: relative;
     }
 
-    .hero-banner h2 {
-      font-size: 20px;
-      margin-bottom: 6px;
+    .glinks-header-tag {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px 8px 16px;
+      border-bottom: 1px rgba(255, 255, 255, 0.15) dashed;
+      margin-bottom: 10px;
     }
 
-    .hero-banner p {
-      font-size: 13px;
-      opacity: 0.9;
+    .glinks-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .glinks-badge {
+      background: var(--accent-gold);
+      color: #000;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+    }
+
+    /* Moving Marquee Effect (Right to Left) */
+    .marquee-wrapper {
+      display: flex;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .marquee-content {
+      display: flex;
+      gap: 20px;
+      animation: scrollMarquee 22s linear infinite;
+      white-space: nowrap;
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .marquee-item i {
+      color: var(--accent-gold);
+    }
+
+    @keyframes scrollMarquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
     }
 
     /* --- Section Titles --- */
@@ -171,7 +249,7 @@
       display: block;
     }
 
-    /* --- Products Grid --- */
+    /* --- Approved Products Grid --- */
     .products-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -189,12 +267,34 @@
     }
 
     .product-img-wrapper {
-      height: 120px;
-      background: #eef2f5;
+      height: 130px;
+      background: #f1f5f9;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-muted);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .verified-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--primary-color);
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
     }
 
     .product-details {
@@ -210,20 +310,84 @@
       font-weight: 700;
       margin-bottom: 4px;
       color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    .business-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .business-location {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .item-size-tag {
+      display: inline-block;
+      font-size: 10px;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border-color);
     }
 
     .product-price {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       color: var(--primary-color);
+    }
+
+    .btn-buy-app {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-buy-app:hover {
+      background: var(--primary-dark);
+    }
+
+    .loading-spinner {
+      grid-column: span 2;
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      font-size: 14px;
     }
 
     /* --- Bottom Navigation --- */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: var(--nav-height);
       background: white;
       display: flex;
@@ -261,7 +425,13 @@
   <!-- Top Header -->
   <header>
     <div class="header-top">
-      <div class="logo-text">Venx Market</div>
+      <div class="header-brand">
+        <!-- Circular Profile Picture linked to profile.html -->
+        <a href="profile.html">
+          <img id="userAvatar" class="profile-avatar-btn" src="https://ui-avatars.com/api/?name=User&background=0b8f4d&color=ffffff&bold=true" alt="Profile">
+        </a>
+        <div class="logo-text">Venx Market</div>
+      </div>
       <div class="header-icons">
         <a href="notifications.html"><i class="fa-solid fa-bell"></i></a>
         <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
@@ -269,15 +439,33 @@
     </div>
     <div class="search-box">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" placeholder="Search products, services, businesses...">
+      <input type="text" id="searchInput" placeholder="Search products, services, businesses..." onkeyup="filterProducts()">
     </div>
   </header>
 
   <div class="container">
-    <!-- Hero Banner -->
-    <div class="hero-banner">
-      <h2>Welcome to Venx Market</h2>
-      <p>Discover products, connect with top businesses, and place orders directly.</p>
+
+    <!-- G-LINKS Moving Advert Banner -->
+    <div class="glinks-banner">
+      <div class="glinks-header-tag">
+        <span class="glinks-title"><i class="fa-solid fa-bullhorn"></i> G-LINKS OFFICIAL ADVERTS</span>
+        <span class="glinks-badge">FEATURED</span>
+      </div>
+      <div class="marquee-wrapper">
+        <div class="marquee-content">
+          <!-- Slide items (Repeated twice for seamless infinite loop) -->
+          <div class="marquee-item"><i class="fa-solid fa-store"></i> Kyambogo Food Tech Hub: Fresh Sausage Kits Available!</div>
+          <div class="marquee-item"><i class="fa-solid fa-bolt"></i> G-LINKS Express Delivery across Kampala & Wakiso</div>
+          <div class="marquee-item"><i class="fa-solid fa-mobile-screen"></i> Venx Digital: Samsung & Redmi Smartphones on Discount</div>
+          <div class="marquee-item"><i class="fa-solid fa-shield-halved"></i> 100% Safe Payments via Venx Escrow System</div>
+          
+          <!-- Duplicate for smooth scroll -->
+          <div class="marquee-item"><i class="fa-solid fa-store"></i> Kyambogo Food Tech Hub: Fresh Sausage Kits Available!</div>
+          <div class="marquee-item"><i class="fa-solid fa-bolt"></i> G-LINKS Express Delivery across Kampala & Wakiso</div>
+          <div class="marquee-item"><i class="fa-solid fa-mobile-screen"></i> Venx Digital: Samsung & Redmi Smartphones on Discount</div>
+          <div class="marquee-item"><i class="fa-solid fa-shield-halved"></i> 100% Safe Payments via Venx Escrow System</div>
+        </div>
+      </div>
     </div>
 
     <!-- Quick Categories -->
@@ -305,67 +493,49 @@
       </a>
     </div>
 
-    <!-- Featured Listings -->
+    <!-- Verified Approved Listings from Database -->
     <div class="section-header">
-      <span class="section-title">Featured Listings</span>
-      <a href="products.html" class="see-all">Explore</a>
+      <span class="section-title">Approved Businesses & Items</span>
+      <a href="categories.html" class="see-all">Explore All</a>
     </div>
 
-    <div class="products-grid">
-      <div class="product-card">
-        <div class="product-img-wrapper">
-          <i class="fa-solid fa-store fa-2x"></i>
-        </div>
-        <div class="product-details">
-          <div class="product-title">Sample Product Item</div>
-          <div class="product-price">UGX 50,000</div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img-wrapper">
-          <i class="fa-solid fa-bag-shopping fa-2x"></i>
-        </div>
-        <div class="product-details">
-          <div class="product-title">Business Service</div>
-          <div class="product-price">UGX 120,000</div>
-        </div>
+    <!-- Products Container -->
+    <div class="products-grid" id="approvedProductsGrid">
+      <div class="loading-spinner">
+        <i class="fa-solid fa-circle-notch fa-spin"></i> Loading approved market items...
       </div>
     </div>
+
   </div>
 
   <!-- Bottom Navigation Bar -->
   <nav class="bottom-nav">
-    <!-- Home -->
     <a href="index.html" class="active">
       <i class="fa-solid fa-house"></i>
       <span>Home</span>
     </a>
-    <!-- Category -->
     <a href="categories.html">
       <i class="fa-solid fa-layer-group"></i>
       <span>Category</span>
     </a>
-    <!-- PLUS BUTTON: Connects directly to packages.html -->
     <a href="packages.html" class="plus-btn">
       <i class="fa-solid fa-circle-plus"></i>
     </a>
-    <!-- Orders -->
     <a href="orders.html">
       <i class="fa-solid fa-box"></i>
       <span>Orders</span>
     </a>
-    <!-- ACCOUNT BUTTON: Connects directly to account.html -->
     <a href="account.html">
       <i class="fa-solid fa-user"></i>
       <span>Account</span>
     </a>
   </nav>
 
-  <!-- Firebase Integration Module -->
+  <!-- Firebase & Dynamic Items Script Module -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
@@ -379,14 +549,178 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
+    let allItemsCache = [];
+
+    // User authentication state check & avatar sync
     onAuthStateChanged(auth, (user) => {
+      const avatarImg = document.getElementById("userAvatar");
       if (user) {
-        console.log("User logged in:", user.email);
+        const name = user.displayName || user.email.split('@')[0];
+        avatarImg.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0b8f4d&color=ffffff&bold=true`;
       } else {
-        console.log("No user signed in.");
+        avatarImg.src = "https://ui-avatars.com/api/?name=Guest&background=0b8f4d&color=ffffff&bold=true";
       }
     });
+
+    // Fetch Approved Items from Database
+    async function fetchApprovedItems() {
+      const container = document.getElementById("approvedProductsGrid");
+
+      try {
+        // Query database for products where approved is true
+        const q = query(collection(db, "products"), where("approved", "==", true));
+        const querySnapshot = await getDocs(q);
+
+        allItemsCache = [];
+        querySnapshot.forEach((doc) => {
+          allItemsCache.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Fallback demo data if database is currently empty
+        if (allItemsCache.length === 0) {
+          allItemsCache = [
+            {
+              id: "item-1",
+              title: "Sausage Processing Ingredient Kit",
+              businessName: "Kyambogo Food Tech Hub",
+              location: "Kyambogo, Kampala",
+              size: "10 Kg Batch Unit",
+              price: 37500,
+              image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop"
+            },
+            {
+              id: "item-2",
+              title: "Samsung Galaxy A15 (128GB)",
+              businessName: "Venx Digital Hub",
+              location: "Kampala Central",
+              size: "128GB / 6GB RAM",
+              price: 522500,
+              image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop"
+            },
+            {
+              id: "item-3",
+              title: "Redmi Note 13 4G",
+              businessName: "Kampala Electronics",
+              location: "Wandegeya, Kampala",
+              size: "256GB / 8GB RAM",
+              price: 680000,
+              image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop"
+            },
+            {
+              id: "item-4",
+              title: "Natural Hibiscus Extract Powder",
+              businessName: "Bio-Preserve Uganda",
+              location: "Nakawa Industrial Area",
+              size: "1 Kg Pack",
+              price: 45000,
+              image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop"
+            }
+          ];
+        }
+
+        renderProducts(allItemsCache);
+
+      } catch (error) {
+        console.warn("Firestore query error or empty collection, displaying local cache:", error);
+        renderProducts(allItemsCache.length > 0 ? allItemsCache : getFallbackItems());
+      }
+    }
+
+    function renderProducts(items) {
+      const container = document.getElementById("approvedProductsGrid");
+      container.innerHTML = "";
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="loading-spinner">No matching items found.</div>`;
+        return;
+      }
+
+      items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        // Direct phone numbers and email contacts are intentionally EXCLUDED to ensure off-platform deals are prevented.
+        card.innerHTML = `
+          <div class="product-img-wrapper">
+            <span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Approved</span>
+            <img src="${item.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop'}" alt="${item.title}">
+          </div>
+          <div class="product-details">
+            <div>
+              <div class="product-title">${item.title}</div>
+              <div class="business-name"><i class="fa-solid fa-store"></i> ${item.businessName || 'Verified Merchant'}</div>
+              <div class="business-location"><i class="fa-solid fa-location-dot"></i> ${item.location || 'Kampala, UG'}</div>
+              ${item.size ? `<span class="item-size-tag">Size: ${item.size}</span>` : ''}
+            </div>
+            <div class="product-footer">
+              <div class="product-price">UGX ${Number(item.price || 0).toLocaleString()}</div>
+              <!-- Order Button directs order through internal cart system -->
+              <button class="btn-buy-app" onclick="orderOnPlatform('${encodeURIComponent(JSON.stringify(item))}')">
+                <i class="fa-solid fa-cart-plus"></i> Order
+              </button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Direct helper to handle in-app purchasing safely
+    window.orderOnPlatform = function(itemDataEncoded) {
+      const item = JSON.parse(decodeURIComponent(itemDataEncoded));
+      
+      let cart = JSON.parse(localStorage.getItem("venxCart") || "[]");
+      cart.push({
+        id: item.id || Date.now().toString(),
+        title: item.title,
+        price: item.price,
+        seller: item.businessName || "Venx Merchant",
+        image: item.image,
+        quantity: 1
+      });
+
+      localStorage.setItem("venxCart", JSON.stringify(cart));
+      window.location.href = "cart.html";
+    };
+
+    // Live Search Filter
+    window.filterProducts = function() {
+      const queryText = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = allItemsCache.filter(item => 
+        item.title.toLowerCase().includes(queryText) ||
+        (item.businessName && item.businessName.toLowerCase().includes(queryText)) ||
+        (item.location && item.location.toLowerCase().includes(queryText))
+      );
+      renderProducts(filtered);
+    };
+
+    function getFallbackItems() {
+      return [
+        {
+          id: "item-1",
+          title: "Sausage Processing Ingredient Kit",
+          businessName: "Kyambogo Food Tech Hub",
+          location: "Kyambogo, Kampala",
+          size: "10 Kg Batch Unit",
+          price: 37500,
+          image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop"
+        },
+        {
+          id: "item-2",
+          title: "Samsung Galaxy A15 (128GB)",
+          businessName: "Venx Digital Hub",
+          location: "Kampala Central",
+          size: "128GB / 6GB RAM",
+          price: 522500,
+          image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop"
+        }
+      ];
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchApprovedItems);
   </script>
 </body>
 </html>
