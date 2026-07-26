@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Profile - Venx Online Market</title>
+  <title>My Orders - Venx Online Market</title>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --primary-color: #0b8f4d;
-      --primary-dark: #086d3a;
       --bg-color: #f4f6f8;
       --card-bg: #ffffff;
       --text-main: #2c3e50;
       --text-muted: #7f8c8d;
       --border-color: #e2e8f0;
+      --warning-color: #f39c12;
       --nav-height: 65px;
     }
 
@@ -28,146 +28,161 @@
     body {
       background: var(--bg-color);
       color: var(--text-main);
-      padding-bottom: 90px;
+      padding-bottom: calc(var(--nav-height) + 20px);
     }
 
-    /* --- Top Header --- */
     header {
       background: var(--primary-color);
-      padding: 16px;
+      padding: 14px 16px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 1000;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .back-btn {
+    header a {
       color: white;
-      font-size: 20px;
       text-decoration: none;
-      display: flex;
-      align-items: center;
+      font-size: 18px;
     }
 
     .header-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
     }
 
-    /* --- Container --- */
     .container {
       max-width: 600px;
-      margin: 16px auto;
-      padding: 0 16px;
+      margin: 0 auto;
+      padding: 12px;
     }
 
-    /* --- Notice Banner --- */
-    .info-banner {
-      background: #e6fffa;
-      border: 1px solid #b2f5ea;
-      padding: 14px 16px;
+    /* Order Card Styling */
+    .order-card {
+      background: white;
       border-radius: 12px;
-      margin-bottom: 20px;
-      font-size: 13px;
-      color: #234e52;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      line-height: 1.4;
-    }
-
-    .info-banner i {
-      color: var(--primary-color);
-      font-size: 16px;
-      margin-top: 2px;
-    }
-
-    /* --- Form Styling --- */
-    .form-card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      border: 1px solid var(--border-color);
-      margin-bottom: 20px;
-    }
-
-    .form-section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 14px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 6px;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      font-size: 14px;
-      outline: none;
-      background: #fafafa;
-      transition: border-color 0.2s, background 0.2s;
-    }
-
-    .form-control:focus {
-      border-color: var(--primary-color);
-      background: #fff;
-    }
-
-    textarea.form-control {
-      min-height: 80px;
-      resize: vertical;
-    }
-
-    .btn-submit {
-      width: 100%;
       padding: 14px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border-color);
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .order-id {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .status-processing {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .order-body {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .order-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #f1f5f9;
+    }
+
+    .order-details {
+      flex: 1;
+    }
+
+    .order-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .order-seller {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .order-price {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
+    .order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .btn-pay-now {
       background: var(--primary-color);
       color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 15px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 8px;
-      transition: background 0.2s;
+      gap: 6px;
     }
 
-    .btn-submit:hover {
-      background: var(--primary-dark);
+    .btn-pay-now:hover {
+      background: #086d3a;
     }
 
-    /* --- Bottom Navigation --- */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 40px;
+      margin-bottom: 10px;
+      color: var(--border-color);
+    }
+
+    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: var(--nav-height);
       background: white;
       display: flex;
@@ -188,175 +203,148 @@
       flex: 1;
     }
 
-    .bottom-nav a.active {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
-
-    .bottom-nav a i {
-      font-size: 18px;
-    }
+    .bottom-nav a.active { color: var(--primary-color); font-weight: 600; }
+    .bottom-nav a i { font-size: 18px; }
   </style>
 </head>
 <body>
 
   <!-- Header -->
   <header>
-    <a href="profile.html" class="back-btn" aria-label="Back to Profile">
-      <i class="fa-solid fa-arrow-left"></i>
-    </a>
-    <div class="header-title">Edit Profile Details</div>
+    <a href="index.html"><i class="fa-solid fa-arrow-left"></i></a>
+    <span class="header-title">My Orders</span>
+    <span style="width: 18px;"></span>
   </header>
 
   <div class="container">
-
-    <!-- Information Banner -->
-    <div class="info-banner">
-      <i class="fa-solid fa-circle-info"></i>
-      <div>Your phone number and primary location are used by buyers and dispatchers on Venx Online Market to fulfill your orders.</div>
+    <div id="ordersList">
+      <!-- Orders loaded dynamically from localStorage -->
     </div>
-
-    <!-- Edit Profile Form -->
-    <div class="form-card">
-      <form id="editProfileForm">
-
-        <!-- Personal Details Section -->
-        <div class="form-section-title">
-          <i class="fa-solid fa-user" style="color: var(--primary-color);"></i>
-          <span>Personal Information</span>
-        </div>
-
-        <div class="form-group">
-          <label for="fullName"><i class="fa-solid fa-id-card"></i> Full Name / Business Owner *</label>
-          <input type="text" id="fullName" class="form-control" placeholder="e.g. John Doe" required>
-        </div>
-
-        <div class="form-group">
-          <label for="phone"><i class="fa-solid fa-phone"></i> WhatsApp / Phone Number *</label>
-          <input type="tel" id="phone" class="form-control" placeholder="e.g. +256 700 000000" required>
-        </div>
-
-        <div class="form-group">
-          <label for="email"><i class="fa-solid fa-envelope"></i> Email Address (Optional)</label>
-          <input type="email" id="email" class="form-control" placeholder="e.g. johndoe@example.com">
-        </div>
-
-        <!-- Location & Contact Preferences -->
-        <div class="form-section-title" style="margin-top: 24px;">
-          <i class="fa-solid fa-location-dot" style="color: var(--primary-color);"></i>
-          <span>Address & Preferences</span>
-        </div>
-
-        <div class="form-group">
-          <label for="district"><i class="fa-solid fa-map-pin"></i> Primary Region / District *</label>
-          <select id="district" class="form-control" required>
-            <option value="" disabled selected>Select District</option>
-            <option value="Kampala">Kampala</option>
-            <option value="Wakiso">Wakiso</option>
-            <option value="Mukono">Mukono</option>
-            <option value="Jinja">Jinja</option>
-            <option value="Mbarara">Mbarara</option>
-            <option value="Gulu">Gulu</option>
-            <option value="Other">Other District</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="address"><i class="fa-solid fa-building"></i> Detailed Delivery Address / Shop Location *</label>
-          <input type="text" id="address" class="form-control" placeholder="e.g. Shop 12, Wandegeya Plaza, Kampala" required>
-        </div>
-
-        <div class="form-group">
-          <label for="contactPref"><i class="fa-solid fa-comments"></i> Preferred Contact Method *</label>
-          <select id="contactPref" class="form-control" required>
-            <option value="WhatsApp">WhatsApp Message</option>
-            <option value="Phone Call">Direct Phone Call</option>
-            <option value="Both">Both WhatsApp & Phone Call</option>
-          </select>
-        </div>
-
-        <!-- Shop Information (Optional) -->
-        <div class="form-section-title" style="margin-top: 24px;">
-          <i class="fa-solid fa-store" style="color: var(--primary-color);"></i>
-          <span>Shop & Bio Information</span>
-        </div>
-
-        <div class="form-group">
-          <label for="businessName"><i class="fa-solid fa-shop"></i> Registered Business Name (If Seller)</label>
-          <input type="text" id="businessName" class="form-control" placeholder="e.g. Kampala Fresh Organics">
-        </div>
-
-        <div class="form-group">
-          <label for="bio"><i class="fa-solid fa-align-left"></i> Short Bio / Shop Tagline</label>
-          <textarea id="bio" class="form-control" placeholder="Briefly describe what you buy or sell..."></textarea>
-        </div>
-
-        <button type="submit" class="btn-submit">
-          <i class="fa-solid fa-floppy-disk"></i>
-          <span>Save Changes</span>
-        </button>
-
-      </form>
-    </div>
-
   </div>
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
     <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
-    <a href="add-business.html"><i class="fa-solid fa-plus-circle"></i><span>Add Business</span></a>
-    <a href="orders.html"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
-    <a href="profile.html" class="active"><i class="fa-solid fa-user"></i><span>Account</span></a>
+    <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></a>
+    <a href="orders.html" class="active"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
   </nav>
 
-  <!-- JavaScript Script -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Fetch saved profile details from localStorage
-      const pendingDetails = localStorage.getItem("pendingBusinessDetails");
-      
-      if (pendingDetails) {
-        const user = JSON.parse(pendingDetails);
-        
-        if (user.fullName) document.getElementById("fullName").value = user.fullName;
-        if (user.phone) document.getElementById("phone").value = user.phone;
-        if (user.email) document.getElementById("email").value = user.email;
-        if (user.district) document.getElementById("district").value = user.district;
-        if (user.address) document.getElementById("address").value = user.address;
-        if (user.contactPref) document.getElementById("contactPref").value = user.contactPref;
-        if (user.businessName) document.getElementById("businessName").value = user.businessName;
-        if (user.description) document.getElementById("bio").value = user.description;
+      loadOrders();
+    });
+
+    function loadOrders() {
+      let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+
+      // Seed mock pending order if localStorage is empty (for testing)
+      if (orders.length === 0) {
+        orders = [{
+          orderId: "VNX-882910",
+          title: "Sausage Processing Ingredient Kit",
+          price: 35000,
+          quantity: 1,
+          seller: "Kyambogo Food Tech Hub",
+          image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop",
+          status: "Pending Payment",
+          date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+          items: [{
+            title: "Sausage Processing Ingredient Kit",
+            price: 35000,
+            quantity: 1,
+            seller: "Kyambogo Food Tech Hub",
+            image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop"
+          }]
+        }];
+        localStorage.setItem("venxOrders", JSON.stringify(orders));
       }
-    });
 
-    // Handle Form Submit -> Save to LocalStorage -> Trigger Toast Flag -> Redirect to index.html
-    document.getElementById("editProfileForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+      renderOrders(orders);
+    }
 
-      // Retrieve existing stored object or initialize a new one
-      let existingDetails = JSON.parse(localStorage.getItem("pendingBusinessDetails") || "{}");
+    function renderOrders(orders) {
+      const container = document.getElementById("ordersList");
+      container.innerHTML = "";
 
-      // Update values from input fields
-      existingDetails.fullName = document.getElementById("fullName").value;
-      existingDetails.businessName = document.getElementById("businessName").value || document.getElementById("fullName").value;
-      existingDetails.phone = document.getElementById("phone").value;
-      existingDetails.email = document.getElementById("email").value;
-      existingDetails.district = document.getElementById("district").value;
-      existingDetails.address = document.getElementById("address").value;
-      existingDetails.contactPref = document.getElementById("contactPref").value;
-      existingDetails.description = document.getElementById("bio").value;
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-box-open"></i>
+            <p>No orders found yet.</p>
+          </div>
+        `;
+        return;
+      }
 
-      // Save updated data object to localStorage
-      localStorage.setItem("pendingBusinessDetails", JSON.stringify(existingDetails));
+      orders.forEach((order, index) => {
+        const card = document.createElement("div");
+        card.className = "order-card";
 
-      // Set trigger flag so index.html displays the confirmation message
-      localStorage.setItem("showProfileUpdatedMsg", "true");
+        const isPending = order.status === "Pending Payment" || order.status === "Pending";
+        const statusClass = isPending ? "status-pending" : "status-processing";
 
-      // Redirect immediately back to index.html
-      window.location.href = "index.html";
-    });
+        card.innerHTML = `
+          <div class="order-header">
+            <span class="order-id">Order #${order.orderId || ('VNX-' + (100000 + index))}</span>
+            <span class="status-badge ${statusClass}">${order.status || 'Processing'}</span>
+          </div>
+
+          <div class="order-body">
+            <img src="${order.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop'}" class="order-thumb" alt="${order.title}">
+            <div class="order-details">
+              <div class="order-title">${order.title}</div>
+              <div class="order-seller"><i class="fa-solid fa-store"></i> ${order.seller || 'Venx Merchant'}</div>
+              <div class="order-price">UGX ${Number(order.price || 0).toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div class="order-footer">
+            <span style="font-size:11px; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> ${order.date || 'Today'}</span>
+            <button class="btn-pay-now" onclick="payNow('${order.orderId}')">
+              <i class="fa-solid fa-credit-card"></i> Pay Now
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    /**
+     * Stores the selected order item(s) into localStorage before redirecting to product-payment.html
+     */
+    function payNow(orderId) {
+      const orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+      const selectedOrder = orders.find(o => o.orderId === orderId);
+
+      if (!selectedOrder) {
+        alert("Order details not found!");
+        return;
+      }
+
+      // Format items array for product-payment.html
+      let itemsToPay = [];
+      if (selectedOrder.items && Array.isArray(selectedOrder.items) && selectedOrder.items.length > 0) {
+        itemsToPay = selectedOrder.items;
+      } else {
+        // Fallback single item object wrapper
+        itemsToPay = [{
+          title: selectedOrder.title,
+          price: selectedOrder.price,
+          quantity: selectedOrder.quantity || 1,
+          seller: selectedOrder.seller || "Venx Merchant",
+          image: selectedOrder.image || "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop"
+        }];
+      }
+
+      // Save to localStorage key expected by product-payment.html
+      localStorage.setItem("venxCheckoutItems", JSON.stringify(itemsToPay));
+
+      // Redirect to payment page
+      window.location.href = "product-payment.html";
+    }
   </script>
-
 </body>
 </html>
