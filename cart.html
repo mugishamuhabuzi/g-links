@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Cart - Venx Online Market</title>
-  <!-- FontAwesome Icons -->
+  <title>Venx Market - Shopping Cart</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -15,7 +14,7 @@
       --text-main: #2c3e50;
       --text-muted: #7f8c8d;
       --border-color: #e2e8f0;
-      --danger-color: #e74c3c;
+      --accent-gold: #f39c12;
       --nav-height: 65px;
     }
 
@@ -23,831 +22,566 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
       background: var(--bg-color);
       color: var(--text-main);
-      padding-bottom: calc(var(--nav-height) + 100px);
+      padding-bottom: 90px;
     }
 
-    /* --- Top Header --- */
     header {
       background: var(--primary-color);
-      padding: 14px 16px;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 16px;
       position: sticky;
       top: 0;
       z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    header a {
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
-    }
+    header a { color: white; text-decoration: none; font-size: 18px; }
+    .header-title { font-size: 18px; font-weight: 700; flex-grow: 1; }
 
-    .header-title {
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    /* --- Main Container --- */
     .container {
-      max-width: 600px;
+      max-width: 650px;
       margin: 0 auto;
-      padding: 12px;
+      padding: 16px;
     }
 
-    .cart-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .cart-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
-    }
-
-    .btn-clear-cart {
-      background: none;
-      border: none;
-      color: var(--danger-color);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* --- Cart Items List --- */
-    .cart-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    /* Section Cards */
+    .card-box {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 16px;
       margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
 
-    .cart-card {
-      background: white;
-      border-radius: 12px;
-      padding: 12px;
-      border: 1px solid var(--border-color);
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+
+    .card-title i { color: var(--primary-color); }
+
+    /* Cart Items List */
+    .cart-item {
       display: flex;
       gap: 12px;
-      position: relative;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed var(--border-color);
     }
 
-    .cart-img {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
+    .cart-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .item-img {
+      width: 65px;
+      height: 65px;
       border-radius: 8px;
-      background: #f8fafc;
-      flex-shrink: 0;
+      object-fit: cover;
+      background: #f1f5f9;
     }
 
-    .cart-info {
-      flex: 1;
+    .item-info {
+      flex-grow: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding-right: 20px;
     }
 
-    .item-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-main);
-      line-height: 1.3;
-      margin-bottom: 2px;
-    }
-
-    .item-seller {
+    .item-name { font-size: 13px; font-weight: 700; line-height: 1.3; }
+    
+    .item-origin {
       font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .item-location {
-      font-size: 10px;
-      color: #3b82f6;
+      color: var(--primary-dark);
+      background: #e2f7ed;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      width: fit-content;
+      margin-top: 3px;
       font-weight: 600;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
 
-    .item-unit-price {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .item-subtotal {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--primary-color);
-    }
-
-    .item-controls-row {
+    .item-price-qty {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-top: 6px;
     }
+
+    .price-tag { font-size: 13px; font-weight: 800; color: var(--primary-color); }
 
     .qty-controls {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
+      background: #f1f5f9;
       padding: 2px 6px;
+      border-radius: 6px;
     }
 
     .qty-btn {
-      background: white;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-weight: bold;
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+    }
+
+    .qty-num { font-size: 12px; font-weight: 700; }
+
+    /* Delivery Location Selector */
+    .location-selector-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .select-wrapper select, .input-wrapper input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
       border: 1px solid var(--border-color);
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      background: #f8fafc;
+    }
+
+    .gps-btn {
+      background: #e2f7ed;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      padding: 9px 12px;
+      border-radius: 8px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-main);
-    }
-
-    .qty-val {
-      font-size: 12px;
-      font-weight: 700;
-      min-width: 18px;
-      text-align: center;
-    }
-
-    .remove-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: none;
-      border: none;
-      color: var(--danger-color);
-      font-size: 14px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    /* --- Delivery Address Card --- */
-    .section-card {
-      background: white;
-      border-radius: 12px;
-      padding: 14px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 12px;
-    }
-
-    .section-card-title {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
       gap: 6px;
     }
 
-    .address-box {
-      background: var(--bg-color);
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-    }
-
-    .address-select {
-      width: 100%;
-      padding: 8px 10px;
+    /* Distance & Transport Breakdown */
+    .distance-info-badge {
+      background: #f1f5f9;
+      border-left: 4px solid var(--primary-color);
+      padding: 10px 12px;
       border-radius: 6px;
-      border: 1px solid var(--border-color);
       font-size: 12px;
-      font-weight: 600;
-      color: var(--text-main);
-      background: white;
-      outline: none;
-      margin-top: 6px;
-      cursor: pointer;
+      margin-top: 10px;
     }
 
-    .delivery-note {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 6px;
+    .distance-info-badge div {
       display: flex;
-      align-items: center;
-      gap: 4px;
+      justify-content: space-between;
+      margin-bottom: 4px;
     }
 
-    /* --- Promo Code Box --- */
-    .promo-row {
-      display: flex;
-      gap: 8px;
-    }
+    .distance-info-badge div:last-child { margin-bottom: 0; }
 
-    .promo-input {
-      flex: 1;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 12px;
-      outline: none;
-      text-transform: uppercase;
-    }
-
-    .btn-promo {
-      background: var(--text-main);
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .promo-status {
-      font-size: 11px;
-      margin-top: 6px;
-      display: none;
-    }
-
-    .promo-status.success { color: var(--primary-color); display: block; }
-    .promo-status.error { color: var(--danger-color); display: block; }
-
-    /* --- Order Summary Breakdown --- */
+    /* Summary Breakdown */
     .summary-row {
       display: flex;
       justify-content: space-between;
       font-size: 13px;
       margin-bottom: 8px;
-      color: var(--text-main);
-    }
-
-    .summary-row.discount {
-      color: var(--primary-color);
-      font-weight: 600;
+      color: var(--text-muted);
     }
 
     .summary-row.total {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
-      border-top: 1px dashed var(--border-color);
-      padding-top: 10px;
-      margin-bottom: 0;
-      color: var(--primary-color);
-    }
-
-    /* --- Empty State View --- */
-    .empty-cart {
-      text-align: center;
-      padding: 60px 20px;
-      background: white;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-
-    .empty-cart i {
-      font-size: 52px;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-    }
-
-    .empty-cart h3 {
-      font-size: 16px;
       color: var(--text-main);
-      margin-bottom: 6px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 6px;
     }
 
-    .empty-cart p {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 18px;
-    }
-
-    .btn-shop {
-      display: inline-block;
-      background: var(--primary-color);
-      color: white;
-      padding: 10px 24px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    /* --- Fixed Bottom Checkout Bar --- */
-    .bottom-action-bar {
-      position: fixed;
-      bottom: var(--nav-height);
-      left: 0;
-      right: 0;
-      background: white;
-      padding: 12px 16px;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      z-index: 999;
-    }
-
-    .total-preview {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .total-preview-label {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .total-preview-amount {
-      font-size: 16px;
-      font-weight: 800;
+    .summary-row.total span:last-child {
       color: var(--primary-color);
     }
 
-    .btn-confirm-order {
-      flex: 1;
-      max-width: 240px;
+    .btn-checkout {
+      width: 100%;
       background: var(--primary-color);
       color: white;
       border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
+      margin-top: 14px;
       display: flex;
-      align-items: center;
       justify-content: center;
-      gap: 8px;
-      transition: background 0.2s;
-    }
-
-    .btn-confirm-order:hover {
-      background: var(--primary-dark);
-    }
-
-    /* --- Notification Toast --- */
-    .toast {
-      position: fixed;
-      bottom: 140px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #2c3e50;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: none;
       align-items: center;
       gap: 8px;
-      z-index: 2000;
     }
 
-    /* --- Bottom Navigation Bar --- */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: var(--nav-height);
-      background: white;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-      z-index: 1000;
-    }
-
-    .bottom-nav a {
-      text-decoration: none;
+    .empty-cart-msg {
+      text-align: center;
+      padding: 40px 10px;
       color: var(--text-muted);
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      flex: 1;
     }
 
-    .bottom-nav a.active {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
-
-    .bottom-nav a i {
-      font-size: 18px;
+    .empty-cart-msg i {
+      font-size: 40px;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+      display: block;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Header -->
   <header>
-    <a href="categories.html" aria-label="Back to Categories"><i class="fa-solid fa-arrow-left"></i></a>
-    <span class="header-title">Unconfirmed Orders</span>
-    <a href="orders.html" aria-label="View Confirmed Orders"><i class="fa-solid fa-box"></i></a>
+    <a href="index.html"><i class="fa-solid fa-arrow-left"></i></a>
+    <div class="header-title">My Cart</div>
   </header>
 
   <div class="container">
 
-    <!-- Header Row -->
-    <div class="cart-header-row" id="cartHeaderRow" style="display: none;">
-      <span class="cart-title" id="itemCountLabel">Items in Cart (0)</span>
-      <button class="btn-clear-cart" onclick="clearCart()">
-        <i class="fa-solid fa-trash-arrow-up"></i> Clear All
-      </button>
-    </div>
-
-    <!-- Unconfirmed Items List -->
-    <div class="cart-list" id="cartList">
-      <!-- Populated dynamically via JS -->
-    </div>
-
-    <!-- Feature 1: Location-Based Delivery Address Selector -->
-    <div class="section-card" id="addressCard" style="display: none;">
-      <div class="section-card-title">
-        <i class="fa-solid fa-location-dot" style="color: var(--primary-color);"></i> Delivery Destination
+    <!-- Cart Items Section -->
+    <div class="card-box">
+      <div class="card-title">
+        <i class="fa-solid fa-basket-shopping"></i> Order Items
       </div>
-      <div class="address-box">
-        <div style="font-size: 12px; font-weight: 700;">Select Delivery Location:</div>
-        <select id="userLocationSelect" class="address-select" onchange="onLocationChange()">
-          <option value="kyambogo_campus">Kyambogo University (Main Campus / Hostels)</option>
-          <option value="banda_nakawa">Banda / Nakawa / Ntinda</option>
-          <option value="kampala_central">Kampala Central Business District</option>
-          <option value="kampala_outskirts">Kampala Outskirts (Entebbe / Wakiso / Mukono)</option>
-        </select>
-        <div class="delivery-note" id="deliveryNoteText">
-          <i class="fa-solid fa-truck-fast"></i> Delivery rate auto-calculated based on vendor distance.
+      <div id="cartItemsList">
+        <div class="empty-cart-msg">
+          <i class="fa-solid fa-cart-flatbed"></i>
+          Your cart is currently empty.
         </div>
       </div>
     </div>
 
-    <!-- Feature 2: Promo / Discount Code -->
-    <div class="section-card" id="promoCard" style="display: none;">
-      <div class="section-card-title">
-        <i class="fa-solid fa-ticket" style="color: var(--primary-color);"></i> Promo Code
+    <!-- Delivery & Transport Calculator Section -->
+    <div class="card-box">
+      <div class="card-title">
+        <i class="fa-solid fa-truck-ramp-box"></i> Delivery Location & Distance
       </div>
-      <div class="promo-row">
-        <input type="text" id="promoInput" class="promo-input" placeholder="Try code: VENX10">
-        <button class="btn-promo" onclick="applyPromo()">Apply</button>
+      
+      <div class="location-selector-group">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Select or Detect Buyer Delivery Location:</label>
+        
+        <div class="select-wrapper">
+          <select id="buyerLocationSelect" onchange="calculateTransportFee()">
+            <option value="Kyambogo">Kyambogo, Kampala</option>
+            <option value="Kampala Central" selected>Kampala Central / City Centre</option>
+            <option value="Nakawa">Nakawa Industrial Area</option>
+            <option value="Wandegeya">Wandegeya, Kampala</option>
+            <option value="Ntinda">Ntinda, Kampala</option>
+            <option value="Bugolobi">Bugolobi, Kampala</option>
+            <option value="Rubaga">Rubaga, Kampala</option>
+            <option value="Makindye">Makindye, Kampala</option>
+            <option value="Kawempe">Kawempe, Kampala</option>
+            <option value="Mukono">Mukono Town</option>
+            <option value="Entebbe">Entebbe Town</option>
+          </select>
+        </div>
+
+        <button class="gps-btn" onclick="detectBuyerGPS()">
+          <i class="fa-solid fa-location-crosshairs"></i> Use Current Device Location (GPS)
+        </button>
+
+        <!-- Distance & Fee Calculation Result -->
+        <div class="distance-info-badge" id="distanceBadge">
+          <div>
+            <span>Origin Location(s):</span>
+            <strong id="originLocText">Detecting...</strong>
+          </div>
+          <div>
+            <span>Estimated Distance:</span>
+            <strong id="distanceKmText">0.0 km</strong>
+          </div>
+          <div>
+            <span>Transport Fee Rate:</span>
+            <strong>UGX 800 / km (Base: 3,000)</strong>
+          </div>
+        </div>
       </div>
-      <div class="promo-status" id="promoStatus"></div>
     </div>
 
-    <!-- Detailed Order Summary Breakdown -->
-    <div class="section-card" id="summaryCard" style="display: none;">
-      <div class="section-card-title">
-        <i class="fa-solid fa-receipt" style="color: var(--primary-color);"></i> Payment Summary
+    <!-- Order Summary Section -->
+    <div class="card-box">
+      <div class="card-title">
+        <i class="fa-solid fa-receipt"></i> Payment Summary
       </div>
+
       <div class="summary-row">
         <span>Items Subtotal</span>
-        <span id="subtotalDisplay">UGX 0</span>
+        <span id="subtotalText">UGX 0</span>
       </div>
       <div class="summary-row">
-        <span>Distance Delivery Fee</span>
-        <span id="deliveryFeeDisplay" style="font-weight: 700; color: var(--primary-color);">UGX 0</span>
-      </div>
-      <div class="summary-row discount" id="discountRow" style="display: none;">
-        <span>Promo Discount (10%)</span>
-        <span id="discountDisplay">-UGX 0</span>
+        <span>Calculated Transport Fee</span>
+        <span id="transportFeeText">UGX 0</span>
       </div>
       <div class="summary-row total">
-        <span>Total Payable</span>
-        <span id="grandTotalDisplay">UGX 0</span>
+        <span>Grand Total</span>
+        <span id="grandTotalText">UGX 0</span>
       </div>
+
+      <button class="btn-checkout" id="checkoutBtn" onclick="proceedToCheckout()">
+        <i class="fa-solid fa-shield-halved"></i> Proceed to Escrow Payment
+      </button>
     </div>
 
   </div>
 
-  <!-- Fixed Bottom Checkout Bar -->
-  <div class="bottom-action-bar" id="bottomBar" style="display: none;">
-    <div class="total-preview">
-      <span class="total-preview-label">Grand Total</span>
-      <span class="total-preview-amount" id="barTotalDisplay">UGX 0</span>
-    </div>
-    <button class="btn-confirm-order" onclick="confirmAndCheckout()">
-      <i class="fa-solid fa-circle-check"></i> Confirm Order
-    </button>
-  </div>
-
-  <!-- Toast Notification -->
-  <div class="toast" id="toast">
-    <i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i>
-    <span id="toastText">Action completed!</span>
-  </div>
-
-  <!-- Bottom Navigation Bar -->
-  <nav class="bottom-nav">
-    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
-    <a href="cart.html" class="active"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></a>
-    <a href="orders.html"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
-    <a href="profile.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
-  </nav>
-
-  <!-- Dynamic Logic JavaScript -->
   <script>
-    let discountPercent = 0;
-
-    // Delivery Fee Rate Matrix (UGX) based on Vendor Origin vs Buyer Destination
-    const distanceFeeMatrix = {
-      "kyambogo_campus": { "kyambogo_campus": 1500, "banda_nakawa": 3000, "kampala_central": 5000, "kampala_outskirts": 8000 },
-      "banda_nakawa":     { "kyambogo_campus": 3000, "banda_nakawa": 2000, "kampala_central": 4500, "kampala_outskirts": 7500 },
-      "kampala_central":  { "kyambogo_campus": 5000, "banda_nakawa": 4500, "kampala_central": 2500, "kampala_outskirts": 6000 },
-      "default":          { "kyambogo_campus": 2500, "banda_nakawa": 3500, "kampala_central": 5000, "kampala_outskirts": 8000 }
+    // Known Hub Coordinates (Latitude & Longitude) in Uganda
+    const LOCATION_COORDINATES = {
+      "kyambogo": { lat: 0.3544, lng: 32.6288, name: "Kyambogo, Kampala" },
+      "nakawa": { lat: 0.3300, lng: 32.6100, name: "Nakawa, Kampala" },
+      "wandegeya": { lat: 0.3340, lng: 32.5680, name: "Wandegeya, Kampala" },
+      "kampala central": { lat: 0.3136, lng: 32.5811, name: "Kampala Central" },
+      "ntinda": { lat: 0.3580, lng: 32.6150, name: "Ntinda, Kampala" },
+      "bugolobi": { lat: 0.3170, lng: 32.6130, name: "Bugolobi, Kampala" },
+      "rubaga": { lat: 0.3010, lng: 32.5530, name: "Rubaga, Kampala" },
+      "makindye": { lat: 0.2850, lng: 32.5830, name: "Makindye, Kampala" },
+      "kawempe": { lat: 0.3700, lng: 32.5600, name: "Kawempe, Kampala" },
+      "mukono": { lat: 0.3533, lng: 32.7553, name: "Mukono Town" },
+      "entebbe": { lat: 0.0512, lng: 32.4637, name: "Entebbe Town" }
     };
 
-    // Mapping sellers to business locations
-    function getSellerLocation(sellerName) {
-      if (!sellerName) return "kyambogo_campus";
-      const name = sellerName.toLowerCase();
-      if (name.includes("campus") || name.includes("kyambogo") || name.includes("hostel")) return "kyambogo_campus";
-      if (name.includes("nakawa") || name.includes("banda") || name.includes("ntinda")) return "banda_nakawa";
-      if (name.includes("central") || name.includes("plaza") || name.includes("market")) return "kampala_central";
-      return "default";
-    }
+    let cart = [];
+    let activeBuyerCoords = LOCATION_COORDINATES["kampala central"];
+    let currentTransportFee = 0;
+    let currentSubtotal = 0;
+    let calculatedDistanceKm = 0;
 
-    function getReadableLocationName(locKey) {
-      const names = {
-        "kyambogo_campus": "Kyambogo Campus",
-        "banda_nakawa": "Banda / Nakawa",
-        "kampala_central": "Kampala Central",
-        "default": "Partner Vendor Hub"
-      };
-      return names[locKey] || "Vendor Store";
-    }
-
+    // Load Cart Data on Page Load
     document.addEventListener("DOMContentLoaded", () => {
-      // Restore selected destination from local storage if saved
-      const savedLoc = localStorage.getItem("userDeliveryLocation");
-      if (savedLoc) {
-        const select = document.getElementById("userLocationSelect");
-        if (select) select.value = savedLoc;
-      }
-      renderCart();
+      loadCartItems();
     });
 
-    function getCart() {
-      return JSON.parse(localStorage.getItem("venxCart") || "[]");
-    }
-
-    function saveCart(cart) {
-      localStorage.setItem("venxCart", JSON.stringify(cart));
-    }
-
-    function onLocationChange() {
-      const selectedLoc = document.getElementById("userLocationSelect").value;
-      localStorage.setItem("userDeliveryLocation", selectedLoc);
-      renderCart();
-      showToast("Delivery fee recalculated");
-    }
-
-    // Calculate total delivery fee based on vendor locations and chosen buyer destination
-    function calculateTotalDeliveryFee(cart, buyerLocation) {
-      if (cart.length === 0) return 0;
-
-      // Find unique seller locations present in current cart
-      const sellerLocations = new Set();
-      cart.forEach(item => {
-        const origin = item.sellerLocation || getSellerLocation(item.seller);
-        sellerLocations.add(origin);
-      });
-
-      let totalFee = 0;
-      sellerLocations.forEach(origin => {
-        const originMatrix = distanceFeeMatrix[origin] || distanceFeeMatrix["default"];
-        const feeForThisOrigin = originMatrix[buyerLocation] || 3500;
-        totalFee += feeForThisOrigin;
-      });
-
-      return totalFee;
-    }
-
-    // Main render function
-    function renderCart() {
-      const cart = getCart();
-      const cartList = document.getElementById("cartList");
-      const cartHeaderRow = document.getElementById("cartHeaderRow");
-      const addressCard = document.getElementById("addressCard");
-      const promoCard = document.getElementById("promoCard");
-      const summaryCard = document.getElementById("summaryCard");
-      const bottomBar = document.getElementById("bottomBar");
-      const itemCountLabel = document.getElementById("itemCountLabel");
-      const userLocation = document.getElementById("userLocationSelect").value;
+    function loadCartItems() {
+      cart = JSON.parse(localStorage.getItem("venxCart") || "[]");
+      const container = document.getElementById("cartItemsList");
 
       if (cart.length === 0) {
-        cartList.innerHTML = `
-          <div class="empty-cart">
+        container.innerHTML = `
+          <div class="empty-cart-msg">
             <i class="fa-solid fa-cart-flatbed"></i>
-            <h3>Your cart is empty</h3>
-            <p>You have no pending or unconfirmed orders.</p>
-            <a href="categories.html" class="btn-shop">Explore Categories</a>
+            Your cart is currently empty.
           </div>
         `;
-        cartHeaderRow.style.display = "none";
-        addressCard.style.display = "none";
-        promoCard.style.display = "none";
-        summaryCard.style.display = "none";
-        bottomBar.style.display = "none";
+        document.getElementById("checkoutBtn").disabled = true;
+        document.getElementById("checkoutBtn").style.opacity = "0.5";
+        updateSummary(0, 0);
         return;
       }
 
-      cartHeaderRow.style.display = "flex";
-      addressCard.style.display = "block";
-      promoCard.style.display = "block";
-      summaryCard.style.display = "block";
-      bottomBar.style.display = "flex";
-
-      const totalItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-      itemCountLabel.textContent = `Items in Cart (${totalItemsCount})`;
-
-      cartList.innerHTML = "";
-      let subtotal = 0;
-
+      container.innerHTML = "";
       cart.forEach((item, index) => {
-        const itemTotal = item.price * item.quantity;
-        subtotal += itemTotal;
-
-        const vendorLocKey = item.sellerLocation || getSellerLocation(item.seller);
-        const vendorLocName = getReadableLocationName(vendorLocKey);
-
-        const card = document.createElement("div");
-        card.className = "cart-card";
-        card.innerHTML = `
-          <button class="remove-btn" onclick="removeItem(${index})" title="Remove item">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-          <img src="${item.image}" alt="${item.title}" class="cart-img">
-          <div class="cart-info">
+        const itemOrigin = item.location || item.businessLocation || "Kampala Central";
+        
+        const itemEl = document.createElement("div");
+        itemEl.className = "cart-item";
+        itemEl.innerHTML = `
+          <img src="${item.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300'}" class="item-img" alt="${item.title}">
+          <div class="item-info">
             <div>
-              <div class="item-title">${item.title}</div>
-              <div class="item-seller"><i class="fa-solid fa-store"></i> ${item.seller}</div>
-              <div class="item-location"><i class="fa-solid fa-map-pin"></i> Ships from: ${vendorLocName}</div>
-              <div class="item-unit-price">UGX ${item.price.toLocaleString()} each</div>
+              <div class="item-name">${item.title}</div>
+              <div class="item-origin"><i class="fa-solid fa-store"></i> Origin: ${itemOrigin}</div>
             </div>
-            <div class="item-controls-row">
-              <span class="item-subtotal">UGX ${itemTotal.toLocaleString()}</span>
+            <div class="item-price-qty">
+              <span class="price-tag">UGX ${Number(item.price).toLocaleString()}</span>
               <div class="qty-controls">
                 <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
-                <span class="qty-val">${item.quantity}</span>
+                <span class="qty-num">${item.quantity || 1}</span>
                 <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
               </div>
             </div>
           </div>
         `;
-        cartList.appendChild(card);
+        container.appendChild(itemEl);
       });
 
-      // Compute final calculations
-      const deliveryFee = calculateTotalDeliveryFee(cart, userLocation);
-      const discountAmount = Math.round((subtotal * discountPercent) / 100);
-      const grandTotal = subtotal - discountAmount + deliveryFee;
+      calculateTransportFee();
+    }
 
-      document.getElementById("subtotalDisplay").textContent = `UGX ${subtotal.toLocaleString()}`;
-      document.getElementById("deliveryFeeDisplay").textContent = `UGX ${deliveryFee.toLocaleString()}`;
+    function updateQty(index, change) {
+      if (!cart[index].quantity) cart[index].quantity = 1;
+      cart[index].quantity += change;
+
+      if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+      }
+
+      localStorage.setItem("venxCart", JSON.stringify(cart));
+      loadCartItems();
+    }
+
+    // Convert address name to standard coordinates key
+    function getCoordsFromLocationName(locationName) {
+      if (!locationName) return LOCATION_COORDINATES["kampala central"];
+      const lower = locationName.toLowerCase();
       
-      const discountRow = document.getElementById("discountRow");
-      if (discountPercent > 0) {
-        discountRow.style.display = "flex";
-        document.getElementById("discountDisplay").textContent = `-UGX ${discountAmount.toLocaleString()}`;
-      } else {
-        discountRow.style.display = "none";
+      for (const key in LOCATION_COORDINATES) {
+        if (lower.includes(key)) {
+          return LOCATION_COORDINATES[key];
+        }
       }
-
-      document.getElementById("grandTotalDisplay").textContent = `UGX ${grandTotal.toLocaleString()}`;
-      document.getElementById("barTotalDisplay").textContent = `UGX ${grandTotal.toLocaleString()}`;
+      return LOCATION_COORDINATES["kampala central"];
     }
 
-    // Quantity controller
-    function updateQty(index, delta) {
-      let cart = getCart();
-      if (cart[index].quantity + delta >= 1) {
-        cart[index].quantity += delta;
-        saveCart(cart);
-        renderCart();
-      }
+    // Haversine Distance Formula (calculates distance in km between 2 lat/lng points)
+    function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Earth's radius in kilometers
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c; 
     }
 
-    // Remove single item
-    function removeItem(index) {
-      let cart = getCart();
-      cart.splice(index, 1);
-      saveCart(cart);
-      renderCart();
-      showToast("Item removed from cart");
-    }
-
-    // Clear cart
-    function clearCart() {
-      if (confirm("Are you sure you want to clear all unconfirmed orders?")) {
-        localStorage.removeItem("venxCart");
-        discountPercent = 0;
-        renderCart();
-        showToast("Cart cleared");
-      }
-    }
-
-    // Promo code handler
-    function applyPromo() {
-      const input = document.getElementById("promoInput").value.trim().toUpperCase();
-      const statusEl = document.getElementById("promoStatus");
-
-      if (input === "VENX10") {
-        discountPercent = 10;
-        statusEl.className = "promo-status success";
-        statusEl.textContent = "10% Discount applied successfully!";
-        renderCart();
-      } else if (input === "") {
-        statusEl.className = "promo-status error";
-        statusEl.textContent = "Please enter a promo code.";
-      } else {
-        discountPercent = 0;
-        statusEl.className = "promo-status error";
-        statusEl.textContent = "Invalid promo code.";
-        renderCart();
-      }
-    }
-
-    // Confirm Order -> Send to orders.html
-    function confirmAndCheckout() {
-      const cart = getCart();
+    // Automatic Transport Fee Calculation
+    function calculateTransportFee() {
       if (cart.length === 0) return;
 
-      const userLocation = document.getElementById("userLocationSelect").value;
-      const deliveryFee = calculateTotalDeliveryFee(cart, userLocation);
-      let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+      const selectedBuyerLocName = document.getElementById("buyerLocationSelect").value;
+      activeBuyerCoords = getCoordsFromLocationName(selectedBuyerLocName);
+
+      // Collect all business origin locations from items in the cart
+      let maxDistance = 0;
+      let sellerLocations = [];
+
+      currentSubtotal = cart.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
 
       cart.forEach(item => {
-        const itemPriceAfterDiscount = discountPercent > 0 
-          ? (item.price * item.quantity) * (1 - discountPercent / 100)
-          : item.price * item.quantity;
+        const originLocName = item.location || item.businessLocation || "Kampala Central";
+        if (!sellerLocations.includes(originLocName)) {
+          sellerLocations.push(originLocName);
+        }
 
-        const confirmedOrder = {
-          orderId: "VNX-" + Math.floor(100000 + Math.random() * 900000),
-          title: item.title + (item.quantity > 1 ? ` (x${item.quantity})` : ""),
-          price: Math.round(itemPriceAfterDiscount) + Math.round(deliveryFee / cart.length),
-          seller: item.seller,
-          image: item.image,
-          quantity: item.quantity,
-          status: "Processing",
-          date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-        };
+        const originCoords = getCoordsFromLocationName(originLocName);
+        const dist = calculateHaversineDistance(
+          activeBuyerCoords.lat, activeBuyerCoords.lng,
+          originCoords.lat, originCoords.lng
+        );
 
-        orders.unshift(confirmedOrder);
+        if (dist > maxDistance) {
+          maxDistance = dist;
+        }
       });
 
-      localStorage.setItem("venxOrders", JSON.stringify(orders));
-      localStorage.removeItem("venxCart");
+      // Business logic for transport fee calculation:
+      // Base fee = UGX 3,000 + (Distance in km * UGX 800)
+      // Rounded to nearest 500 UGX
+      calculatedDistanceKm = Math.max(1.2, parseFloat(maxDistance.toFixed(1)));
+      const rawFee = 3000 + (calculatedDistanceKm * 800);
+      currentTransportFee = Math.ceil(rawFee / 500) * 500;
 
-      showToast("Orders Confirmed! Redirecting...");
+      // Update UI elements
+      document.getElementById("originLocText").innerText = sellerLocations.join(", ");
+      document.getElementById("distanceKmText").innerText = `${calculatedDistanceKm} km`;
+      
+      updateSummary(currentSubtotal, currentTransportFee);
 
-      setTimeout(() => {
-        window.location.href = "orders.html";
-      }, 1000);
+      // Save delivery calculation state into localStorage
+      saveDeliveryDetailsToLocalStorage(selectedBuyerLocName, sellerLocations);
     }
 
-    // Toast Alert Helper
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      document.getElementById("toastText").textContent = message;
-      toast.style.display = "flex";
-      setTimeout(() => {
-        toast.style.display = "none";
-      }, 2500);
+    function detectBuyerGPS() {
+      if (navigator.geolocation) {
+        document.getElementById("distanceKmText").innerText = "Detecting GPS...";
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            activeBuyerCoords = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            
+            // Recalculate using exact GPS coordinates
+            let maxDistance = 0;
+            let sellerLocations = [];
+
+            cart.forEach(item => {
+              const originLocName = item.location || item.businessLocation || "Kampala Central";
+              if (!sellerLocations.includes(originLocName)) sellerLocations.push(originLocName);
+              
+              const originCoords = getCoordsFromLocationName(originLocName);
+              const dist = calculateHaversineDistance(
+                activeBuyerCoords.lat, activeBuyerCoords.lng,
+                originCoords.lat, originCoords.lng
+              );
+              if (dist > maxDistance) maxDistance = dist;
+            });
+
+            calculatedDistanceKm = parseFloat(maxDistance.toFixed(1));
+            const rawFee = 3000 + (calculatedDistanceKm * 800);
+            currentTransportFee = Math.ceil(rawFee / 500) * 500;
+
+            document.getElementById("originLocText").innerText = sellerLocations.join(", ");
+            document.getElementById("distanceKmText").innerText = `${calculatedDistanceKm} km (Live GPS)`;
+            
+            updateSummary(currentSubtotal, currentTransportFee);
+            saveDeliveryDetailsToLocalStorage("Live GPS Location", sellerLocations);
+          },
+          (error) => {
+            alert("Could not retrieve device location. Using dropdown selection.");
+            calculateTransportFee();
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    }
+
+    function updateSummary(subtotal, fee) {
+      document.getElementById("subtotalText").innerText = `UGX ${subtotal.toLocaleString()}`;
+      document.getElementById("transportFeeText").innerText = `UGX ${fee.toLocaleString()}`;
+      document.getElementById("grandTotalText").innerText = `UGX ${(subtotal + fee).toLocaleString()}`;
+    }
+
+    // Save calculation data into LocalStorage for checkout / order processing
+    function saveDeliveryDetailsToLocalStorage(buyerLocName, sellerLocations) {
+      const deliveryDetails = {
+        buyerDeliveryLocation: buyerLocName,
+        buyerCoordinates: activeBuyerCoords,
+        sellerBusinessLocations: sellerLocations,
+        distanceKm: calculatedDistanceKm,
+        transportFee: currentTransportFee,
+        subtotal: currentSubtotal,
+        grandTotal: currentSubtotal + currentTransportFee,
+        updatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem("venxDeliveryDetails", JSON.stringify(deliveryDetails));
+    }
+
+    function proceedToCheckout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      
+      // Redirect to checkout/payment page
+      window.location.href = "checkout.html";
     }
   </script>
-
 </body>
 </html>
