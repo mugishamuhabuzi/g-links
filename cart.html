@@ -3,91 +3,164 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopping Cart - Escrow Checkout</title>
-  <!-- Font Awesome Icons -->
+  <title>Venx Market - Shopping Cart & Escrow Checkout</title>
+  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
+      --primary: #0b8f4d;
+      --primary-dark: #076637;
+      --primary-light: #e8f7f0;
+      --accent-gold: #f59e0b;
       --bg: #f8fafc;
       --surface: #ffffff;
       --text: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
-      --success: #16a34a;
+      --danger: #ef4444;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
       --radius: 12px;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding: 2rem 1rem;
-      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
     }
 
     .container {
       max-width: 1100px;
-      margin: 0 auto;
+      margin: 20px auto;
+      padding: 0 16px;
     }
 
-    .page-title {
-      font-size: 1.875rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .cart-layout {
+    /* Grid Layout */
+    .cart-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 2rem;
+      gap: 20px;
     }
 
-    @media (min-width: 768px) {
-      .cart-layout {
-        grid-template-columns: 1fr 360px;
+    @media (min-width: 850px) {
+      .cart-grid {
+        grid-template-columns: 1fr 380px;
       }
     }
 
-    /* Cart Items Table/List */
-    .cart-items-card {
+    /* Card styling */
+    .card {
       background: var(--surface);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1.5rem;
       border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
     }
 
-    .empty-cart {
-      text-align: center;
-      padding: 3rem 1rem;
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+    }
+
+    .card-title i {
+      color: var(--primary);
+    }
+
+    /* Country & Currency Selector Row */
+    .selector-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-control {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-control label {
+      font-size: 12px;
+      font-weight: 600;
       color: var(--text-muted);
     }
 
-    .empty-cart i {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      color: var(--border);
+    .select-input, .text-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
     }
 
+    .select-input:focus, .text-input:focus {
+      border-color: var(--primary);
+      background: white;
+    }
+
+    /* Cart Items */
     .cart-item {
-      display: grid;
-      grid-template-columns: 80px 1fr auto;
-      gap: 1.25rem;
-      align-items: center;
-      padding: 1.25rem 0;
-      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px dashed var(--border);
+      position: relative;
     }
 
     .cart-item:last-child {
@@ -95,311 +168,790 @@
     }
 
     .item-img {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
+      width: 75px;
+      height: 75px;
       border-radius: 8px;
-      background: #f1f5f9;
+      object-fit: cover;
+      background: #e2e8f0;
+      flex-shrink: 0;
     }
 
-    .item-details h4 {
-      font-size: 1rem;
+    .item-info {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .item-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .item-seller {
+      font-size: 11px;
+      color: var(--primary-dark);
+      background: var(--primary-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      width: fit-content;
+      margin-top: 4px;
       font-weight: 600;
-      margin-bottom: 0.25rem;
+    }
+
+    .item-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
     }
 
     .item-price {
+      font-size: 14px;
+      font-weight: 800;
       color: var(--primary);
-      font-weight: 700;
-      font-size: 1.05rem;
-      margin-bottom: 0.5rem;
     }
 
-    .quantity-controls {
-      display: inline-flex;
+    .qty-box {
+      display: flex;
       align-items: center;
-      border: 1px solid var(--border);
+      background: #f1f5f9;
       border-radius: 6px;
       overflow: hidden;
+      border: 1px solid var(--border);
     }
 
     .qty-btn {
-      background: #f8fafc;
       border: none;
+      background: transparent;
       width: 28px;
       height: 28px;
+      font-size: 14px;
+      font-weight: bold;
       cursor: pointer;
-      font-weight: 600;
-      transition: background 0.2s;
+      color: var(--text);
     }
 
     .qty-btn:hover {
-      background: #e2e8f0;
+      background: #cbd5e1;
     }
 
-    .qty-input {
-      width: 36px;
-      text-align: center;
-      border: none;
-      font-weight: 600;
-      font-size: 0.9rem;
+    .qty-val {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 8px;
     }
 
     .btn-remove {
       background: none;
       border: none;
-      color: #ef4444;
+      color: var(--danger);
       cursor: pointer;
-      padding: 0.5rem;
-      border-radius: 6px;
-      transition: background 0.2s;
+      font-size: 13px;
+      padding: 4px;
     }
 
     .btn-remove:hover {
-      background: #fef2f2;
+      opacity: 0.8;
+    }
+
+    /* Delivery section */
+    .delivery-tabs {
+      display: flex;
+      gap: 8px;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .delivery-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .delivery-tab.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .gps-btn {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary);
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .gps-btn:hover {
+      background: #d1fae5;
+    }
+
+    .delivery-badge {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .delivery-badge div {
+      display: flex;
+      justify-content: space-between;
     }
 
     /* Summary Card */
     .summary-card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1.5rem;
-      border: 1px solid var(--border);
-      height: fit-content;
       position: sticky;
-      top: 2rem;
-    }
-
-    .summary-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
+      top: 80px;
     }
 
     .summary-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 1rem;
-      font-size: 0.95rem;
+      font-size: 13px;
+      margin-bottom: 10px;
       color: var(--text-muted);
     }
 
     .summary-row.total {
-      font-size: 1.2rem;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 800;
       color: var(--text);
+      padding-top: 12px;
       border-top: 1px dashed var(--border);
-      padding-top: 1rem;
-      margin-top: 1rem;
+      margin-top: 12px;
     }
 
-    .escrow-badge {
-      background-color: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      color: #166534;
-      padding: 0.75rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
+    .summary-row.total span:last-child {
+      color: var(--primary);
+    }
+
+    /* Coupon Input */
+    .coupon-box {
       display: flex;
-      gap: 0.6rem;
-      align-items: flex-start;
-      margin: 1.25rem 0;
+      gap: 8px;
+      margin: 12px 0;
     }
 
-    .escrow-badge i {
-      font-size: 1.1rem;
-      margin-top: 2px;
-      color: var(--success);
+    .coupon-box input {
+      flex-grow: 1;
+      text-transform: uppercase;
     }
 
-    /* Proceed Button */
+    .btn-apply {
+      background: var(--text);
+      color: white;
+      border: none;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Escrow Security Banner */
+    .escrow-banner {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 14px 0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .escrow-banner i {
+      font-size: 20px;
+      color: var(--primary);
+    }
+
+    .escrow-banner p {
+      font-size: 11px;
+      color: #166534;
+      line-height: 1.3;
+    }
+
+    /* Checkout Button */
     .btn-checkout {
       width: 100%;
-      background-color: var(--primary);
-      color: #ffffff;
+      background: var(--primary);
+      color: white;
       border: none;
-      padding: 0.9rem 1.25rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 8px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.6rem;
-      transition: background-color 0.2s, transform 0.1s;
-      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(11, 143, 77, 0.25);
+      transition: background 0.2s;
     }
 
     .btn-checkout:hover {
-      background-color: var(--primary-hover);
+      background: var(--primary-dark);
     }
 
-    .btn-checkout:active {
-      transform: scale(0.99);
+    .btn-checkout:disabled {
+      background: #cbd5e1;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .empty-msg {
+      text-align: center;
+      padding: 30px 10px;
+      color: var(--text-muted);
+    }
+
+    .empty-msg i {
+      font-size: 38px;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .note-box {
+      margin-top: 12px;
+    }
+
+    .note-box textarea {
+      width: 100%;
+      height: 60px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      resize: none;
+      outline: none;
+      background: #f8fafc;
     }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <a href="index.html" title="Back to Marketplace"><i class="fa-solid fa-arrow-left"></i></a>
+      <div class="header-title">Checkout & Escrow Payment</div>
+    </div>
+    <div>
+      <i class="fa-solid fa-shield-halved"></i>
+    </div>
+  </header>
+
   <div class="container">
-    <h1 class="page-title">
-      <i class="fa-solid fa-cart-shopping"></i> Shopping Cart
-    </h1>
-
-    <div class="cart-layout">
-      <!-- Cart Items Section -->
-      <div class="cart-items-card" id="cartItemsContainer">
-        <!-- JS will populate items here -->
-      </div>
-
-      <!-- Order Summary Section -->
-      <div class="summary-card">
-        <h2 class="summary-title">Order Summary</h2>
+    <div class="cart-grid">
+      
+      <!-- Main Cart & Region Column -->
+      <div class="left-col">
         
-        <div class="summary-row">
-          <span>Subtotal</span>
-          <span id="subtotalAmount">$0.00</span>
-        </div>
-        
-        <div class="summary-row">
-          <span>Escrow Protection Fee</span>
-          <span id="escrowFee">$0.00</span>
-        </div>
+        <!-- Country & Currency Selector Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-globe"></i> Region & Currency Settings
+            </div>
+            <span style="font-size: 11px; color: var(--text-muted);">Real-time Conversion</span>
+          </div>
 
-        <div class="summary-row total">
-          <span>Total</span>
-          <span id="grandTotal">$0.00</span>
-        </div>
+          <div class="selector-group">
+            <div class="form-control">
+              <label for="countrySelect"><i class="fa-solid fa-flag"></i> Destination Country</label>
+              <select id="countrySelect" class="select-input" onchange="handleCountryCurrencyChange()">
+                <option value="UG" data-currency="UGX" selected>Uganda (UGX 🇺🇬)</option>
+                <option value="KE" data-currency="KES">Kenya (KES 🇰🇪)</option>
+                <option value="TZ" data-currency="TZS">Tanzania (TZS 🇹🇿)</option>
+                <option value="RW" data-currency="RWF">Rwanda (RWF 🇷🇼)</option>
+                <option value="US" data-currency="USD">United States (USD 🇺🇸)</option>
+                <option value="UK" data-currency="GBP">United Kingdom (GBP 🇬🇧)</option>
+                <option value="EU" data-currency="EUR">Euro Zone (EUR 🇪🇺)</option>
+              </select>
+            </div>
 
-        <!-- Escrow Security Notice -->
-        <div class="escrow-badge">
-          <i class="fa-solid fa-shield-halved"></i>
-          <div>
-            <strong>Escrow Protection Active</strong>
-            <p>Your payment is safely held until you receive and verify your order items.</p>
+            <div class="form-control">
+              <label for="currencySelect"><i class="fa-solid fa-money-bill-transfer"></i> Currency</label>
+              <select id="currencySelect" class="select-input" onchange="updateCurrencyOnly()">
+                <option value="UGX" selected>UGX - Shilling</option>
+                <option value="KES">KES - K. Shilling</option>
+                <option value="TZS">TZS - T. Shilling</option>
+                <option value="RWF">RWF - R. Franc</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="GBP">GBP - Brit. Pound</option>
+                <option value="EUR">EUR - Euro</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <!-- Checkout Button connected to orders.html -->
-        <button class="btn-checkout" id="checkoutBtn" onclick="proceedToCheckout()">
-          <i class="fa-solid fa-shield-halved"></i> Proceed to Escrow Payment
-        </button>
+        <!-- Cart Items Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-cart-shopping"></i> Selected Items
+            </div>
+            <span id="itemCountBadge" style="font-size: 12px; font-weight:700; color:var(--primary);">0 Items</span>
+          </div>
+
+          <div id="cartItemsList">
+            <!-- Dynamically Rendered -->
+          </div>
+        </div>
+
+        <!-- Delivery & Location Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-truck-fast"></i> Delivery Address & Transport Rate
+            </div>
+          </div>
+
+          <div class="delivery-tabs">
+            <div class="delivery-tab active" id="tabType" onclick="setDeliveryMode('type')">
+              <i class="fa-solid fa-pen"></i> Enter Specific Address
+            </div>
+            <div class="delivery-tab" id="tabSelect" onclick="setDeliveryMode('select')">
+              <i class="fa-solid fa-list-check"></i> Standard City Zones
+            </div>
+          </div>
+
+          <div id="customAddressView">
+            <input type="text" id="customLocationInput" class="text-input" placeholder="e.g. Makerere Kikoni, Ntinda, Kololo..." oninput="calculateFinancials()">
+          </div>
+
+          <div id="zoneSelectView" style="display: none;">
+            <select id="zoneSelect" class="select-input" onchange="calculateFinancials()">
+              <option value="Kampala Central" selected>Kampala Central / City Centre</option>
+              <option value="Kyambogo">Kyambogo Campus / Banda</option>
+              <option value="Nakawa">Nakawa Industrial Zone</option>
+              <option value="Makerere">Makerere / Wandegeya</option>
+              <option value="Ntinda">Ntinda / Naalya</option>
+              <option value="Bugolobi">Bugolobi / Port Bell</option>
+              <option value="Entebbe">Entebbe Town</option>
+              <option value="Mukono">Mukono Town</option>
+            </select>
+          </div>
+
+          <button class="gps-btn" onclick="detectGPSLocation()">
+            <i class="fa-solid fa-location-crosshairs"></i> Detect Device GPS Location
+          </button>
+
+          <div class="delivery-badge">
+            <div><span>Seller Origin:</span> <strong id="sellerOriginsText">Multi-Vendor</strong></div>
+            <div><span>Destination:</span> <strong id="destinationText">Kampala Central</strong></div>
+            <div><span>Estimated Distance:</span> <strong id="distanceText">0.0 km</strong></div>
+          </div>
+
+          <div class="note-box">
+            <label style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Special Instructions / Order Note:</label>
+            <textarea id="orderNote" placeholder="e.g. Please call upon arrival at the gate..."></textarea>
+          </div>
+        </div>
+
       </div>
+
+      <!-- Right Order Summary Column -->
+      <div class="right-col">
+        <div class="card summary-card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-receipt"></i> Payment Breakdown
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <span>Items Subtotal</span>
+            <span id="subtotalText">0</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Transport / Delivery Fee</span>
+            <span id="transportFeeText">0</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Escrow Protection Fee (1.5%)</span>
+            <span id="escrowFeeText">0</span>
+          </div>
+
+          <div class="summary-row" id="discountRow" style="display: none; color: var(--primary);">
+            <span>Discount Applied</span>
+            <span id="discountText">-0</span>
+          </div>
+
+          <!-- Coupon Code Input -->
+          <div class="coupon-box">
+            <input type="text" id="couponInput" class="text-input" placeholder="Promo Code (e.g. VENX2026)">
+            <button class="btn-apply" onclick="applyCoupon()">Apply</button>
+          </div>
+
+          <div class="summary-row total">
+            <span>Grand Total</span>
+            <span id="grandTotalText">0</span>
+          </div>
+
+          <!-- Escrow Trust Banner -->
+          <div class="escrow-banner">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div>
+              <strong style="font-size: 12px;">100% Escrow Protection</strong>
+              <p>Funds are held securely by Venx Escrow. Release payment only after receiving & verifying your items.</p>
+            </div>
+          </div>
+
+          <!-- Main Confirm & Proceed Button -->
+          <button class="btn-checkout" id="checkoutBtn" onclick="proceedToCheckout()">
+            <i class="fa-solid fa-lock"></i> Place Order & Pay via Escrow
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script>
-    // Sample Cart Initializer (Uses LocalStorage or loads fallback items)
-    let cart = JSON.parse(localStorage.getItem('cart')) || [
-      { id: 1, name: "Wireless Noise-Canceling Headphones", price: 120.00, quantity: 1, image: "https://via.placeholder.com/80" },
-      { id: 2, name: "Ergonomic Mechanical Keyboard", price: 85.50, quantity: 2, image: "https://via.placeholder.com/80" }
-    ];
+    // Currency Conversion Rates (Base: UGX)
+    const EXCHANGE_RATES = {
+      UGX: { rate: 1, symbol: "UGX ", decimal: 0 },
+      KES: { rate: 0.035, symbol: "KSh ", decimal: 2 },
+      TZS: { rate: 0.71, symbol: "TSh ", decimal: 0 },
+      RWF: { rate: 0.37, symbol: "RWF ", decimal: 0 },
+      USD: { rate: 0.00027, symbol: "$", decimal: 2 },
+      GBP: { rate: 0.00021, symbol: "£", decimal: 2 },
+      EUR: { rate: 0.00025, symbol: "€", decimal: 2 }
+    };
 
-    const ESCROW_FEE_PERCENT = 0.02; // 2% Escrow protection fee
+    let cart = [];
+    let deliveryMode = "type";
+    let appliedDiscountUGX = 0;
+    let computedSubtotalUGX = 0;
+    let computedTransportUGX = 0;
+    let computedEscrowUGX = 0;
+    let computedGrandTotalUGX = 0;
+    let calculatedDistanceKm = 2.5;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initCartData();
+      renderCart();
+    });
+
+    function initCartData() {
+      const stored = localStorage.getItem("venxCart");
+      if (stored) {
+        try { cart = JSON.parse(stored); } catch (e) { cart = []; }
+      }
+
+      // Fallback demo items for instant testing
+      if (!cart || cart.length === 0) {
+        cart = [
+          {
+            id: "PROD-101",
+            title: "Premium Beef Sausages (1kg)",
+            price: 28000,
+            quantity: 2,
+            location: "Kyambogo Industrial Zone",
+            image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300"
+          },
+          {
+            id: "PROD-102",
+            title: "Organic Hibiscus & Cinnamon Extract (500ml)",
+            price: 15000,
+            quantity: 1,
+            location: "Kampala Central",
+            image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300"
+          }
+        ];
+        localStorage.setItem("venxCart", JSON.stringify(cart));
+      }
+    }
 
     function renderCart() {
-      const container = document.getElementById('cartItemsContainer');
-      
+      const listContainer = document.getElementById("cartItemsList");
+      const badge = document.getElementById("itemCountBadge");
+      const checkoutBtn = document.getElementById("checkoutBtn");
+
       if (cart.length === 0) {
-        container.innerHTML = `
-          <div class="empty-cart">
+        listContainer.innerHTML = `
+          <div class="empty-msg">
             <i class="fa-solid fa-cart-flatbed"></i>
-            <h3>Your cart is empty</h3>
-            <p>Add items to your cart to continue shopping.</p>
+            <p>Your shopping cart is currently empty.</p>
           </div>
         `;
-        updateTotals(0);
+        badge.innerText = "0 Items";
+        checkoutBtn.disabled = true;
+        resetSummaryFields();
         return;
       }
 
-      let html = '';
-      let subtotal = 0;
+      checkoutBtn.disabled = false;
+      badge.innerText = `${cart.length} Item${cart.length > 1 ? 's' : ''}`;
+      
+      const currKey = document.getElementById("currencySelect").value;
+      const curr = EXCHANGE_RATES[currKey] || EXCHANGE_RATES.UGX;
 
+      let html = "";
       cart.forEach((item, index) => {
-        const itemTotal = item.price * item.quantity;
-        subtotal += itemTotal;
+        const itemPriceConverted = item.price * curr.rate;
+        const formattedPrice = formatMoney(itemPriceConverted, curr);
 
         html += `
           <div class="cart-item">
-            <img src="${item.image}" alt="${item.name}" class="item-img">
-            <div class="item-details">
-              <h4>${item.name}</h4>
-              <div class="item-price">$${item.price.toFixed(2)}</div>
-              <div class="quantity-controls">
-                <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
-                <input type="text" class="qty-input" value="${item.quantity}" readonly>
-                <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+            <img src="${item.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300'}" class="item-img" alt="${item.title}">
+            <div class="item-info">
+              <div>
+                <div class="item-title">${item.title}</div>
+                <div class="item-seller"><i class="fa-solid fa-store"></i> Seller: ${item.location || 'Kampala Main'}</div>
+              </div>
+              <div class="item-meta">
+                <span class="item-price">${formattedPrice}</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div class="qty-box">
+                    <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                    <span class="qty-val">${item.quantity || 1}</span>
+                    <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                  </div>
+                  <button class="btn-remove" onclick="removeItem(${index})" title="Remove Item">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
               </div>
             </div>
-            <button class="btn-remove" onclick="removeItem(${index})" title="Remove item">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
           </div>
         `;
       });
 
-      container.innerHTML = html;
-      updateTotals(subtotal);
-      localStorage.setItem('cart', JSON.stringify(cart));
+      listContainer.innerHTML = html;
+      calculateFinancials();
     }
 
-    function updateQty(index, change) {
-      if (cart[index].quantity + change > 0) {
-        cart[index].quantity += change;
-      } else {
+    function updateQty(index, delta) {
+      cart[index].quantity = (cart[index].quantity || 1) + delta;
+      if (cart[index].quantity <= 0) {
         cart.splice(index, 1);
       }
+      localStorage.setItem("venxCart", JSON.stringify(cart));
       renderCart();
     }
 
     function removeItem(index) {
       cart.splice(index, 1);
+      localStorage.setItem("venxCart", JSON.stringify(cart));
       renderCart();
     }
 
-    function updateTotals(subtotal) {
-      const escrowFee = subtotal * ESCROW_FEE_PERCENT;
-      const total = subtotal + escrowFee;
+    function handleCountryCurrencyChange() {
+      const countrySelect = document.getElementById("countrySelect");
+      const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+      const targetCurrency = selectedOption.getAttribute("data-currency");
 
-      document.getElementById('subtotalAmount').textContent = `$${subtotal.toFixed(2)}`;
-      document.getElementById('escrowFee').textContent = `$${escrowFee.toFixed(2)}`;
-      document.getElementById('grandTotal').textContent = `$${total.toFixed(2)}`;
+      if (targetCurrency) {
+        document.getElementById("currencySelect").value = targetCurrency;
+      }
+      renderCart();
     }
 
-    // Function that connects cart.html to orders.html
+    function updateCurrencyOnly() {
+      renderCart();
+    }
+
+    function setDeliveryMode(mode) {
+      deliveryMode = mode;
+      document.getElementById("tabType").classList.toggle("active", mode === "type");
+      document.getElementById("tabSelect").classList.toggle("active", mode === "select");
+
+      document.getElementById("customAddressView").style.display = mode === "type" ? "block" : "none";
+      document.getElementById("zoneSelectView").style.display = mode === "select" ? "block" : "none";
+
+      calculateFinancials();
+    }
+
+    function getBuyerLocationName() {
+      if (deliveryMode === "type") {
+        const typed = document.getElementById("customLocationInput").value.trim();
+        return typed !== "" ? typed : "Kampala Central (Default)";
+      } else {
+        return document.getElementById("zoneSelect").value;
+      }
+    }
+
+    function calculateFinancials() {
+      if (cart.length === 0) return;
+
+      computedSubtotalUGX = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+
+      const destName = getBuyerLocationName();
+      document.getElementById("destinationText").innerText = destName;
+
+      const sellerOrigins = [...new Set(cart.map(i => i.location || "Kampala Central"))];
+      document.getElementById("sellerOriginsText").innerText = sellerOrigins.join(", ");
+
+      let dist = 2.5;
+      const lowerDest = destName.toLowerCase();
+      if (lowerDest.includes("kyambogo") || lowerDest.includes("banda")) dist = 1.8;
+      else if (lowerDest.includes("ntinda") || lowerDest.includes("naalya")) dist = 5.2;
+      else if (lowerDest.includes("entebbe")) dist = 34.0;
+      else if (lowerDest.includes("mukono")) dist = 21.0;
+
+      calculatedDistanceKm = dist;
+      document.getElementById("distanceText").innerText = `${calculatedDistanceKm} km`;
+
+      computedTransportUGX = Math.ceil((3000 + (calculatedDistanceKm * 800)) / 500) * 500;
+      computedEscrowUGX = Math.round(computedSubtotalUGX * 0.015);
+      computedGrandTotalUGX = Math.max(0, computedSubtotalUGX + computedTransportUGX + computedEscrowUGX - appliedDiscountUGX);
+
+      const currKey = document.getElementById("currencySelect").value;
+      const curr = EXCHANGE_RATES[currKey] || EXCHANGE_RATES.UGX;
+
+      document.getElementById("subtotalText").innerText = formatMoney(computedSubtotalUGX * curr.rate, curr);
+      document.getElementById("transportFeeText").innerText = formatMoney(computedTransportUGX * curr.rate, curr);
+      document.getElementById("escrowFeeText").innerText = formatMoney(computedEscrowUGX * curr.rate, curr);
+      document.getElementById("grandTotalText").innerText = formatMoney(computedGrandTotalUGX * curr.rate, curr);
+    }
+
+    function applyCoupon() {
+      const code = document.getElementById("couponInput").value.trim().toUpperCase();
+      if (code === "VENX2026" || code === "DISCOUNT10") {
+        appliedDiscountUGX = Math.round(computedSubtotalUGX * 0.10);
+        const currKey = document.getElementById("currencySelect").value;
+        const curr = EXCHANGE_RATES[currKey] || EXCHANGE_RATES.UGX;
+
+        document.getElementById("discountRow").style.display = "flex";
+        document.getElementById("discountText").innerText = "-" + formatMoney(appliedDiscountUGX * curr.rate, curr);
+        alert("Coupon code applied successfully! (10% Discount)");
+        calculateFinancials();
+      } else {
+        alert("Invalid promo code. Try 'VENX2026'.");
+      }
+    }
+
+    function detectGPSLocation() {
+      if (navigator.geolocation) {
+        document.getElementById("distanceText").innerText = "Locating...";
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const gpsLabel = "GPS Verified Location";
+            document.getElementById("customLocationInput").value = gpsLabel;
+            setDeliveryMode("type");
+            alert("GPS location successfully captured!");
+            calculateFinancials();
+          },
+          () => {
+            alert("GPS access denied or unavailable. Please type your location.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    }
+
+    function formatMoney(amount, currencyObj) {
+      return currencyObj.symbol + amount.toLocaleString(undefined, {
+        minimumFractionDigits: currencyObj.decimal,
+        maximumFractionDigits: currencyObj.decimal
+      });
+    }
+
+    function resetSummaryFields() {
+      document.getElementById("subtotalText").innerText = "0";
+      document.getElementById("transportFeeText").innerText = "0";
+      document.getElementById("escrowFeeText").innerText = "0";
+      document.getElementById("grandTotalText").innerText = "0";
+    }
+
+    // Connects to orders.html and passes detailed order object via localStorage
     function proceedToCheckout() {
       if (cart.length === 0) {
-        alert('Your cart is empty. Please add items before proceeding.');
+        alert("Your cart is empty!");
         return;
       }
 
-      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const escrowFee = subtotal * ESCROW_FEE_PERCENT;
-      const grandTotal = subtotal + escrowFee;
+      const countrySelect = document.getElementById("countrySelect");
+      const countryName = countrySelect.options[countrySelect.selectedIndex].text;
+      const currencyKey = document.getElementById("currencySelect").value;
+      const curr = EXCHANGE_RATES[currencyKey] || EXCHANGE_RATES.UGX;
+      const deliveryAddress = getBuyerLocationName();
+      const note = document.getElementById("orderNote").value;
 
-      // Prepare order details to pass to orders.html
-      const pendingOrder = {
-        orderId: 'ESC-' + Math.floor(100000 + Math.random() * 900000),
-        items: cart,
-        subtotal: subtotal,
-        escrowFee: escrowFee,
-        grandTotal: grandTotal,
-        createdAt: new Date().toISOString()
+      const newOrder = {
+        orderId: "VNX-" + Math.floor(100000 + Math.random() * 900000),
+        createdAt: new Date().toLocaleString(),
+        timestamp: new Date().toISOString(),
+        country: countryName,
+        currency: currencyKey,
+        currencySymbol: curr.symbol,
+        exchangeRate: curr.rate,
+        
+        financials: {
+          subtotalUGX: computedSubtotalUGX,
+          transportFeeUGX: computedTransportUGX,
+          escrowFeeUGX: computedEscrowUGX,
+          discountUGX: appliedDiscountUGX,
+          grandTotalUGX: computedGrandTotalUGX,
+          
+          subtotalFormatted: formatMoney(computedSubtotalUGX * curr.rate, curr),
+          transportFeeFormatted: formatMoney(computedTransportUGX * curr.rate, curr),
+          escrowFeeFormatted: formatMoney(computedEscrowUGX * curr.rate, curr),
+          grandTotalFormatted: formatMoney(computedGrandTotalUGX * curr.rate, curr)
+        },
+
+        deliveryDetails: {
+          address: deliveryAddress,
+          distanceKm: calculatedDistanceKm,
+          sellerOrigins: [...new Set(cart.map(i => i.location || "Kampala Central"))],
+          orderNote: note
+        },
+
+        items: cart.map(item => ({
+          ...item,
+          formattedPrice: formatMoney(item.price * curr.rate, curr)
+        })),
+
+        status: "Pending Escrow Payment",
+        paymentMethod: "Venx Escrow Holding"
       };
 
-      // Store pending order details in localStorage
-      localStorage.setItem('pendingOrder', JSON.stringify(pendingOrder));
+      // 1. Store order history
+      const existingOrders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
+      existingOrders.unshift(newOrder);
+      localStorage.setItem("venxOrders", JSON.stringify(existingOrders));
 
-      // Redirect to orders.html
-      window.location.href = 'orders.html';
+      // 2. Set active pending order for orders.html
+      localStorage.setItem("venxActiveOrder", JSON.stringify(newOrder));
+
+      // 3. Clear cart
+      localStorage.removeItem("venxCart");
+
+      // 4. Redirect to orders.html
+      window.location.href = "orders.html";
     }
-
-    // Initialize cart render on page load
-    document.addEventListener('DOMContentLoaded', renderCart);
   </script>
 </body>
 </html>
