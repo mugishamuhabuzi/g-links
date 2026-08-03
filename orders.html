@@ -1,417 +1,637 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Confirmed Orders - Venx Online Market</title>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary-color: #0b8f4d;
-      --primary-dark: #086d3a;
-      --bg-color: #f4f6f8;
-      --card-bg: #ffffff;
-      --text-main: #2c3e50;
-      --text-muted: #7f8c8d;
-      --border-color: #e2e8f0;
-      --blue-btn: #2563eb;
-      --nav-height: 65px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - E-Commerce Escrow Store</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-color: #16a34a;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius: 10px;
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    body {
-      background: var(--bg-color);
-      color: var(--text-main);
-      padding-bottom: calc(var(--nav-height) + 20px);
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 50px;
+        }
 
-    /* --- Top Header --- */
-    header {
-      background: var(--primary-color);
-      padding: 14px 16px;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+        /* Top Navigation Bar */
+        .navbar {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
 
-    header a {
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
-    }
+        .navbar .brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
 
-    .header-title {
-      font-size: 16px;
-      font-weight: 700;
-    }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
 
-    /* --- Container --- */
-    .container {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 14px;
-    }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
 
-    /* --- Order Card --- */
-    .order-card {
-      background: white;
-      border-radius: 12px;
-      padding: 16px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-    }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
 
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed var(--border-color);
-      margin-bottom: 12px;
-      font-size: 13px;
-    }
+        /* Container & Page Header */
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
 
-    .order-id-date {
-      font-weight: 800;
-      color: #1e293b;
-    }
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
 
-    .order-date {
-      font-weight: 400;
-      color: var(--text-muted);
-      font-size: 12px;
-      margin-left: 6px;
-    }
+        .page-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
 
-    .badge-processing {
-      background: #fef3c7;
-      color: #d97706;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+        /* Order Metrics Header */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
 
-    .order-body {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      margin-bottom: 14px;
-    }
+        .metric-card {
+            background: var(--card-bg);
+            padding: 1.2rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
 
-    .order-thumb {
-      width: 75px;
-      height: 75px;
-      border-radius: 8px;
-      object-fit: cover;
-      background: #f1f5f9;
-      border: 1px solid var(--border-color);
-    }
+        .metric-card h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    .order-details {
-      flex: 1;
-    }
+        .metric-card p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.3rem;
+        }
 
-    .order-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 4px;
-      line-height: 1.3;
-    }
+        /* Controls: Search & Tabs */
+        .controls-card {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+        }
 
-    .order-seller {
-      font-size: 12px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
 
-    .order-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      padding-top: 10px;
-      border-top: 1px dashed var(--border-color);
-    }
+        .tab-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
 
-    .total-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-    }
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
 
-    .total-price {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--primary-color);
-    }
+        .search-box input {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            outline: none;
+            width: 220px;
+        }
 
-    .action-buttons {
-      display: flex;
-      gap: 8px;
-    }
+        /* Orders Card List */
+        .order-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
 
-    .btn-action {
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      border: none;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
+        .order-header {
+            background: #f1f5f9;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-    .btn-pay-now {
-      background: var(--blue-btn);
-      color: white;
-    }
+        .order-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+        }
 
-    .btn-pay-now:hover {
-      background: #1d4ed8;
-    }
+        .order-meta div span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
 
-    .btn-cancel {
-      background: white;
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-    }
+        /* Badges */
+        .badge {
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-block;
+        }
 
-    .btn-track {
-      background: var(--primary-color);
-      color: white;
-    }
+        .badge-pending { background: #fef3c7; color: var(--warning-color); }
+        .badge-escrow { background: #dbeafe; color: var(--primary-color); }
+        .badge-completed { background: #dcfce7; color: var(--success-color); }
+        .badge-cancelled { background: #fee2e2; color: var(--danger-color); }
 
-    .empty-state {
-      text-align: center;
-      padding: 50px 20px;
-      background: white;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
+        /* Order Body & Items */
+        .order-body {
+            padding: 1.5rem;
+        }
 
-    .empty-state i {
-      font-size: 48px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
+        .item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
 
-    /* --- Bottom Navigation --- */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: var(--nav-height);
-      background: white;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-      z-index: 1000;
-    }
+        .item-row:last-child {
+            border-bottom: none;
+        }
 
-    .bottom-nav a {
-      text-decoration: none;
-      color: var(--text-muted);
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      flex: 1;
-    }
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-    .bottom-nav a.active { color: var(--primary-color); font-weight: 700; }
-    .bottom-nav a i { font-size: 18px; }
-  </style>
+        .item-img {
+            width: 50px;
+            height: 50px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .item-details h4 {
+            font-size: 0.95rem;
+        }
+
+        .item-details p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Calculation & Footer */
+        .order-footer {
+            padding: 1rem 1.5rem;
+            background: #fafafa;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .total-breakdown {
+            font-size: 0.9rem;
+        }
+
+        .total-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .escrow-banner {
+            font-size: 0.8rem;
+            color: #1e40af;
+            background: #eff6ff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        @media (max-width: 600px) {
+            .order-header, .order-footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .action-buttons {
+                width: 100%;
+            }
+            .btn {
+                flex: 1;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Top Header -->
-  <header>
-    <a href="index.html"><i class="fa-solid fa-arrow-left"></i></a>
-    <span class="header-title">My Confirmed Orders</span>
-    <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
-  </header>
+    <!-- Main Navigation Bar -->
+    <nav class="navbar">
+        <a href="index.html" class="brand">🛡️ EscrowShop</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Shop</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="orders.html" class="active">My Orders</a></li>
+            <li><a href="product-payment.html">Payment & Escrow</a></li>
+        </ul>
+    </nav>
 
-  <div class="container">
-    <div id="ordersList">
-      <!-- Dynamically populated orders -->
+    <div class="container">
+        <div class="page-header">
+            <h1>Order History & Tracking</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Track your recent purchases and manage secure escrow releases.</p>
+        </div>
+
+        <!-- Metric Dashboard Header -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Total Orders</h3>
+                <p id="total-orders-count">0</p>
+            </div>
+            <div class="metric-card">
+                <h3>Awaiting Payment</h3>
+                <p id="pending-pay-count" style="color: var(--warning-color);">0</p>
+            </div>
+            <div class="metric-card">
+                <h3>In Escrow Protection</h3>
+                <p id="escrow-count" style="color: var(--primary-color);">0</p>
+            </div>
+        </div>
+
+        <!-- Search & Filter Tab Controls -->
+        <div class="controls-card">
+            <div class="filter-tabs">
+                <button class="tab-btn active" onclick="filterOrders('all', this)">All Orders</button>
+                <button class="tab-btn" onclick="filterOrders('Pending Payment', this)">Pending Payment</button>
+                <button class="tab-btn" onclick="filterOrders('In Escrow', this)">In Escrow</button>
+                <button class="tab-btn" onclick="filterOrders('Completed', this)">Completed</button>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" onkeyup="searchOrders()" placeholder="Search by Order ID or item...">
+            </div>
+        </div>
+
+        <!-- Container where Orders are Dynamically Rendered -->
+        <div id="ordersContainer"></div>
     </div>
-  </div>
 
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
-    <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></a>
-    <a href="orders.html" class="active"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
-    <a href="profile.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
-  </nav>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      loadOrders();
-    });
-
-    function loadOrders() {
-      let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
-
-      // Seed default items matching your exact screenshot if local storage is empty
-      if (orders.length === 0) {
-        orders = [
-          {
-            orderId: "VNX-837793",
-            date: "26 Jul 2026",
-            status: "PROCESSING",
-            title: "Sausage Processing Ingredient Kit",
-            seller: "Kyambogo Food Tech Hub",
-            price: 37500,
-            image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop"
-          },
-          {
-            orderId: "VNX-549996",
-            date: "26 Jul 2026",
-            status: "PROCESSING",
-            title: "Samsung Galaxy A15 (128GB)",
-            seller: "Venx Digital Hub",
-            price: 522500,
-            image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop"
-          },
-          {
-            orderId: "VNX-686984",
-            date: "26 Jul 2026",
-            status: "PROCESSING",
-            title: "Redmi Note 13 4G",
-            seller: "Kampala Electronics",
-            price: 680000,
-            image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop"
-          }
+    <script>
+        // Default Mock Data (Used if LocalStorage is empty for testing)
+        const sampleOrders = [
+            {
+                id: "ORD-98234",
+                date: "Aug 02, 2026",
+                status: "Pending Payment",
+                items: [
+                    { name: "Sausage Processing Casing Kit", qty: 2, price: 45000, img: "https://via.placeholder.com/50" },
+                    { name: "Cinnamon & Hibiscus Extract Blend", qty: 1, price: 20000, img: "https://via.placeholder.com/50" }
+                ],
+                subtotal: 110000,
+                deliveryFee: 5000,
+                escrowFee: 2000,
+            },
+            {
+                id: "ORD-88120",
+                date: "Jul 28, 2026",
+                status: "In Escrow",
+                items: [
+                    { name: "Industrial Milk Pasteurizer Probe", qty: 1, price: 180000, img: "https://via.placeholder.com/50" }
+                ],
+                subtotal: 180000,
+                deliveryFee: 10000,
+                escrowFee: 3500,
+            },
+            {
+                id: "ORD-71049",
+                date: "Jul 15, 2026",
+                status: "Completed",
+                items: [
+                    { name: "Digital Bakery Thermometer", qty: 1, price: 35000, img: "https://via.placeholder.com/50" }
+                ],
+                subtotal: 35000,
+                deliveryFee: 4000,
+                escrowFee: 1000,
+            }
         ];
-        localStorage.setItem("venxOrders", JSON.stringify(orders));
-      }
 
-      renderOrders(orders);
-    }
+        // Initialize orders from localStorage or set defaults
+        function getOrders() {
+            const stored = localStorage.getItem('userOrders');
+            if (stored) {
+                return JSON.parse(stored);
+            } else {
+                localStorage.setItem('userOrders', JSON.stringify(sampleOrders));
+                return sampleOrders;
+            }
+        }
 
-    function renderOrders(orders) {
-      const container = document.getElementById("ordersList");
-      container.innerHTML = "";
+        // Render function
+        function renderOrders(filterStatus = 'all', searchTerm = '') {
+            const orders = getOrders();
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = '';
 
-      if (orders.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <i class="fa-solid fa-box-open"></i>
-            <h3>No Orders Found</h3>
-            <p>You have no active or confirmed orders right now.</p>
-          </div>
-        `;
-        return;
-      }
+            let filtered = orders;
 
-      orders.forEach((order, index) => {
-        const card = document.createElement("div");
-        card.className = "order-card";
+            // Filter logic
+            if (filterStatus !== 'all') {
+                filtered = filtered.filter(o => o.status === filterStatus);
+            }
 
-        card.innerHTML = `
-          <div class="order-header">
-            <div class="order-id-date">
-              ${order.orderId || ('VNX-' + (100000 + index))} 
-              <span class="order-date">• ${order.date || '26 Jul 2026'}</span>
-            </div>
-            <span class="badge-processing">${order.status || 'PROCESSING'}</span>
-          </div>
+            // Search logic
+            if (searchTerm.trim() !== '') {
+                const term = searchTerm.toLowerCase();
+                filtered = filtered.filter(o => 
+                    o.id.toLowerCase().includes(term) || 
+                    o.items.some(i => i.name.toLowerCase().includes(term))
+                );
+            }
 
-          <div class="order-body">
-            <img src="${order.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop'}" class="order-thumb" alt="${order.title}">
-            <div class="order-details">
-              <div class="order-title">${order.title}</div>
-              <div class="order-seller"><i class="fa-solid fa-store"></i> ${order.seller || 'Venx Merchant'}</div>
-            </div>
-          </div>
+            // Update Metrics Dashboard
+            document.getElementById('total-orders-count').innerText = orders.length;
+            document.getElementById('pending-pay-count').innerText = orders.filter(o => o.status === 'Pending Payment').length;
+            document.getElementById('escrow-count').innerText = orders.filter(o => o.status === 'In Escrow').length;
 
-          <div class="order-footer">
-            <div>
-              <div class="total-label">Total Amount</div>
-              <div class="total-price">UGX ${Number(order.price || 0).toLocaleString()}</div>
-            </div>
-            <div class="action-buttons">
-              <!-- Direct Index Selection to avoid ID mismatches -->
-              <button class="btn-action btn-pay-now" onclick="payNowByIndex(${index})">
-                <i class="fa-solid fa-credit-card"></i> Pay Now
-              </button>
-              <button class="btn-action btn-cancel" onclick="cancelOrder(${index})">Cancel</button>
-              <button class="btn-action btn-track" onclick="trackOrder('${order.orderId}')">
-                <i class="fa-solid fa-location-dot"></i> Track
-              </button>
-            </div>
-          </div>
-        `;
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 3rem; background:white; border-radius:10px;">
+                    <p style="color: var(--text-muted);">No orders found matching your criteria.</p>
+                    <a href="products.html" class="btn btn-primary" style="margin-top: 1rem;">Browse Products</a>
+                </div>`;
+                return;
+            }
 
-        container.appendChild(card);
-      });
-    }
+            // Loop through each order and construct HTML
+            filtered.forEach(order => {
+                const grandTotal = order.subtotal + order.deliveryFee + order.escrowFee;
+                
+                // Status badge configuration
+                let badgeClass = "badge-pending";
+                if(order.status === 'In Escrow') badgeClass = "badge-escrow";
+                if(order.status === 'Completed') badgeClass = "badge-completed";
+                if(order.status === 'Cancelled') badgeClass = "badge-cancelled";
 
-    /**
-     * Directly reads the item at array index `index`, stores it into 
-     * `venxCheckoutItems` in localStorage, and opens product-payment.html
-     */
-    function payNowByIndex(index) {
-      const orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
-      const selectedOrder = orders[index];
+                // Action buttons logic depending on status
+                let actionButtonsHTML = '';
+                
+                if (order.status === 'Pending Payment') {
+                    actionButtonsHTML = `
+                        <button class="btn btn-danger" onclick="cancelOrder('${order.id}')">Cancel</button>
+                        <a href="product-payment.html?orderId=${order.id}&amount=${grandTotal}" class="btn btn-primary">
+                           💳 Pay Now (UGX ${grandTotal.toLocaleString()})
+                        </a>
+                    `;
+                } else if (order.status === 'In Escrow') {
+                    actionButtonsHTML = `
+                        <button class="btn btn-outline" onclick="trackOrder('${order.id}')">🚚 Track Order</button>
+                        <button class="btn btn-success" onclick="releaseEscrow('${order.id}')">✅ Confirm & Release Payment</button>
+                    `;
+                } else if (order.status === 'Completed') {
+                    actionButtonsHTML = `
+                        <button class="btn btn-outline" onclick="reorderItems('${order.id}')">🔄 Buy Again</button>
+                        <button class="btn btn-outline" onclick="leaveReview('${order.id}')">⭐ Write Review</button>
+                    `;
+                } else {
+                    actionButtonsHTML = `<button class="btn btn-outline" onclick="reorderItems('${order.id}')">🔄 Re-order</button>`;
+                }
 
-      if (!selectedOrder) {
-        alert("Selected order item was not found!");
-        return;
-      }
+                // Render Item list
+                let itemsListHTML = order.items.map(item => `
+                    <div class="item-row">
+                        <div class="item-info">
+                            <img src="${item.img}" alt="${item.name}" class="item-img">
+                            <div class="item-details">
+                                <h4>${item.name}</h4>
+                                <p>Qty: ${item.qty} × UGX ${item.price.toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <div style="font-weight: 600;">
+                            UGX ${(item.qty * item.price).toLocaleString()}
+                        </div>
+                    </div>
+                `).join('');
 
-      // Format payload specifically for product-payment.html
-      const checkoutItem = [{
-        title: selectedOrder.title,
-        price: selectedOrder.price,
-        quantity: selectedOrder.quantity || 1,
-        seller: selectedOrder.seller || "Venx Merchant",
-        image: selectedOrder.image
-      }];
+                // Render full card
+                const orderCard = `
+                    <div class="order-card" id="card-${order.id}">
+                        <div class="order-header">
+                            <div class="order-meta">
+                                <div><span>ORDER PLACED</span>${order.date}</div>
+                                <div><span>ORDER ID</span><strong>${order.id}</strong></div>
+                            </div>
+                            <div>
+                                <span class="badge ${badgeClass}">${order.status}</span>
+                            </div>
+                        </div>
 
-      // Write directly to localStorage key read by product-payment.html
-      localStorage.setItem("venxCheckoutItems", JSON.stringify(checkoutItem));
+                        <div class="order-body">
+                            ${itemsListHTML}
+                            
+                            ${order.status === 'In Escrow' ? `
+                                <div class="escrow-banner">
+                                    🛡️ <strong>Escrow Protection Active:</strong> Your funds are safely held until you verify receipt of your item.
+                                </div>
+                            ` : ''}
+                        </div>
 
-      // Redirect to payment page
-      window.location.href = "product-payment.html";
-    }
+                        <div class="order-footer">
+                            <div class="total-breakdown">
+                                <span>Subtotal: UGX ${order.subtotal.toLocaleString()} | Delivery: UGX ${order.deliveryFee.toLocaleString()} | Escrow Fee: UGX ${order.escrowFee.toLocaleString()}</span>
+                                <div class="total-amount">Total: UGX ${grandTotal.toLocaleString()}</div>
+                            </div>
+                            <div class="action-buttons">
+                                ${actionButtonsHTML}
+                            </div>
+                        </div>
+                    </div>
+                `;
 
-    function cancelOrder(index) {
-      if (confirm("Are you sure you want to cancel this order?")) {
-        let orders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
-        orders.splice(index, 1);
-        localStorage.setItem("venxOrders", JSON.stringify(orders));
-        loadOrders();
-      }
-    }
+                container.innerHTML += orderCard;
+            });
+        }
 
-    function trackOrder(orderId) {
-      alert("Tracking order: #" + orderId + "\nStatus: Package in transit to Kyambogo Hub.");
-    }
-  </script>
+        // Action Handlers
+        function filterOrders(status, btnElement) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            renderOrders(status, document.getElementById('searchInput').value);
+        }
+
+        function searchOrders() {
+            const activeTab = document.querySelector('.tab-btn.active').innerText;
+            const filterStatus = activeTab === 'All Orders' ? 'all' : activeTab;
+            renderOrders(filterStatus, document.getElementById('searchInput').value);
+        }
+
+        function cancelOrder(orderId) {
+            if (confirm(`Are you sure you want to cancel order ${orderId}?`)) {
+                let orders = getOrders();
+                orders = orders.map(o => o.id === orderId ? { ...o, status: 'Cancelled' } : o);
+                localStorage.setItem('userOrders', JSON.stringify(orders));
+                renderOrders();
+            }
+        }
+
+        function releaseEscrow(orderId) {
+            if (confirm(`Confirm receipt of products for ${orderId}? This will release the funds held in escrow to the seller.`)) {
+                let orders = getOrders();
+                orders = orders.map(o => o.id === orderId ? { ...o, status: 'Completed' } : o);
+                localStorage.setItem('userOrders', JSON.stringify(orders));
+                alert('Payment released to vendor! Thank you for confirming.');
+                renderOrders();
+            }
+        }
+
+        function reorderItems(orderId) {
+            const orders = getOrders();
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                // Save items to cart in local storage
+                localStorage.setItem('cartItems', JSON.stringify(order.items));
+                alert('Items re-added to your cart!');
+                window.location.href = 'cart.html';
+            }
+        }
+
+        function trackOrder(orderId) {
+            alert(`Tracking Info for ${orderId}:\nStatus: Package is in transit with courier.\nEstimated delivery: Within 24 Hours.`);
+        }
+
+        function leaveReview(orderId) {
+            alert(`Redirecting to review form for order ${orderId}...`);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderOrders();
+        });
+    </script>
 </body>
 </html>
