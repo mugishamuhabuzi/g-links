@@ -161,7 +161,28 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Try reading the parameters from the URL URL search string
+        const urlParams = new URLSearchParams(window.location.search);
+        const amountFromUrl = urlParams.get('amount');
+        const orderIdFromUrl = urlParams.get('orderId');
 
+        const amountInput = document.getElementById('amount'); // Ensure your input ID is 'amount'
+
+        if (amountFromUrl && amountInput) {
+            // Set the value from URL parameter
+            amountInput.value = amountFromUrl;
+        } else {
+            // 2. Fallback: Try reading from localStorage stored by orders.html
+            const storedOrder = localStorage.getItem('activePaymentOrder');
+            if (storedOrder && amountInput) {
+                const orderData = JSON.parse(storedOrder);
+                const totalAmount = orderData.subtotal + orderData.deliveryFee + orderData.escrowFee;
+                amountInput.value = totalAmount;
+            }
+        }
+    });
+      
         // Handle response...
     }
   </script>
