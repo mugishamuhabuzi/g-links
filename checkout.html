@@ -129,6 +129,41 @@
         payBtn.innerText = "Pay Now with Pesapal";
         payBtn.disabled = false;
       }
-    }); </script>
+    });<!-- Inside checkout.html -->
+    // 1. Place helper function here
+    function formatUgandaPhone(phone) {
+        let cleaned = phone.trim().replace(/\s+/g, '');
+        if (cleaned.startsWith('0')) {
+            return '256' + cleaned.substring(1);
+        }
+        if (cleaned.startsWith('+')) {
+            return cleaned.substring(1);
+        }
+        return cleaned;
+    }
+
+    // 2. Use it inside your submit handler
+    async function handlePaymentSubmit(event) {
+        event.preventDefault();
+
+        const rawPhone = document.getElementById('phoneInput').value; // e.g. "0777364857"
+        const formattedPhone = formatUgandaPhone(rawPhone);           // outputs "256777364857"
+
+        const payload = {
+            fullName: document.getElementById('nameInput').value,
+            email: document.getElementById('emailInput').value,
+            phone: formattedPhone, // <-- Send formatted phone
+            amount: document.getElementById('amountInput').value
+        };
+
+        const response = await fetch('https://your-backend.onrender.com/api/pesapal-pay', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        // Handle response...
+    }
+  </script>
 </body>
 </html>
