@@ -360,7 +360,7 @@
             <li><a href="products.html">Shop</a></li>
             <li><a href="cart.html">Cart</a></li>
             <li><a href="orders.html" class="active">My Orders</a></li>
-            <li><a href="product-payment.html">Payment & Escrow</a></li>
+            <li><a href="checkout.html">Checkout & Payment</a></li>
         </ul>
     </nav>
 
@@ -504,9 +504,9 @@
                 if (order.status === 'Pending Payment') {
                     actionButtonsHTML = `
                         <button class="btn btn-danger" onclick="cancelOrder('${order.id}')">Cancel</button>
-                        <a href="product-payment.html?orderId=${order.id}&amount=${grandTotal}" class="btn btn-primary">
-                           💳 Pay Now (UGX ${grandTotal.toLocaleString()})
-                        </a>
+                        <button class="btn btn-primary" onclick="proceedToPayment('${order.id}')">
+                            💳 Pay Now (UGX ${grandTotal.toLocaleString()})
+                        </button>
                     `;
                 } else if (order.status === 'In Escrow') {
                     actionButtonsHTML = `
@@ -590,6 +590,16 @@
             renderOrders(filterStatus, document.getElementById('searchInput').value);
         }
 
+        function proceedToPayment(orderId) {
+            const orders = getOrders();
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                const grandTotal = order.subtotal + order.deliveryFee + order.escrowFee;
+                localStorage.setItem('activePaymentOrder', JSON.stringify(order));
+                window.location.href = `checkout.html?orderId=${encodeURIComponent(order.id)}&amount=${grandTotal}`;
+            }
+        }
+
         function cancelOrder(orderId) {
             if (confirm(`Are you sure you want to cancel order ${orderId}?`)) {
                 let orders = getOrders();
@@ -613,7 +623,6 @@
             const orders = getOrders();
             const order = orders.find(o => o.id === orderId);
             if (order) {
-                // Save items to cart in local storage
                 localStorage.setItem('cartItems', JSON.stringify(order.items));
                 alert('Items re-added to your cart!');
                 window.location.href = 'cart.html';
