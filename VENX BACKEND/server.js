@@ -250,3 +250,46 @@ app.post('/api/ipn/pesapal', handlePesapalIPN);
 // =========================================================================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Venx Pesapal Backend running on port ${PORT}`));
+// File: server.js
+
+// 1. Helper function near top of file
+function formatUgandaPhone(phone) {
+    if (!phone) return '';
+    let cleaned = phone.trim().replace(/\s+/g, '');
+    if (cleaned.startsWith('0')) {
+        return '256' + cleaned.substring(1);
+    }
+    if (cleaned.startsWith('+')) {
+        return cleaned.substring(1);
+    }
+    return cleaned;
+}
+
+// 2. Use inside your payment route
+app.post('/api/pesapal-pay', async (req, res) => {
+    try {
+        const { amount, email, phone, name } = req.body;
+        
+        // Clean phone number before sending to Pesapal
+        const validPhone = formatUgandaPhone(phone);
+
+        const orderPayload = {
+            id: `VENX-${Date.now()}`,
+            currency: 'UGX',
+            amount: amount,
+            description: 'Order Payment',
+            callback_url: 'https://mugishamuhabuzi.github.io/orders.html',
+            notification_id: process.env.PESAPAL_NOTIFICATION_ID,
+            billing_address: {
+                email_address: email,
+                phone_number: validPhone, // <-- Cleaned number sent to Pesapal V3
+                first_name: name.split(' ')[0] || name,
+                last_name: name.split(' ')[1] || 'Customer'
+            }
+        };
+
+        // Send orderPayload to Pesapal SubmitOrderRequest endpoint...
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
