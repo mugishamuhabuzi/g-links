@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders - E-Commerce Escrow Store</title>
+    <title>My Orders - Venx Market</title>
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success-color: #16a34a;
-            --warning-color: #d97706;
+            --blue-primary: #1e40af;
+            --blue-hover: #1d4ed8;
+            --blue-light: #eff6ff;
+            --green-primary: #059669;
+            --green-hover: #047857;
+            --green-light: #ecfdf5;
             --danger-color: #dc2626;
+            --warning-color: #d97706;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --radius: 10px;
+            --radius: 12px;
         }
 
         * {
@@ -35,7 +38,7 @@
         /* Top Navigation Bar */
         .navbar {
             background-color: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 2px solid var(--blue-light);
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
@@ -43,14 +46,21 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .navbar .brand {
             font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--primary-color);
+            font-weight: 800;
+            color: var(--blue-primary);
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar .brand span {
+            color: var(--green-primary);
         }
 
         .nav-links {
@@ -62,14 +72,15 @@
         .nav-links a {
             text-decoration: none;
             color: var(--text-muted);
-            font-weight: 500;
+            font-weight: 600;
             transition: color 0.2s;
         }
 
         .nav-links a:hover,
         .nav-links a.active {
-            color: var(--primary-color);
-            font-weight: 600;
+            color: var(--blue-primary);
+            border-bottom: 2px solid var(--green-primary);
+            padding-bottom: 4px;
         }
 
         /* Container & Page Header */
@@ -85,7 +96,8 @@
 
         .page-header h1 {
             font-size: 1.8rem;
-            margin-bottom: 0.5rem;
+            color: var(--blue-primary);
+            margin-bottom: 0.3rem;
         }
 
         /* Order Metrics Header */
@@ -101,7 +113,13 @@
             padding: 1.2rem;
             border-radius: var(--radius);
             border: 1px solid var(--border-color);
+            border-top: 4px solid var(--blue-primary);
             text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .metric-card.green-accent {
+            border-top-color: var(--green-primary);
         }
 
         .metric-card h3 {
@@ -112,9 +130,14 @@
         }
 
         .metric-card p {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
             margin-top: 0.3rem;
+            color: var(--blue-primary);
+        }
+
+        .metric-card.green-accent p {
+            color: var(--green-primary);
         }
 
         /* Controls: Search & Tabs */
@@ -138,29 +161,34 @@
         }
 
         .tab-btn {
-            background: none;
+            background: var(--blue-light);
             border: 1px solid var(--border-color);
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.2rem;
             border-radius: 20px;
             cursor: pointer;
             font-size: 0.85rem;
-            color: var(--text-muted);
+            font-weight: 600;
+            color: var(--blue-primary);
             white-space: nowrap;
             transition: all 0.2s;
         }
 
         .tab-btn.active, .tab-btn:hover {
-            background: var(--primary-color);
+            background: var(--blue-primary);
             color: white;
-            border-color: var(--primary-color);
+            border-color: var(--blue-primary);
         }
 
         .search-box input {
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1rem;
             border: 1px solid var(--border-color);
             border-radius: 20px;
             outline: none;
-            width: 220px;
+            width: 240px;
+        }
+
+        .search-box input:focus {
+            border-color: var(--green-primary);
         }
 
         /* Orders Card List */
@@ -170,11 +198,11 @@
             border: 1px solid var(--border-color);
             margin-bottom: 1.5rem;
             overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
         }
 
         .order-header {
-            background: #f1f5f9;
+            background: var(--blue-light);
             padding: 1rem 1.5rem;
             display: flex;
             justify-content: space-between;
@@ -198,16 +226,16 @@
 
         /* Badges */
         .badge {
-            padding: 0.3rem 0.7rem;
+            padding: 0.35rem 0.8rem;
             border-radius: 20px;
             font-size: 0.78rem;
-            font-weight: 600;
+            font-weight: 700;
             display: inline-block;
         }
 
         .badge-pending { background: #fef3c7; color: var(--warning-color); }
-        .badge-escrow { background: #dbeafe; color: var(--primary-color); }
-        .badge-completed { background: #dcfce7; color: var(--success-color); }
+        .badge-escrow { background: var(--blue-light); color: var(--blue-primary); border: 1px solid var(--blue-primary); }
+        .badge-completed { background: var(--green-light); color: var(--green-primary); border: 1px solid var(--green-primary); }
         .badge-cancelled { background: #fee2e2; color: var(--danger-color); }
 
         /* Order Body & Items */
@@ -234,15 +262,17 @@
         }
 
         .item-img {
-            width: 50px;
-            height: 50px;
+            width: 52px;
+            height: 52px;
             background: #e2e8f0;
-            border-radius: 6px;
+            border-radius: 8px;
             object-fit: cover;
+            border: 1px solid var(--border-color);
         }
 
         .item-details h4 {
             font-size: 0.95rem;
+            color: var(--text-main);
         }
 
         .item-details p {
@@ -253,7 +283,7 @@
         /* Calculation & Footer */
         .order-footer {
             padding: 1rem 1.5rem;
-            background: #fafafa;
+            background: #f8fafc;
             border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -263,13 +293,15 @@
         }
 
         .total-breakdown {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
         }
 
         .total-amount {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--blue-primary);
+            margin-top: 2px;
         }
 
         .action-buttons {
@@ -280,26 +312,37 @@
 
         /* Buttons */
         .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            padding: 0.65rem 1.3rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
             cursor: pointer;
             text-decoration: none;
             border: none;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            transition: background 0.2s;
+            gap: 6px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-pay {
+            background: var(--green-primary);
+            color: white;
+            box-shadow: 0 3px 6px rgba(5, 150, 105, 0.25);
+        }
+
+        .btn-pay:hover {
+            background: var(--green-hover);
+            transform: translateY(-1px);
         }
 
         .btn-primary {
-            background: var(--primary-color);
+            background: var(--blue-primary);
             color: white;
         }
 
         .btn-primary:hover {
-            background: var(--primary-hover);
+            background: var(--blue-hover);
         }
 
         .btn-outline {
@@ -309,12 +352,8 @@
         }
 
         .btn-outline:hover {
-            background: #f1f5f9;
-        }
-
-        .btn-success {
-            background: var(--success-color);
-            color: white;
+            background: var(--blue-light);
+            color: var(--blue-primary);
         }
 
         .btn-danger {
@@ -323,15 +362,16 @@
         }
 
         .escrow-banner {
-            font-size: 0.8rem;
-            color: #1e40af;
-            background: #eff6ff;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--blue-primary);
+            background: var(--blue-light);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--blue-primary);
             margin-top: 1rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         @media (max-width: 600px) {
@@ -354,20 +394,20 @@
 
     <!-- Main Navigation Bar -->
     <nav class="navbar">
-        <a href="index.html" class="brand">🛡️ EscrowShop</a>
+        <a href="index.html" class="brand">🛡️ Venx <span>Market</span></a>
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
             <li><a href="products.html">Shop</a></li>
             <li><a href="cart.html">Cart</a></li>
             <li><a href="orders.html" class="active">My Orders</a></li>
-            <li><a href="checkout.html">Checkout & Payment</a></li>
+            <li><a href="checkout.html">Checkout</a></li>
         </ul>
     </nav>
 
     <div class="container">
         <div class="page-header">
             <h1>Order History & Tracking</h1>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Track your recent purchases and manage secure escrow releases.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Review pending payments, track shipments, and manage escrow releases.</p>
         </div>
 
         <!-- Metric Dashboard Header -->
@@ -380,9 +420,9 @@
                 <h3>Awaiting Payment</h3>
                 <p id="pending-pay-count" style="color: var(--warning-color);">0</p>
             </div>
-            <div class="metric-card">
+            <div class="metric-card green-accent">
                 <h3>In Escrow Protection</h3>
-                <p id="escrow-count" style="color: var(--primary-color);">0</p>
+                <p id="escrow-count">0</p>
             </div>
         </div>
 
@@ -395,65 +435,65 @@
                 <button class="tab-btn" onclick="filterOrders('Completed', this)">Completed</button>
             </div>
             <div class="search-box">
-                <input type="text" id="searchInput" onkeyup="searchOrders()" placeholder="Search by Order ID or item...">
+                <input type="text" id="searchInput" onkeyup="searchOrders()" placeholder="Search Order ID or item...">
             </div>
         </div>
 
-        <!-- Container where Orders are Dynamically Rendered -->
+        <!-- Dynamic Container for Orders -->
         <div id="ordersContainer"></div>
     </div>
 
     <script>
-        // Default Mock Data (Used if LocalStorage is empty for testing)
-        const sampleOrders = [
+        // Sample Orders Data used if localStorage is uninitialized
+        const defaultOrders = [
             {
                 id: "ORD-98234",
-                date: "Aug 02, 2026",
+                date: "Aug 06, 2026",
                 status: "Pending Payment",
                 items: [
-                    { name: "Sausage Processing Casing Kit", qty: 2, price: 45000, img: "https://via.placeholder.com/50" },
-                    { name: "Cinnamon & Hibiscus Extract Blend", qty: 1, price: 20000, img: "https://via.placeholder.com/50" }
+                    { name: "Sausage Casing Kit & Ingredients", qty: 2, price: 45000, img: "https://via.placeholder.com/52/1e40af/ffffff?text=Kit" },
+                    { name: "Cinnamon & Hibiscus Powder Extract", qty: 1, price: 20000, img: "https://via.placeholder.com/52/059669/ffffff?text=Extract" }
                 ],
                 subtotal: 110000,
                 deliveryFee: 5000,
-                escrowFee: 2000,
+                escrowFee: 2000
             },
             {
                 id: "ORD-88120",
                 date: "Jul 28, 2026",
                 status: "In Escrow",
                 items: [
-                    { name: "Industrial Milk Pasteurizer Probe", qty: 1, price: 180000, img: "https://via.placeholder.com/50" }
+                    { name: "Digital Temperature Probe Sensor", qty: 1, price: 180000, img: "https://via.placeholder.com/52/1e40af/ffffff?text=Sensor" }
                 ],
                 subtotal: 180000,
                 deliveryFee: 10000,
-                escrowFee: 3500,
+                escrowFee: 3500
             },
             {
                 id: "ORD-71049",
                 date: "Jul 15, 2026",
                 status: "Completed",
                 items: [
-                    { name: "Digital Bakery Thermometer", qty: 1, price: 35000, img: "https://via.placeholder.com/50" }
+                    { name: "Digital Lab Scale Probe", qty: 1, price: 35000, img: "https://via.placeholder.com/52/059669/ffffff?text=Scale" }
                 ],
                 subtotal: 35000,
                 deliveryFee: 4000,
-                escrowFee: 1000,
+                escrowFee: 1000
             }
         ];
 
-        // Initialize orders from localStorage or set defaults
+        // Retrieve orders from localStorage or set defaults
         function getOrders() {
             const stored = localStorage.getItem('userOrders');
             if (stored) {
                 return JSON.parse(stored);
             } else {
-                localStorage.setItem('userOrders', JSON.stringify(sampleOrders));
-                return sampleOrders;
+                localStorage.setItem('userOrders', JSON.stringify(defaultOrders));
+                return defaultOrders;
             }
         }
 
-        // Render function
+        // Render Orders function
         function renderOrders(filterStatus = 'all', searchTerm = '') {
             const orders = getOrders();
             const container = document.getElementById('ordersContainer');
@@ -461,12 +501,10 @@
 
             let filtered = orders;
 
-            // Filter logic
             if (filterStatus !== 'all') {
                 filtered = filtered.filter(o => o.status === filterStatus);
             }
 
-            // Search logic
             if (searchTerm.trim() !== '') {
                 const term = searchTerm.toLowerCase();
                 filtered = filtered.filter(o => 
@@ -475,75 +513,73 @@
                 );
             }
 
-            // Update Metrics Dashboard
+            // Update Header Counts
             document.getElementById('total-orders-count').innerText = orders.length;
             document.getElementById('pending-pay-count').innerText = orders.filter(o => o.status === 'Pending Payment').length;
             document.getElementById('escrow-count').innerText = orders.filter(o => o.status === 'In Escrow').length;
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding: 3rem; background:white; border-radius:10px;">
-                    <p style="color: var(--text-muted);">No orders found matching your criteria.</p>
-                    <a href="products.html" class="btn btn-primary" style="margin-top: 1rem;">Browse Products</a>
-                </div>`;
+                container.innerHTML = `
+                    <div style="text-align:center; padding: 3rem; background:white; border-radius:12px; border:1px solid var(--border-color);">
+                        <p style="color: var(--text-muted); font-size: 1rem;">No orders found matching your selection.</p>
+                        <a href="products.html" class="btn btn-primary" style="margin-top: 1rem;">Browse Marketplace</a>
+                    </div>`;
                 return;
             }
 
-            // Loop through each order and construct HTML
             filtered.forEach(order => {
-                const grandTotal = order.subtotal + order.deliveryFee + order.escrowFee;
-                
-                // Status badge configuration
-                let badgeClass = "badge-pending";
-                if(order.status === 'In Escrow') badgeClass = "badge-escrow";
-                if(order.status === 'Completed') badgeClass = "badge-completed";
-                if(order.status === 'Cancelled') badgeClass = "badge-cancelled";
+                const delivery = order.deliveryFee || order.transportFee || 0;
+                const escrow = order.escrowFee || 0;
+                const grandTotal = order.subtotal + delivery + escrow;
 
-                // Action buttons logic depending on status
+                let badgeClass = "badge-pending";
+                if (order.status === 'In Escrow') badgeClass = "badge-escrow";
+                if (order.status === 'Completed') badgeClass = "badge-completed";
+                if (order.status === 'Cancelled') badgeClass = "badge-cancelled";
+
+                // Separate action buttons per order status
                 let actionButtonsHTML = '';
                 
                 if (order.status === 'Pending Payment') {
                     actionButtonsHTML = `
                         <button class="btn btn-danger" onclick="cancelOrder('${order.id}')">Cancel</button>
-                        <button class="btn btn-primary" onclick="proceedToPayment('${order.id}')">
+                        <button class="btn btn-pay" onclick="proceedToPayment('${order.id}')">
                             💳 Pay Now (UGX ${grandTotal.toLocaleString()})
                         </button>
                     `;
                 } else if (order.status === 'In Escrow') {
                     actionButtonsHTML = `
-                        <button class="btn btn-outline" onclick="trackOrder('${order.id}')">🚚 Track Order</button>
-                        <button class="btn btn-success" onclick="releaseEscrow('${order.id}')">✅ Confirm & Release Payment</button>
+                        <button class="btn btn-outline" onclick="trackOrder('${order.id}')">🚚 Track Shipping</button>
+                        <button class="btn btn-pay" onclick="releaseEscrow('${order.id}')">✅ Confirm & Release Payment</button>
                     `;
                 } else if (order.status === 'Completed') {
                     actionButtonsHTML = `
                         <button class="btn btn-outline" onclick="reorderItems('${order.id}')">🔄 Buy Again</button>
-                        <button class="btn btn-outline" onclick="leaveReview('${order.id}')">⭐ Write Review</button>
                     `;
                 } else {
                     actionButtonsHTML = `<button class="btn btn-outline" onclick="reorderItems('${order.id}')">🔄 Re-order</button>`;
                 }
 
-                // Render Item list
-                let itemsListHTML = order.items.map(item => `
+                const itemsListHTML = order.items.map(item => `
                     <div class="item-row">
                         <div class="item-info">
-                            <img src="${item.img}" alt="${item.name}" class="item-img">
+                            <img src="${item.img || 'https://via.placeholder.com/52'}" alt="${item.name}" class="item-img">
                             <div class="item-details">
                                 <h4>${item.name}</h4>
                                 <p>Qty: ${item.qty} × UGX ${item.price.toLocaleString()}</p>
                             </div>
                         </div>
-                        <div style="font-weight: 600;">
+                        <div style="font-weight: 700; color: var(--text-main);">
                             UGX ${(item.qty * item.price).toLocaleString()}
                         </div>
                     </div>
                 `).join('');
 
-                // Render full card
                 const orderCard = `
                     <div class="order-card" id="card-${order.id}">
                         <div class="order-header">
                             <div class="order-meta">
-                                <div><span>ORDER PLACED</span>${order.date}</div>
+                                <div><span>ORDER PLACED</span><strong>${order.date}</strong></div>
                                 <div><span>ORDER ID</span><strong>${order.id}</strong></div>
                             </div>
                             <div>
@@ -553,17 +589,16 @@
 
                         <div class="order-body">
                             ${itemsListHTML}
-                            
                             ${order.status === 'In Escrow' ? `
                                 <div class="escrow-banner">
-                                    🛡️ <strong>Escrow Protection Active:</strong> Your funds are safely held until you verify receipt of your item.
+                                    🛡️ <strong>Escrow Protected:</strong> Payment is safely locked until you confirm receipt.
                                 </div>
                             ` : ''}
                         </div>
 
                         <div class="order-footer">
                             <div class="total-breakdown">
-                                <span>Subtotal: UGX ${order.subtotal.toLocaleString()} | Delivery: UGX ${order.deliveryFee.toLocaleString()} | Escrow Fee: UGX ${order.escrowFee.toLocaleString()}</span>
+                                <span>Subtotal: UGX ${order.subtotal.toLocaleString()} | Delivery: UGX ${delivery.toLocaleString()} | Escrow Fee: UGX ${escrow.toLocaleString()}</span>
                                 <div class="total-amount">Total: UGX ${grandTotal.toLocaleString()}</div>
                             </div>
                             <div class="action-buttons">
@@ -577,7 +612,37 @@
             });
         }
 
-        // Action Handlers
+        // Dedicated Pay Now Handler
+        function proceedToPayment(orderId) {
+            const orders = getOrders();
+            const order = orders.find(o => o.id === orderId);
+
+            if (order) {
+                const delivery = order.deliveryFee || order.transportFee || 0;
+                const escrow = order.escrowFee || 0;
+                const grandTotal = order.subtotal + delivery + escrow;
+
+                // 1. Save detailed order object to localStorage for checkout.html
+                const activePaymentData = {
+                    orderId: order.id,
+                    items: order.items,
+                    subtotal: order.subtotal,
+                    transportFee: delivery,
+                    deliveryFee: delivery,
+                    escrowFee: escrow,
+                    amount: grandTotal,
+                    date: order.date
+                };
+
+                localStorage.setItem('activePaymentOrder', JSON.stringify(activePaymentData));
+                localStorage.setItem('checkout_orderId', order.id);
+                localStorage.setItem('checkout_amount', grandTotal);
+
+                // 2. Redirect directly to checkout.html with query parameters
+                window.location.href = `checkout.html?orderId=${encodeURIComponent(order.id)}&amount=${grandTotal}`;
+            }
+        }
+
         function filterOrders(status, btnElement) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
@@ -590,16 +655,6 @@
             renderOrders(filterStatus, document.getElementById('searchInput').value);
         }
 
-        function proceedToPayment(orderId) {
-            const orders = getOrders();
-            const order = orders.find(o => o.id === orderId);
-            if (order) {
-                const grandTotal = order.subtotal + order.deliveryFee + order.escrowFee;
-                localStorage.setItem('activePaymentOrder', JSON.stringify(order));
-                window.location.href = `checkout.html?orderId=${encodeURIComponent(order.id)}&amount=${grandTotal}`;
-            }
-        }
-
         function cancelOrder(orderId) {
             if (confirm(`Are you sure you want to cancel order ${orderId}?`)) {
                 let orders = getOrders();
@@ -610,11 +665,11 @@
         }
 
         function releaseEscrow(orderId) {
-            if (confirm(`Confirm receipt of products for ${orderId}? This will release the funds held in escrow to the seller.`)) {
+            if (confirm(`Confirm receipt of products for ${orderId}? This will release the escrow funds to the seller.`)) {
                 let orders = getOrders();
                 orders = orders.map(o => o.id === orderId ? { ...o, status: 'Completed' } : o);
                 localStorage.setItem('userOrders', JSON.stringify(orders));
-                alert('Payment released to vendor! Thank you for confirming.');
+                alert('Payment successfully released to vendor!');
                 renderOrders();
             }
         }
@@ -624,20 +679,16 @@
             const order = orders.find(o => o.id === orderId);
             if (order) {
                 localStorage.setItem('cartItems', JSON.stringify(order.items));
-                alert('Items re-added to your cart!');
+                alert('Items added back to your cart!');
                 window.location.href = 'cart.html';
             }
         }
 
         function trackOrder(orderId) {
-            alert(`Tracking Info for ${orderId}:\nStatus: Package is in transit with courier.\nEstimated delivery: Within 24 Hours.`);
+            alert(`Order ${orderId} Status:\nCourier dispatched. Estimated delivery within 24 hours.`);
         }
 
-        function leaveReview(orderId) {
-            alert(`Redirecting to review form for order ${orderId}...`);
-        }
-
-        // Initialize on load
+        // Initialize Page
         document.addEventListener('DOMContentLoaded', () => {
             renderOrders();
         });
