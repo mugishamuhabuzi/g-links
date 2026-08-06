@@ -9,6 +9,21 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 // =========================================================================
+// HELPER FUNCTIONS
+// =========================================================================
+function formatUgandaPhone(phone) {
+  if (!phone) return '';
+  let cleaned = phone.trim().replace(/\s+/g, '');
+  if (cleaned.startsWith('0')) {
+    return '256' + cleaned.substring(1);
+  }
+  if (cleaned.startsWith('+')) {
+    return cleaned.substring(1);
+  }
+  return cleaned;
+}
+
+// =========================================================================
 // 1. FIREBASE ADMIN SDK INITIALIZATION
 // =========================================================================
 try {
@@ -37,12 +52,13 @@ const sms = africasTalking.SMS;
 
 async function sendSMS(to, message) {
   try {
+    const formattedNumber = formatUgandaPhone(to);
     const response = await sms.send({
-      to: [to],
+      to: [`+${formattedNumber}`],
       message: message,
       from: process.env.AT_SENDER_ID || undefined,
     });
-    console.log(`📱 SMS sent to ${to}`);
+    console.log(`📱 SMS sent to +${formattedNumber}`);
     return response;
   } catch (err) {
     console.error('❌ SMS error:', err.message);
@@ -71,20 +87,24 @@ async function getPesapalAuthToken() {
   });
 
   const data = await response.json();
-  if (data.status === '200' && data.token) {
+  if (data.token) {
     return data.token;
   }
-  throw new Error(data.message || 'Pesapal authentication failed');
+  throw new Error(data.error?.message || data.message || 'Pesapal authentication failed');
 }
 
 // Register IPN URL with Pesapal dynamically
 let cachedIpnId = null;
 async function getOrRegisterIpnId(token) {
+  if (process.env.PESAPAL_NOTIFICATION_ID) {
+    return process.env.PESAPAL_NOTIFICATION_ID;
+  }
   if (cachedIpnId) return cachedIpnId;
 
-  const ipnUrl = `${process.env.MY_SERVER_URL}/api/ipn/pesapal`;
+  const ipnUrl = `${process.env.MY_SERVER_URL || 'https://mugishamuhabuzi.github.io'}/api/ipn/pesapal`;
 
-  const response = await fetch(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterUrl`, {
+  // FIXED: Endpoint changed from RegisterUrl to RegisterIPN
+  const response = await fetch(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterIPN`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -103,6 +123,7 @@ async function getOrRegisterIpnId(token) {
     console.log(`✅ Registered Pesapal IPN ID: ${cachedIpnId}`);
     return cachedIpnId;
   }
+  console.error('❌ IPN registration response:', data);
   return null;
 }
 
@@ -115,19 +136,27 @@ app.get('/', (req, res) => {
   res.json({ status: 'active', message: 'Venx Market Pesapal API is live!' });
 });
 
-// Route A: Initiate Pesapal Payment (Called by Checkout page)
-app.post('/api/payments/initiate', async (req, res) => {
-  const { amount, email, phone, buyerName, orderId } = req.body;
+// Shared Payment Handler for both route aliases
+const initiatePaymentHandler = async (req, res) => {
+  const amount = req.body.amount;
+  const email = req.body.email;
+  const phone = formatUgandaPhone(req.body.phone);
+  const buyerName = req.body.buyerName || req.body.name || 'Venx Customer';
+  const orderId = req.body.orderId || `VENX-${Date.now()}`;
 
-  if (!amount || !email || !orderId) {
-    return res.status(400).json({ error: 'Missing required order details.' });
+  if (!amount || !email) {
+    return res.status(400).json({ error: 'Missing required order details (amount or email).' });
   }
 
   try {
     const token = await getPesapalAuthToken();
     const notificationId = await getOrRegisterIpnId(token);
 
-    const nameParts = (buyerName || 'Venx Customer').trim().split(' ');
+    if (!notificationId) {
+      return res.status(400).json({ error: 'Failed to retrieve or register Pesapal Notification ID.' });
+    }
+
+    const nameParts = buyerName.trim().split(' ');
     const firstName = nameParts[0] || 'Venx';
     const lastName = nameParts.slice(1).join(' ') || 'Customer';
 
@@ -136,11 +165,11 @@ app.post('/api/payments/initiate', async (req, res) => {
       currency: 'UGX',
       amount: parseFloat(amount),
       description: `Escrow Payment for Order #${orderId}`,
-      callback_url: process.env.FRONTEND_CALLBACK_URL || 'https://venxmarket.com/order-success.html',
+      callback_url: process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/orders.html',
       notification_id: notificationId,
       billing_address: {
         email_address: email,
-        phone_number: phone || '',
+        phone_number: phone,
         first_name: firstName,
         last_name: lastName,
       },
@@ -158,20 +187,28 @@ app.post('/api/payments/initiate', async (req, res) => {
 
     const pesapalData = await response.json();
 
-    if (pesapalData.status === '200' && pesapalData.redirect_url) {
-      res.status(200).json({
+    if (pesapalData.redirect_url) {
+      return res.status(200).json({
         status: 'success',
         paymentUrl: pesapalData.redirect_url,
+        redirect_url: pesapalData.redirect_url,
         orderTrackingId: pesapalData.order_tracking_id,
       });
     } else {
-      res.status(400).json({ error: pesapalData.message || 'Failed to generate Pesapal payment link.' });
+      console.error('❌ Pesapal SubmitOrder error response:', pesapalData);
+      return res.status(400).json({ 
+        error: pesapalData.error?.message || pesapalData.message || 'Failed to generate Pesapal payment link.' 
+      });
     }
   } catch (err) {
-    console.error('❌ Error initiating Pesapal payment:', err.message);
-    res.status(500).json({ error: 'Server error processing Pesapal payment.' });
+    console.error('❌ Error initiating Pesapal payment:', err);
+    return res.status(500).json({ error: err.message || 'Server error processing Pesapal payment.' });
   }
-});
+};
+
+// Route Endpoints (Supports both endpoint paths)
+app.post('/api/payments/initiate', initiatePaymentHandler);
+app.post('/api/pesapal-pay', initiatePaymentHandler);
 
 // Route B: Pesapal IPN Notification Handler (Automated Webhook)
 const handlePesapalIPN = async (req, res) => {
@@ -185,7 +222,6 @@ const handlePesapalIPN = async (req, res) => {
   try {
     const token = await getPesapalAuthToken();
 
-    // Query official transaction status from Pesapal
     const statusResponse = await fetch(`${PESAPAL_BASE_URL}/api/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`, {
       method: 'GET',
       headers: {
@@ -218,7 +254,6 @@ const handlePesapalIPN = async (req, res) => {
 
         console.log(`✅ Order #${orderId} updated in Firestore to Paid & Held in Escrow.`);
 
-        // Send Automated SMS Alerts
         const customerPhone = orderData.buyerPhone || statusData.payment_account;
         if (customerPhone) {
           await sendSMS(customerPhone, `Venx Market: Payment of ${currency} ${amountPaid.toLocaleString()} for Order #${orderId} verified and locked in Escrow!`);
@@ -230,7 +265,6 @@ const handlePesapalIPN = async (req, res) => {
       }
     }
 
-    // Return acknowledgment back to Pesapal
     res.status(200).json({
       orderNotificationType: 'IPNChange',
       orderTrackingId: orderTrackingId,
@@ -250,46 +284,3 @@ app.post('/api/ipn/pesapal', handlePesapalIPN);
 // =========================================================================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Venx Pesapal Backend running on port ${PORT}`));
-// File: server.js
-
-// 1. Helper function near top of file
-function formatUgandaPhone(phone) {
-    if (!phone) return '';
-    let cleaned = phone.trim().replace(/\s+/g, '');
-    if (cleaned.startsWith('0')) {
-        return '256' + cleaned.substring(1);
-    }
-    if (cleaned.startsWith('+')) {
-        return cleaned.substring(1);
-    }
-    return cleaned;
-}
-
-// 2. Use inside your payment route
-app.post('/api/pesapal-pay', async (req, res) => {
-    try {
-        const { amount, email, phone, name } = req.body;
-        
-        // Clean phone number before sending to Pesapal
-        const validPhone = formatUgandaPhone(phone);
-
-        const orderPayload = {
-            id: `VENX-${Date.now()}`,
-            currency: 'UGX',
-            amount: amount,
-            description: 'Order Payment',
-            callback_url: 'https://mugishamuhabuzi.github.io/orders.html',
-            notification_id: process.env.PESAPAL_NOTIFICATION_ID,
-            billing_address: {
-                email_address: email,
-                phone_number: validPhone, // <-- Cleaned number sent to Pesapal V3
-                first_name: name.split(' ')[0] || name,
-                last_name: name.split(' ')[1] || 'Customer'
-            }
-        };
-
-        // Send orderPayload to Pesapal SubmitOrderRequest endpoint...
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
