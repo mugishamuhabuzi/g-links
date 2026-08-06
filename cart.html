@@ -323,6 +323,60 @@
       justify-content: space-between;
     }
 
+    /* Payment Method Options UI */
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .payment-option {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+    }
+
+    .payment-option:hover {
+      border-color: var(--primary);
+      background: white;
+    }
+
+    .payment-option.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .pay-radio i {
+      font-size: 18px;
+      color: var(--text-muted);
+    }
+
+    .payment-option.active .pay-radio i {
+      color: var(--primary);
+    }
+
+    .pay-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .pay-details strong {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .pay-details p {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
     /* Summary Card */
     .summary-card {
       position: sticky;
@@ -461,7 +515,7 @@
   <header>
     <div class="header-left">
       <a href="index.html" title="Back to Marketplace"><i class="fa-solid fa-arrow-left"></i></a>
-      <div class="header-title">Checkout & Escrow Payment</div>
+      <div class="header-title">Checkout & Payment</div>
     </div>
     <div>
       <i class="fa-solid fa-shield-halved"></i>
@@ -576,6 +630,33 @@
           </div>
         </div>
 
+        <!-- Payment Method Selection Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-credit-card"></i> Payment Option
+            </div>
+          </div>
+
+          <div class="payment-options">
+            <div class="payment-option active" id="payOptOnline" onclick="selectPaymentMethod('online')">
+              <div class="pay-radio"><i class="fa-solid fa-circle-dot"></i></div>
+              <div class="pay-details">
+                <strong>Online Payment (Escrow Holding)</strong>
+                <p>Pay via Mobile Money (MTN/Airtel) or Card. Funds held safely in escrow until delivery.</p>
+              </div>
+            </div>
+
+            <div class="payment-option" id="payOptCOD" onclick="selectPaymentMethod('cod')">
+              <div class="pay-radio"><i class="fa-regular fa-circle"></i></div>
+              <div class="pay-details">
+                <strong>Cash on Delivery (COD)</strong>
+                <p>Pay cash or mobile money directly to the driver upon physical inspection & delivery.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Right Order Summary Column -->
@@ -597,7 +678,7 @@
             <span id="transportFeeText">0</span>
           </div>
 
-          <div class="summary-row">
+          <div class="summary-row" id="escrowRow">
             <span>Escrow Protection Fee (1.5%)</span>
             <span id="escrowFeeText">0</span>
           </div>
@@ -618,12 +699,12 @@
             <span id="grandTotalText">0</span>
           </div>
 
-          <!-- Escrow Trust Banner -->
-          <div class="escrow-banner">
+          <!-- Dynamic Escrow / Cash Trust Banner -->
+          <div class="escrow-banner" id="trustBanner">
             <i class="fa-solid fa-shield-halved"></i>
             <div>
-              <strong style="font-size: 12px;">100% Escrow Protection</strong>
-              <p>Funds are held securely by Venx Escrow. Release payment only after receiving & verifying your items.</p>
+              <strong style="font-size: 12px;" id="bannerTitle">100% Escrow Protection</strong>
+              <p id="bannerDesc">Funds are held securely by Venx Escrow. Release payment only after receiving & verifying your items.</p>
             </div>
           </div>
 
@@ -651,6 +732,7 @@
 
     let cart = [];
     let deliveryMode = "type";
+    let selectedPaymentMethod = "online"; // 'online' or 'cod'
     let appliedDiscountUGX = 0;
     let computedSubtotalUGX = 0;
     let computedTransportUGX = 0;
@@ -669,7 +751,7 @@
         try { cart = JSON.parse(stored); } catch (e) { cart = []; }
       }
 
-      // Fallback demo items for instant testing
+      // Fallback demo items for instant testing if cart is empty
       if (!cart || cart.length === 0) {
         cart = [
           {
@@ -793,6 +875,39 @@
       calculateFinancials();
     }
 
+    function selectPaymentMethod(method) {
+      selectedPaymentMethod = method;
+
+      const onlineOption = document.getElementById("payOptOnline");
+      const codOption = document.getElementById("payOptCOD");
+
+      onlineOption.classList.toggle("active", method === "online");
+      codOption.classList.toggle("active", method === "cod");
+
+      onlineOption.querySelector(".pay-radio i").className = method === "online" ? "fa-solid fa-circle-dot" : "fa-regular fa-circle";
+      codOption.querySelector(".pay-radio i").className = method === "cod" ? "fa-solid fa-circle-dot" : "fa-regular fa-circle";
+
+      // Toggle Escrow row in payment summary
+      document.getElementById("escrowRow").style.display = method === "online" ? "flex" : "none";
+
+      // Update Trust Banner
+      const bannerTitle = document.getElementById("bannerTitle");
+      const bannerDesc = document.getElementById("bannerDesc");
+      const checkoutBtn = document.getElementById("checkoutBtn");
+
+      if (method === "online") {
+        bannerTitle.innerText = "100% Escrow Protection";
+        bannerDesc.innerText = "Funds are held securely by Venx Escrow. Release payment only after receiving & verifying your items.";
+        checkoutBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Place Order & Pay via Escrow`;
+      } else {
+        bannerTitle.innerText = "Cash on Delivery Order";
+        bannerDesc.innerText = "Pay in cash or mobile money directly to the courier upon delivery and verification of your goods.";
+        checkoutBtn.innerHTML = `<i class="fa-solid fa-truck-ramp-box"></i> Place Order (Cash on Delivery)`;
+      }
+
+      calculateFinancials();
+    }
+
     function getBuyerLocationName() {
       if (deliveryMode === "type") {
         const typed = document.getElementById("customLocationInput").value.trim();
@@ -824,7 +939,10 @@
       document.getElementById("distanceText").innerText = `${calculatedDistanceKm} km`;
 
       computedTransportUGX = Math.ceil((3000 + (calculatedDistanceKm * 800)) / 500) * 500;
-      computedEscrowUGX = Math.round(computedSubtotalUGX * 0.015);
+      
+      // Calculate Escrow fee only for online payments
+      computedEscrowUGX = selectedPaymentMethod === "online" ? Math.round(computedSubtotalUGX * 0.015) : 0;
+      
       computedGrandTotalUGX = Math.max(0, computedSubtotalUGX + computedTransportUGX + computedEscrowUGX - appliedDiscountUGX);
 
       const currKey = document.getElementById("currencySelect").value;
@@ -886,7 +1004,7 @@
       document.getElementById("grandTotalText").innerText = "0";
     }
 
-    // Connects to orders.html and passes detailed order object via localStorage
+    // Connects to orders.html and passes detailed order object + key metrics via localStorage
     function proceedToCheckout() {
       if (cart.length === 0) {
         alert("Your cart is empty!");
@@ -900,14 +1018,20 @@
       const deliveryAddress = getBuyerLocationName();
       const note = document.getElementById("orderNote").value;
 
+      const uniqueOrderId = "VNX-" + Math.floor(100000 + Math.random() * 900000);
+      const paymentTypeLabel = selectedPaymentMethod === "online" ? "Online Payment (Escrow Holding)" : "Cash on Delivery (COD)";
+
       const newOrder = {
-        orderId: "VNX-" + Math.floor(100000 + Math.random() * 900000),
+        orderId: uniqueOrderId,
         createdAt: new Date().toLocaleString(),
         timestamp: new Date().toISOString(),
         country: countryName,
         currency: currencyKey,
         currencySymbol: curr.symbol,
         exchangeRate: curr.rate,
+        paymentType: selectedPaymentMethod, // 'online' or 'cod'
+        paymentMethod: paymentTypeLabel,
+        status: selectedPaymentMethod === "online" ? "Pending Escrow Payment" : "Order Placed (Cash on Delivery)",
         
         financials: {
           subtotalUGX: computedSubtotalUGX,
@@ -932,24 +1056,26 @@
         items: cart.map(item => ({
           ...item,
           formattedPrice: formatMoney(item.price * curr.rate, curr)
-        })),
-
-        status: "Pending Escrow Payment",
-        paymentMethod: "Venx Escrow Holding"
+        }))
       };
 
-      // 1. Store order history
+      // 1. Store global parameters directly for quick backend payment triggers
+      localStorage.setItem("venx_checkout_amount", computedGrandTotalUGX);
+      localStorage.setItem("venx_order_id", uniqueOrderId);
+      localStorage.setItem("venx_payment_type", selectedPaymentMethod);
+
+      // 2. Store active pending order object for orders.html
+      localStorage.setItem("venxActiveOrder", JSON.stringify(newOrder));
+
+      // 3. Unshift order history
       const existingOrders = JSON.parse(localStorage.getItem("venxOrders") || "[]");
       existingOrders.unshift(newOrder);
       localStorage.setItem("venxOrders", JSON.stringify(existingOrders));
 
-      // 2. Set active pending order for orders.html
-      localStorage.setItem("venxActiveOrder", JSON.stringify(newOrder));
-
-      // 3. Clear cart
+      // 4. Clear cart
       localStorage.removeItem("venxCart");
 
-      // 4. Redirect to orders.html
+      // 5. Redirect to orders.html
       window.location.href = "orders.html";
     }
   </script>
