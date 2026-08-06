@@ -72,7 +72,7 @@ const PESAPAL_BASE_URL = process.env.PESAPAL_ENV === 'live'
   ? 'https://pay.pesapal.com/v3'
   : 'https://cybqa.pesapal.com/pesapalv3';
 
-// Request OAuth Bearer Token from Pesapal
+// Request OAuth Bearer Token from Pesapal using environment variables with updated fallback keys
 async function getPesapalAuthToken() {
   const response = await fetch(`${PESAPAL_BASE_URL}/api/Auth/RequestToken`, {
     method: 'POST',
@@ -81,8 +81,8 @@ async function getPesapalAuthToken() {
       'Accept': 'application/json',
     },
     body: JSON.stringify({
-      consumer_key: process.env.PESAPAL_CONSUMER_KEY,
-      consumer_secret: process.env.PESAPAL_CONSUMER_SECRET,
+      consumer_key: process.env.PESAPAL_CONSUMER_KEY || 'TDpigBOOhs+zAl8cwH2Fl82jJGyD8xev',
+      consumer_secret: process.env.PESAPAL_CONSUMER_SECRET || '1KpqkfsMaihIcOlhnBo/gBZ5smw=',
     }),
   });
 
@@ -103,7 +103,6 @@ async function getOrRegisterIpnId(token) {
 
   const ipnUrl = `${process.env.MY_SERVER_URL || 'https://mugishamuhabuzi.github.io'}/api/ipn/pesapal`;
 
-  // FIXED: Endpoint changed from RegisterUrl to RegisterIPN
   const response = await fetch(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterIPN`, {
     method: 'POST',
     headers: {
