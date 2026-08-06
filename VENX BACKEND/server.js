@@ -164,7 +164,7 @@ const initiatePaymentHandler = async (req, res) => {
       currency: 'UGX',
       amount: parseFloat(amount),
       description: `Escrow Payment for Order #${orderId}`,
-      callback_url: process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/orders.html',
+      callback_url: process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/g-links/orders.html',
       notification_id: notificationId,
       billing_address: {
         email_address: email,
