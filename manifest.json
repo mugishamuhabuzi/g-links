@@ -1,0 +1,15 @@
+{
+  "short_name": "Venx Rider",
+  "name": "Venx Market Rider Portal",
+  "start_url": "./rider.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#16a34a",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
