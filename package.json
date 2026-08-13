@@ -1,0 +1,20 @@
+{
+  "name": "venx-backend-pesapal",
+  "version": "1.0.0",
+  "description": "Venx Market Pesapal v3 Payment & Automated Escrow Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "africastalking": "^0.6.2",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
