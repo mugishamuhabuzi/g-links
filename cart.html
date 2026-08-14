@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venx Market - Shopping Cart & Checkout</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0b8f4d;
+      --primary-dark: #076637;
+      --primary-light: #e8f7f0;
+      --accent-gold: #f59e0b;
+      --accent-blue: #2563eb;
+      --accent-blue-light: #eff6ff;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: 80px;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    /* Grid Layout */
+    .cart-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 850px) {
+      .cart-grid {
+        grid-template-columns: 1fr 380px;
+      }
+    }
+
+    /* Card styling */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+    }
+
+    .card-title i {
+      color: var(--primary);
+    }
+
+    /* Country & Currency Selector Row */
+    .selector-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-control {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-control label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .select-input, .text-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .select-input:focus, .text-input:focus {
+      border-color: var(--primary);
+      background: white;
+    }
+
+    /* Cart Items */
+    .cart-item {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px dashed var(--border);
+      position: relative;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-img {
+      width: 75px;
+      height: 75px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .item-info {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .item-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .item-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .item-seller {
+      font-size: 11px;
+      color: var(--primary-dark);
+      background: var(--primary-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+    }
+
+    .package-tag {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+    }
+
+    .package-tag.paye {
+      color: #b45309;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+    }
+
+    .package-tag.standard {
+      color: var(--accent-blue);
+      background: var(--accent-blue-light);
+      border: 1px solid #bfdbfe;
+    }
+
+    .item-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+
+    .item-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .qty-box {
+      display: flex;
+      align-items: center;
+      background: #f1f5f9;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .qty-btn {
+      border: none;
+      background: transparent;
+      width: 28px;
+      height: 28px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .qty-btn:hover {
+      background: #cbd5e1;
+    }
+
+    .qty-val {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 8px;
+    }
+
+    .btn-remove {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 4px;
+    }
+
+    .btn-remove:hover {
+      opacity: 0.8;
+    }
+
+    /* Delivery section */
+    .delivery-tabs {
+      display: flex;
+      gap: 8px;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .delivery-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .delivery-tab.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .gps-btn {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary);
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .gps-btn:hover {
+      background: #d1fae5;
+    }
+
+    .delivery-badge {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .delivery-badge div {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Payment Method Options */
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      background: #f8fafc;
+      transition: all 0.2s;
+    }
+
+    .payment-option.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .payment-option input {
+      margin-top: 3px;
+      accent-color: var(--primary);
+    }
+
+    .pay-details strong {
+      font-size: 13px;
+      display: block;
+      color: var(--text);
+    }
+
+    .pay-details p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Summary Card */
+    .summary-card {
+      position: sticky;
+      top: 80px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 10px;
+      color: var(--text-muted);
+    }
+
+    .summary-row.vendor-info {
+      color: #047857;
+      font-size: 11px;
+      background: #ecfdf5;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #a7f3d0;
+    }
+
+    .summary-row.total {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      margin-top: 12px;
+    }
+
+    .summary-row.total span:last-child {
+      color: var(--primary);
+    }
+
+    /* Coupon Input */
+    .coupon-box {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .coupon-box input {
+      flex-grow: 1;
+      text-transform: uppercase;
+    }
+
+    .btn-apply {
+      background: var(--text);
+      color: white;
+      border: none;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Escrow Security Banner */
+    .escrow-banner {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 14px 0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .escrow-banner.cod-mode {
+      background: #fffbeb;
+      border-color: #fef3c7;
+    }
+
+    .escrow-banner i {
+      font-size: 20px;
+      color: var(--primary);
+    }
+
+    .escrow-banner.cod-mode i {
+      color: var(--accent-gold);
+    }
+
+    .escrow-banner p {
+      font-size: 11px;
+      color: #166534;
+      line-height: 1.3;
+    }
+
+    .escrow-banner.cod-mode p {
+      color: #92400e;
+    }
+
+    /* Checkout Button */
+    .btn-checkout {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(11, 143, 77, 0.25);
+      transition: background 0.2s;
+    }
+
+    .btn-checkout:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-checkout:disabled {
+      background: #cbd5e1;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .empty-msg {
+      text-align: center;
+      padding: 30px 10px;
+      color: var(--text-muted);
+    }
+
+    .empty-msg i {
+      font-size: 38px;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .note-box {
+      margin-top: 12px;
+    }
+
+    .note-box textarea {
+      width: 100%;
+      height: 60px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      resize: none;
+      outline: none;
+      background: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <a href="index.html" title="Back to Marketplace"><i class="fa-solid fa-arrow-left"></i></a>
+      <div class="header-title">Checkout & Payment</div>
+    </div>
+    <div>
+      <i class="fa-solid fa-shield-halved"></i>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="cart-grid">
+      
+      <!-- Main Cart & Region Column -->
+      <div class="left-col">
+        
+        <!-- Country & Currency Selector Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-globe"></i> Region & Currency Settings
+            </div>
+            <span style="font-size: 11px; color: var(--text-muted);">Real-time Conversion</span>
+          </div>
+
+          <div class="selector-group">
+            <div class="form-control">
+              <label for="countrySelect"><i class="fa-solid fa-flag"></i> Destination Country</label>
+              <select id="countrySelect" class="select-input" onchange="handleCountryCurrencyChange()">
+                <option value="UG" data-currency="UGX" selected>Uganda (UGX 🇺🇬)</option>
+                <option value="KE" data-currency="KES">Kenya (KES 🇰🇪)</option>
+                <option value="TZ" data-currency="TZS">Tanzania (TZS 🇹ℤ)</option>
+                <option value="RW" data-currency="RWF">Rwanda (RWF 🇷🇼)</option>
+                <option value="US" data-currency="USD">United States (USD 🇺🇸)</option>
+                <option value="UK" data-currency="GBP">United Kingdom (GBP 🇬🇧)</option>
+                <option value="EU" data-currency="EUR">Euro Zone (EUR 🇪🇺)</option>
+              </select>
+            </div>
+
+            <div class="form-control">
+              <label for="currencySelect"><i class="fa-solid fa-money-bill-transfer"></i> Currency</label>
+              <select id="currencySelect" class="select-input" onchange="updateCurrencyOnly()">
+                <option value="UGX" selected>UGX - Shilling</option>
+                <option value="KES">KES - K. Shilling</option>
+                <option value="TZS">TZS - T. Shilling</option>
+                <option value="RWF">RWF - R. Franc</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="GBP">GBP - Brit. Pound</option>
+                <option value="EUR">EUR - Euro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cart Items Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-cart-shopping"></i> Selected Items
+            </div>
+            <span id="itemCountBadge" style="font-size: 12px; font-weight:700; color:var(--primary);">0 Items</span>
+          </div>
+
+          <div id="cartItemsList">
+            <!-- Dynamically Rendered -->
+          </div>
+        </div>
+
+        <!-- Delivery & Location Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-truck-fast"></i> Delivery Address & Transport Rate
+            </div>
+          </div>
+
+          <div class="delivery-tabs">
+            <div class="delivery-tab active" id="tabType" onclick="setDeliveryMode('type')">
+              <i class="fa-solid fa-pen"></i> Enter Specific Address
+            </div>
+            <div class="delivery-tab" id="tabSelect" onclick="setDeliveryMode('select')">
+              <i class="fa-solid fa-list-check"></i> Standard City Zones
+            </div>
+          </div>
+
+          <div id="customAddressView">
+            <input type="text" id="customLocationInput" class="text-input" placeholder="e.g. Makerere Kikoni, Ntinda, Kololo..." oninput="calculateFinancials()">
+          </div>
+
+          <div id="zoneSelectView" style="display: none;">
+            <select id="zoneSelect" class="select-input" onchange="calculateFinancials()">
+              <option value="Kampala Central" selected>Kampala Central / City Centre</option>
+              <option value="Kyambogo">Kyambogo Campus / Banda</option>
+              <option value="Nakawa">Nakawa Industrial Zone</option>
+              <option value="Makerere">Makerere / Wandegeya</option>
+              <option value="Ntinda">Ntinda / Naalya</option>
+              <option value="Bugolobi">Bugolobi / Port Bell</option>
+              <option value="Entebbe">Entebbe Town</option>
+              <option value="Mukono">Mukono Town</option>
+            </select>
+          </div>
+
+          <button class="gps-btn" onclick="detectGPSLocation()">
+            <i class="fa-solid fa-location-crosshairs"></i> Detect Device GPS Location
+          </button>
+
+          <div class="delivery-badge">
+            <div><span>Seller Origin:</span> <strong id="sellerOriginsText">Multi-Vendor</strong></div>
+            <div><span>Destination:</span> <strong id="destinationText">Kampala Central</strong></div>
+            <div><span>Estimated Distance:</span> <strong id="distanceText">0.0 km</strong></div>
+          </div>
+
+          <div class="note-box">
+            <label style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Special Instructions / Order Note:</label>
+            <textarea id="orderNote" placeholder="e.g. Please call upon arrival at the gate..."></textarea>
+          </div>
+        </div>
+
+        <!-- Payment Method Selection Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-credit-card"></i> Payment Method
+            </div>
+          </div>
+
+          <div class="payment-options">
+            <label class="payment-option active" id="payOnlineOpt">
+              <input type="radio" name="paymentMethod" value="PESAPAL" checked onchange="togglePaymentMethod('PESAPAL')">
+              <div class="pay-details">
+                <strong><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> Online Payment / Pesapal (Mobile Money & Cards)</strong>
+                <p>Protected by Venx Escrow. Rider is dispatched immediately once payment is confirmed.</p>
+              </div>
+            </label>
+
+            <label class="payment-option" id="payCodOpt">
+              <input type="radio" name="paymentMethod" value="COD" onchange="togglePaymentMethod('COD')">
+              <div class="pay-details">
+                <strong><i class="fa-solid fa-hand-holding-dollar" style="color:var(--accent-gold);"></i> Cash on Delivery (COD)</strong>
+                <p>No upfront escrow fee. Sends a real-time ringing notification to nearby riders on rider.html to accept your order.</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Order Summary Column -->
+      <div class="right-col">
+        <div class="card summary-card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-receipt"></i> Payment Breakdown
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <span>Items Subtotal</span>
+            <span id="subtotalText">0</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Transport / Delivery Fee</span>
+            <span id="transportFeeText">0</span>
+          </div>
+
+          <!-- Escrow Protection Fee Row -->
+          <div class="summary-row" id="escrowFeeRow">
+            <span>Escrow Protection Fee (1.5%)</span>
+            <span id="escrowFeeText">0</span>
+          </div>
+
+          <!-- PAYE Commission Status Row (Informational for platform transparency; NOT added to buyer total) -->
+          <div class="summary-row vendor-info" id="payeCommissionRow" style="display: none;">
+            <span><i class="fa-solid fa-circle-info"></i> Vendor Commission (Included)</span>
+            <span id="payeCommissionText">10% PAYE</span>
+          </div>
+
+          <div class="summary-row" id="discountRow" style="display: none; color: var(--primary);">
+            <span>Discount Applied</span>
+            <span id="discountText">-0</span>
+          </div>
+
+          <!-- Coupon Code Input -->
+          <div class="coupon-box">
+            <input type="text" id="couponInput" class="text-input" placeholder="Promo Code (e.g. VENX2026)">
+            <button class="btn-apply" onclick="applyCoupon()">Apply</button>
+          </div>
+
+          <div class="summary-row total">
+            <span>Grand Total</span>
+            <span id="grandTotalText">0</span>
+          </div>
+
+          <!-- Escrow / COD Trust Banner -->
+          <div class="escrow-banner" id="escrowBanner">
+            <i class="fa-solid fa-shield-halved" id="bannerIcon"></i>
+            <div>
+              <strong style="font-size: 12px;" id="bannerTitle">100% Escrow Protection</strong>
+              <p id="bannerDesc">Funds are held securely by Venx Escrow. Payment released only after delivery verification.</p>
+            </div>
+          </div>
+
+          <!-- Main Confirm & Proceed Button -->
+          <button class="btn-checkout" id="checkoutBtn" onclick="proceedToCheckout()">
+            <i class="fa-solid fa-lock"></i> Pay via Pesapal (Escrow)
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Currency Conversion Rates (Base: UGX)
+    const EXCHANGE_RATES = {
+      UGX: { rate: 1, symbol: "UGX ", decimal: 0 },
+      KES: { rate: 0.035, symbol: "KSh ", decimal: 2 },
+      TZS: { rate: 0.71, symbol: "TSh ", decimal: 0 },
+      RWF: { rate: 0.37, symbol: "RWF ", decimal: 0 },
+      USD: { rate: 0.00027, symbol: "$", decimal: 2 },
+      GBP: { rate: 0.00021, symbol: "£", decimal: 2 },
+      EUR: { rate: 0.00025, symbol: "€", decimal: 2 }
+    };
+
+    let cart = [];
+    let deliveryMode = "type";
+    let selectedPaymentMethod = "PESAPAL";
+    let appliedDiscountUGX = 0;
+    let computedSubtotalUGX = 0;
+    let computedTransportUGX = 0;
+    let computedEscrowUGX = 0;
+    let computedPayeCommissionUGX = 0; // Calculated for vendor payout deduction, not added to buyer
+    let computedGrandTotalUGX = 0;
+    let calculatedDistanceKm = 2.5;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initCartData();
+      renderCart();
+    });
+
+    // Helper to format money according to active currency
+    function formatMoney(amount, curr) {
+      return `${curr.symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: curr.decimal, maximumFractionDigits: curr.decimal })}`;
+    }
+
+    // Helper to identify Pay As You Earn package items
+    function isPayePackage(packageType) {
+      if (!packageType) return false;
+      const normalized = String(packageType).toLowerCase().trim();
+      return normalized.includes("pay as you earn") || normalized.includes("paye");
+    }
+
+    // Normalizes stored product data and includes vendor package type
+    function initCartData() {
+      let rawData = localStorage.getItem("venxCart") || localStorage.getItem("cart");
+      if (rawData) {
+        try { 
+          const parsed = JSON.parse(rawData);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            cart = parsed.map(item => ({
+              id: String(item.id || "PROD-" + Math.floor(Math.random() * 1000)),
+              title: item.title || item.name || "Product Item",
+              price: Number(item.price || 0),
+              quantity: Number(item.quantity || 1),
+              location: item.location || item.businessName || item.seller || "Kampala Main",
+              image: item.image || "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300",
+              packageType: item.packageType || item.package || item.vendorPackage || "Pay As You Earn"
+            }));
+          }
+        } catch (e) { 
+          cart = []; 
+        }
+      }
+
+      // Fallback demo items demonstrating different package types (Pay As You Earn vs Subscription)
+      if (!cart || cart.length === 0) {
+        cart = [
+          {
+            id: "PROD-101",
+            title: "Premium Beef Sausages (1kg)",
+            price: 28000,
+            quantity: 2,
+            location: "Kyambogo Industrial Zone",
+            image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300",
+            packageType: "Pay As You Earn"
+          },
+          {
+            id: "PROD-102",
+            title: "Organic Hibiscus & Cinnamon Extract (500ml)",
+            price: 15000,
+            quantity: 1,
+            location: "Kampala Central",
+            image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300",
+            packageType: "Standard Vendor Package"
+          }
+        ];
+        saveCartToStorage();
+      }
+    }
+
+    function saveCartToStorage() {
+      localStorage.setItem("venxCart", JSON.stringify(cart));
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    function renderCart() {
+      const listContainer = document.getElementById("cartItemsList");
+      const badge = document.getElementById("itemCountBadge");
+      const checkoutBtn = document.getElementById("checkoutBtn");
+
+      if (cart.length === 0) {
+        listContainer.innerHTML = `
+          <div class="empty-msg">
+            <i class="fa-solid fa-cart-flatbed"></i>
+            <p>Your shopping cart is currently empty.</p>
+          </div>
+        `;
+        badge.innerText = "0 Items";
+        checkoutBtn.disabled = true;
+        resetSummaryFields();
+        return;
+      }
+
+      checkoutBtn.disabled = false;
+      badge.innerText = `${cart.length} Item${cart.length > 1 ? 's' : ''}`;
+      
+      const currKey = document.getElementById("currencySelect").value;
+      const curr = EXCHANGE_RATES[currKey] || EXCHANGE_RATES.UGX;
+
+      let html = "";
+      cart.forEach((item, index) => {
+        const itemPriceConverted = item.price * curr.rate;
+        const formattedPrice = formatMoney(itemPriceConverted, curr);
+        const isPaye = isPayePackage(item.packageType);
+
+        html += `
+          <div class="cart-item">
+            <img src="${item.image}" class="item-img" alt="${item.title}">
+            <div class="item-info">
+              <div>
+                <div class="item-title">${item.title}</div>
+                <div class="item-tags">
+                  <div class="item-seller"><i class="fa-solid fa-store"></i> ${item.location}</div>
+                  <div class="package-tag ${isPaye ? 'paye' : 'standard'}">
+                    <i class="fa-solid ${isPaye ? 'fa-percent' : 'fa-box-open'}"></i>
+                    ${item.packageType}
+                  </div>
+                </div>
+              </div>
+              <div class="item-meta">
+                <span class="item-price">${formattedPrice}</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div class="qty-box">
+                    <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                    <span class="qty-val">${item.quantity || 1}</span>
+                    <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                  </div>
+                  <button class="btn-remove" onclick="removeItem(${index})" title="Remove Item">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      listContainer.innerHTML = html;
+      calculateFinancials();
+    }
+
+    function resetSummaryFields() {
+      document.getElementById("subtotalText").innerText = "0";
+      document.getElementById("transportFeeText").innerText = "0";
+      document.getElementById("escrowFeeText").innerText = "0";
+      document.getElementById("grandTotalText").innerText = "0";
+      document.getElementById("payeCommissionRow").style.display = "none";
+      document.getElementById("discountRow").style.display = "none";
+    }
+
+    function updateQty(index, delta) {
+      cart[index].quantity = (cart[index].quantity || 1) + delta;
+      if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+      }
+      saveCartToStorage();
+      renderCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      saveCartToStorage();
+      renderCart();
+    }
+
+    function togglePaymentMethod(method) {
+      selectedPaymentMethod = method;
+      document.getElementById("payOnlineOpt").classList.toggle("active", method === "PESAPAL");
+      document.getElementById("payCodOpt").classList.toggle("active", method === "COD");
+
+      const checkoutBtn = document.getElementById("checkoutBtn");
+      const escrowRow = document.getElementById("escrowFeeRow");
+      const escrowBanner = document.getElementById("escrowBanner");
+      const bannerIcon = document.getElementById("bannerIcon");
+      const bannerTitle = document.getElementById("bannerTitle");
+      const bannerDesc = document.getElementById("bannerDesc");
+
+      if (method === "PESAPAL") {
+        checkoutBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay via Pesapal (Escrow)`;
+        escrowRow.style.display = "flex";
+        escrowBanner.classList.remove("cod-mode");
+        bannerIcon.className = "fa-solid fa-shield-halved";
+        bannerTitle.innerText = "100% Escrow Protection";
+        bannerDesc.innerText = "Funds are held securely by Venx Escrow. Payment released only after delivery verification.";
+      } else {
+        checkoutBtn.innerHTML = `<i class="fa-solid fa-bell"></i> Place COD Order & Notify Riders`;
+        escrowRow.style.display = "none";
+        escrowBanner.classList.add("cod-mode");
+        bannerIcon.className = "fa-solid fa-hand-holding-dollar";
+        bannerTitle.innerText = "Cash on Delivery Selected";
+        bannerDesc.innerText = "Zero escrow fee. You will pay cash directly to the rider upon receiving your package.";
+      }
+
+      calculateFinancials();
+    }
+
+    function handleCountryCurrencyChange() {
+      const countrySelect = document.getElementById("countrySelect");
+      const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+      const targetCurrency = selectedOption.getAttribute("data-currency");
+
+      if (targetCurrency) {
+        document.getElementById("currencySelect").value = targetCurrency;
+      }
+      renderCart();
+    }
+
+    function updateCurrencyOnly() {
+      renderCart();
+    }
+
+    function setDeliveryMode(mode) {
+      deliveryMode = mode;
+      document.getElementById("tabType").classList.toggle("active", mode === "type");
+      document.getElementById("tabSelect").classList.toggle("active", mode === "select");
+
+      document.getElementById("customAddressView").style.display = mode === "type" ? "block" : "none";
+      document.getElementById("zoneSelectView").style.display = mode === "select" ? "block" : "none";
+
+      calculateFinancials();
+    }
+
+    function getBuyerLocationName() {
+      if (deliveryMode === "type") {
+        const typed = document.getElementById("customLocationInput").value.trim();
+        return typed !== "" ? typed : "Kampala Central (Default)";
+      } else {
+        return document.getElementById("zoneSelect").value;
+      }
+    }
+
+    function detectGPSLocation() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude.toFixed(4);
+            const lng = position.coords.longitude.toFixed(4);
+            const locationStr = `GPS: (${lat}, ${lng})`;
+            
+            if (deliveryMode === "type") {
+              document.getElementById("customLocationInput").value = locationStr;
+            }
+            alert("Location detected successfully!");
+            calculateFinancials();
+          },
+          (error) => {
+            alert("Unable to retrieve GPS location. Please type your delivery address manually.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    }
+
+    function applyCoupon() {
+      const code = document.getElementById("couponInput").value.trim().toUpperCase();
+      if (code === "VENX2026" || code === "DISCOUNT10") {
+        appliedDiscountUGX = Math.round(computedSubtotalUGX * 0.10);
+        alert("Coupon applied! 10% discount subtracted from subtotal.");
+      } else if (code === "") {
+        appliedDiscountUGX = 0;
+        alert("Please enter a valid promo code.");
+      } else {
+        alert("Invalid promo code.");
+      }
+      calculateFinancials();
+    }
+
+    function calculateFinancials() {
+      if (cart.length === 0) return;
+
+      computedSubtotalUGX = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+
+      // Compute 10% commission internally (Deducted from vendor payout, NOT added to buyer total)
+      computedPayeCommissionUGX = cart.reduce((sum, item) => {
+        if (isPayePackage(item.packageType)) {
+          return sum + ((item.price * (item.quantity || 1)) * 0.10);
+        }
+        return sum;
+      }, 0);
+      computedPayeCommissionUGX = Math.round(computedPayeCommissionUGX);
+
+      const destName = getBuyerLocationName();
+      document.getElementById("destinationText").innerText = destName;
+
+      const sellerOrigins = [...new Set(cart.map(i => i.location || "Kampala Central"))];
+      document.getElementById("sellerOriginsText").innerText = sellerOrigins.join(", ");
+
+      let dist = 2.5;
+      const lowerDest = destName.toLowerCase();
+      if (lowerDest.includes("kyambogo") || lowerDest.includes("banda")) dist = 1.8;
+      else if (lowerDest.includes("ntinda") || lowerDest.includes("naalya")) dist = 5.2;
+      else if (lowerDest.includes("entebbe")) dist = 34.0;
+      else if (lowerDest.includes("mukono")) dist = 21.0;
+
+      calculatedDistanceKm = dist;
+      document.getElementById("distanceText").innerText = `${calculatedDistanceKm} km`;
+
+      computedTransportUGX = Math.ceil((3000 + (calculatedDistanceKm * 800)) / 500) * 500;
+      
+      if (selectedPaymentMethod === "COD") {
+        computedEscrowUGX = 0;
+      } else {
+        computedEscrowUGX = Math.round(computedSubtotalUGX * 0.015);
+      }
+
+      // Grand Total for Buyer strictly: Subtotal + Transport + Escrow - Discount
+      computedGrandTotalUGX = Math.max(0, computedSubtotalUGX + computedTransportUGX + computedEscrowUGX - appliedDiscountUGX);
+
+      const currKey = document.getElementById("currencySelect").value;
+      const curr = EXCHANGE_RATES[currKey] || EXCHANGE_RATES.UGX;
+
+      document.getElementById("subtotalText").innerText = formatMoney(computedSubtotalUGX * curr.rate, curr);
+      document.getElementById("transportFeeText").innerText = formatMoney(computedTransportUGX * curr.rate, curr);
+      document.getElementById("escrowFeeText").innerText = formatMoney(computedEscrowUGX * curr.rate, curr);
+
+      // Display Vendor Commission Notice if applicable
+      const payeRow = document.getElementById("payeCommissionRow");
+      if (computedPayeCommissionUGX > 0) {
+        payeRow.style.display = "flex";
+        document.getElementById("payeCommissionText").innerText = formatMoney(computedPayeCommissionUGX * curr.rate, curr) + " (Included)";
+      } else {
+        payeRow.style.display = "none";
+      }
+
+      // Display Discount Row if applicable
+      const discountRow = document.getElementById("discountRow");
+      if (appliedDiscountUGX > 0) {
+        discountRow.style.display = "flex";
+        document.getElementById("discountText").innerText = "-" + formatMoney(appliedDiscountUGX * curr.rate, curr);
+      } else {
+        discountRow.style.display = "none";
+      }
+
+      document.getElementById("grandTotalText").innerText = formatMoney(computedGrandTotalUGX * curr.rate, curr);
+    }
+
+    // Connects order context to Pesapal checkout or COD processing
+    function proceedToCheckout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+
+      const orderId = "ORD-" + Date.now();
+      const deliveryAddress = getBuyerLocationName();
+      const orderNote = document.getElementById("orderNote").value.trim();
+
+      // Unified Order Structure matching payment integration
+      const activeOrder = {
+        orderId: orderId,
+        items: cart,
+        deliveryDetails: {
+          address: deliveryAddress,
+          mode: deliveryMode,
+          distanceKm: calculatedDistanceKm,
+          note: orderNote
+        },
+        financials: {
+          subtotalUGX: computedSubtotalUGX,
+          transportFeeUGX: computedTransportUGX,
+          escrowFeeUGX: computedEscrowUGX,
+          payeCommissionUGX: computedPayeCommissionUGX,
+          vendorNetPayoutUGX: computedSubtotalUGX - computedPayeCommissionUGX,
+          discountUGX: appliedDiscountUGX,
+          grandTotalUGX: computedGrandTotalUGX
+        },
+        paymentMethod: selectedPaymentMethod,
+        status: selectedPaymentMethod === "PESAPAL" ? "PENDING_PAYMENT" : "PENDING_RIDER_COD",
+        createdAt: new Date().toISOString()
+      };
+
+      // Store Order Context in LocalStorage for checkout.html and backend synchronization
+      localStorage.setItem("venxActiveOrder", JSON.stringify(activeOrder));
+      localStorage.setItem("activePaymentOrder", JSON.stringify(activeOrder));
+      localStorage.setItem("venx_order_id", orderId);
+      localStorage.setItem("venx_checkout_amount", computedGrandTotalUGX);
+
+      if (selectedPaymentMethod === "PESAPAL") {
+        // Redirect to Pesapal Checkout Gateway
+        window.location.href = `checkout.html?orderId=${orderId}&amount=${computedGrandTotalUGX}`;
+      } else {
+        // Save Cash on Delivery order directly to history
+        let ordersHistory = JSON.parse(localStorage.getItem("venxOrders")) || [];
+        ordersHistory.unshift(activeOrder);
+        localStorage.setItem("venxOrders", JSON.stringify(ordersHistory));
+        
+        // Clear cart
+        localStorage.removeItem("venxCart");
+        localStorage.removeItem("cart");
+
+        alert("Order placed successfully with Cash on Delivery! Nearby riders have been notified.");
+        window.location.href = "orders.html";
+      }
+    }
+  </script>
+</body>
+</html>

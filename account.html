@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --danger-color: #e53e3e;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Top Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* --- Main Container --- */
+    .container {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    /* --- Card Container --- */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    /* --- Form Controls & Buttons --- */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      background: #fafafa;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      background: white;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .btn-outline:hover {
+      background: #e6fffa;
+    }
+
+    .btn-secondary-action {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      justify-content: flex-start;
+      padding: 12px 16px;
+    }
+
+    .btn-secondary-action:hover {
+      background: #edf2f7;
+      border-color: #cbd5e0;
+    }
+
+    .btn-danger {
+      background: #fff5f5;
+      color: var(--danger-color);
+      border: 1px solid #feb2b2;
+      margin-top: 16px;
+    }
+
+    .btn-danger:hover {
+      background: #fed7d7;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border-color);
+      z-index: 1;
+    }
+
+    .divider span {
+      position: relative;
+      background: white;
+      padding: 0 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      z-index: 2;
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-error {
+      background: #fff5f5;
+      color: #9b2c2c;
+      border: 1px solid #feb2b2;
+    }
+
+    .alert-success {
+      background: #e6fffa;
+      color: #234e52;
+      border: 1px solid #b2f5ea;
+    }
+
+    /* --- Profile Details Styling --- */
+    .profile-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .avatar-icon {
+      font-size: 50px;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .profile-info-list {
+      list-style: none;
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .profile-info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+    }
+
+    .profile-info-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .profile-info-value {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .account-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 20%;
+    }
+
+    .bottom-nav a.active {
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .bottom-nav a.plus-btn {
+      color: var(--primary-color);
+      font-size: 22px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+    <div class="header-title" id="pageTitle">Account</div>
+  </header>
+
+  <div class="container">
+    <div id="alertBox" class="alert"></div>
+
+    <!-- 1. SIGN IN FORM (Default view when logged out) -->
+    <div id="signInView" class="card" style="display: none;">
+      <h2 style="font-size: 20px; margin-bottom: 6px; text-align: center;">Welcome Back</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center;">
+        Sign in to manage your account and orders
+      </p>
+
+      <form id="signInForm">
+        <div class="form-group">
+          <label for="loginEmailOrPhone"><i class="fa-solid fa-envelope"></i> Email or Phone Number</label>
+          <input type="text" id="loginEmailOrPhone" class="form-control" placeholder="e.g. name@example.com or 0770000000" required>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword"><i class="fa-solid fa-lock"></i> Password</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" id="signInBtn" class="btn btn-primary">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>Don't have an account?</span>
+      </div>
+
+      <button type="button" id="switchToSignUpBtn" class="btn btn-outline">
+        <i class="fa-solid fa-user-plus"></i> Create Account
+      </button>
+    </div>
+
+    <!-- 2. CREATE ACCOUNT FORM (Displayed on clicking Create Account) -->
+    <div id="signUpView" class="card" style="display: none;">
+      <h2 style="font-size: 20px; margin-bottom: 6px; text-align: center;">Join Venx Market</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center;">
+        Fill in your details below to register
+      </p>
+
+      <form id="signUpForm">
+        <div class="form-group">
+          <label for="fullName"><i class="fa-solid fa-user"></i> Full Name</label>
+          <input type="text" id="fullName" class="form-control" placeholder="e.g. John Doe" required>
+        </div>
+
+        <div class="form-group">
+          <label for="regEmailOrPhone"><i class="fa-solid fa-envelope"></i> Email or Phone Number</label>
+          <input type="text" id="regEmailOrPhone" class="form-control" placeholder="e.g. name@example.com or 0770000000" required>
+        </div>
+
+        <div class="form-group">
+          <label for="regPassword"><i class="fa-solid fa-lock"></i> Password</label>
+          <input type="password" id="regPassword" class="form-control" placeholder="Min. 6 characters" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword"><i class="fa-solid fa-shield-halved"></i> Confirm Password</label>
+          <input type="password" id="confirmPassword" class="form-control" placeholder="Re-enter password" required>
+        </div>
+
+        <button type="submit" id="createAccountBtn" class="btn btn-primary">
+          <i class="fa-solid fa-user-plus"></i> Create Account
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>Already have an account?</span>
+      </div>
+
+      <button type="button" id="switchToSignInBtn" class="btn btn-outline">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+      </button>
+    </div>
+
+    <!-- 3. USER CREDENTIALS & PROFILE (Displayed when logged in) -->
+    <div id="profileView" class="card" style="display: none;">
+      <div class="profile-header">
+        <div class="avatar-icon"><i class="fa-solid fa-circle-user"></i></div>
+        <h2 id="userDisplayName" style="font-size: 20px; margin-bottom: 4px;">User Profile</h2>
+        <p style="font-size: 12px; color: var(--text-muted);">Active Account</p>
+      </div>
+
+      <ul class="profile-info-list">
+        <li class="profile-info-item">
+          <span class="profile-info-label">Full Name</span>
+          <span class="profile-info-value" id="profileFullName">-</span>
+        </li>
+        <li class="profile-info-item">
+          <span class="profile-info-label">Email / Phone</span>
+          <span class="profile-info-value" id="profileContact">-</span>
+        </li>
+        <li class="profile-info-item">
+          <span class="profile-info-label">Account ID</span>
+          <span class="profile-info-value" id="profileUid" style="font-size: 11px;">-</span>
+        </li>
+      </ul>
+
+      <!-- 🟢 MANAGEMENT & NAVIGATION BUTTONS FOR EXISTING USERS -->
+      <div class="account-actions">
+        <a href="my-items.html" class="btn btn-secondary-action">
+          <i class="fa-solid fa-boxes-stacked" style="color: var(--primary-color); width: 20px;"></i> 
+          <span>My Listed Items</span>
+          <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted); font-size: 12px;"></i>
+        </a>
+
+        <a href="edit-my-business.html" class="btn btn-secondary-action">
+          <i class="fa-solid fa-store" style="color: var(--primary-color); width: 20px;"></i> 
+          <span>Edit My Business</span>
+          <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted); font-size: 12px;"></i>
+        </a>
+
+        <a href="profile.html" class="btn btn-secondary-action">
+          <i class="fa-solid fa-user-pen" style="color: var(--primary-color); width: 20px;"></i> 
+          <span>Edit Profile Settings</span>
+          <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted); font-size: 12px;"></i>
+        </a>
+      </div>
+
+      <button type="button" id="signOutBtn" class="btn btn-danger">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <a href="index.html">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="categories.html">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Category</span>
+    </a>
+    <a href="packages.html" class="plus-btn">
+      <i class="fa-solid fa-circle-plus"></i>
+    </a>
+    <a href="orders.html">
+      <i class="fa-solid fa-box"></i>
+      <span>Orders</span>
+    </a>
+    <a href="account.html" class="active">
+      <i class="fa-solid fa-user"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Firebase Authentication Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      createUserWithEmailAndPassword, 
+      updateProfile, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
+      measurementId: "G-BLH2T3CBVQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // DOM Views & Elements
+    const signInView = document.getElementById("signInView");
+    const signUpView = document.getElementById("signUpView");
+    const profileView = document.getElementById("profileView");
+    const alertBox = document.getElementById("alertBox");
+    const pageTitle = document.getElementById("pageTitle");
+
+    // Display Alert Helper
+    function showAlert(message, type = "error") {
+      alertBox.textContent = message;
+      alertBox.className = `alert alert-${type}`;
+      alertBox.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function clearAlert() {
+      alertBox.style.display = "none";
+      alertBox.textContent = "";
+    }
+
+    // View Switching Helpers
+    function showSignInForm() {
+      clearAlert();
+      signInView.style.display = "block";
+      signUpView.style.display = "none";
+      profileView.style.display = "none";
+      pageTitle.textContent = "Sign In";
+    }
+
+    function showSignUpForm() {
+      clearAlert();
+      signInView.style.display = "none";
+      signUpView.style.display = "block";
+      profileView.style.display = "none";
+      pageTitle.textContent = "Create Account";
+    }
+
+    function showProfileView(user) {
+      clearAlert();
+      signInView.style.display = "none";
+      signUpView.style.display = "none";
+      profileView.style.display = "block";
+      pageTitle.textContent = "My Account";
+
+      // Display User Credentials
+      const name = user.displayName || "Valued User";
+      const rawContact = user.email || "";
+      const displayContact = rawContact.endsWith("@venxmarket.com") 
+        ? rawContact.replace("@venxmarket.com", "") 
+        : rawContact;
+
+      document.getElementById("userDisplayName").textContent = name;
+      document.getElementById("profileFullName").textContent = name;
+      document.getElementById("profileContact").textContent = displayContact;
+      document.getElementById("profileUid").textContent = user.uid;
+    }
+
+    // --- Firebase Auth State Listener ---
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        showProfileView(user);
+      } else {
+        showSignInForm();
+      }
+    });
+
+    // View Switch Event Listeners
+    document.getElementById("switchToSignUpBtn").addEventListener("click", showSignUpForm);
+    document.getElementById("switchToSignInBtn").addEventListener("click", showSignInForm);
+
+    // --- 1. SIGN IN SUBMISSION LOGIC ---
+    document.getElementById("signInForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlert();
+
+      let emailOrPhone = document.getElementById("loginEmailOrPhone").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const signInBtn = document.getElementById("signInBtn");
+
+      // Format Phone to Email format if necessary
+      if (!emailOrPhone.includes("@")) {
+        emailOrPhone = `${emailOrPhone.replace(/[^0-9]/g, '')}@venxmarket.com`;
+      }
+
+      signInBtn.disabled = true;
+      signInBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Signing In...`;
+
+      try {
+        await signInWithEmailAndPassword(auth, emailOrPhone, password);
+        showAlert("Signed in successfully!", "success");
+
+        // Smooth transition in 1.5 seconds (1500ms)
+        setTimeout(() => {
+          clearAlert();
+        }, 1500);
+
+      } catch (error) {
+        console.error("Sign In Error:", error);
+        showAlert("Invalid email/phone or password. Please try again.");
+        signInBtn.disabled = false;
+        signInBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In`;
+      }
+    });
+
+    // --- 2. CREATE ACCOUNT SUBMISSION LOGIC ---
+    document.getElementById("signUpForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlert();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      let emailOrPhone = document.getElementById("regEmailOrPhone").value.trim();
+      const password = document.getElementById("regPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const createBtn = document.getElementById("createAccountBtn");
+
+      // Password Validation
+      if (password !== confirmPassword) {
+        showAlert("Passwords do not match. Please verify both passwords.");
+        return;
+      }
+
+      if (password.length < 6) {
+        showAlert("Password must be at least 6 characters long.");
+        return;
+      }
+
+      // Format Phone to internal email if necessary
+      if (!emailOrPhone.includes("@")) {
+        emailOrPhone = `${emailOrPhone.replace(/[^0-9]/g, '')}@venxmarket.com`;
+      }
+
+      createBtn.disabled = true;
+      createBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...`;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, emailOrPhone, password);
+        
+        // Save Full Name
+        await updateProfile(userCredential.user, {
+          displayName: fullName
+        });
+
+        showAlert("Account created successfully! Loading your profile...", "success");
+
+        // Smooth 1.5 second delay before displaying credentials view
+        setTimeout(() => {
+          clearAlert();
+          showProfileView(auth.currentUser);
+        }, 1500);
+
+      } catch (error) {
+        console.error("Account Creation Error:", error);
+        if (error.code === "auth/email-already-in-use") {
+          showAlert("An account with this Email or Phone number already exists. Please Sign In.");
+        } else {
+          showAlert("Failed to create account: " + error.message);
+        }
+        createBtn.disabled = false;
+        createBtn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Create Account`;
+      }
+    });
+
+    // --- 3. SIGN OUT LOGIC ---
+    document.getElementById("signOutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        showAlert("Signed out successfully.", "success");
+        setTimeout(() => {
+          showSignInForm();
+        }, 1500);
+      } catch (error) {
+        showAlert("Error signing out: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>

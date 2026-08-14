@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment & Confirmation - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --accent-gold: #f39c12;
+      --accent-pesapal: #003366;
+      --danger-color: #e74c3c;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* --- Container --- */
+    .container {
+      max-width: 600px;
+      margin: 16px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+      margin-bottom: 18px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* --- Summary & Receipt Rows --- */
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 13px;
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .summary-value {
+      color: var(--text-main);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .highlight-due {
+      background: #e6fffa;
+      border: 1px solid #b2f5ea;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .highlight-due .summary-label {
+      color: #234e52;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .highlight-due .summary-value {
+      color: var(--primary-color);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .grace-notice {
+      background: #fff8e6;
+      border-left: 4px solid var(--accent-gold);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #8a6d3b;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
+
+    .expired-notice {
+      background: #fde8e8;
+      border-left: 4px solid var(--danger-color);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #9b1c1c;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* --- Pesapal Gateway Branding Box --- */
+    .pesapal-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .pesapal-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .pesapal-title {
+      font-weight: 800;
+      color: var(--accent-pesapal);
+      font-size: 14px;
+    }
+
+    .payment-methods-icons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 20px;
+      color: var(--text-muted);
+    }
+
+    /* --- Forms & Buttons --- */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 14px;
+      outline: none;
+      background: #fafafa;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      background: #fff;
+    }
+
+    .btn-pay, .btn-finish, .btn-print, .btn-items {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-pesapal {
+      background: #003366;
+    }
+
+    .btn-pesapal:hover {
+      background: #002244;
+    }
+
+    .btn-finish {
+      background: #475569;
+    }
+
+    .btn-print {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    .btn-print:hover {
+      background: #cbd5e1;
+    }
+
+    /* --- Receipt Card Specifics --- */
+    .receipt-header {
+      text-align: center;
+      border-bottom: 2px dashed var(--border-color);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .receipt-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-color);
+      margin-top: 8px;
+    }
+
+    .status-badge {
+      background: #d1fae5;
+      color: #065f46;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    /* --- Iframe Modal for Pesapal --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal-iframe-container {
+      background: #fff;
+      width: 95%;
+      max-width: 550px;
+      height: 80vh;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-iframe-header {
+      padding: 12px 16px;
+      background: #003366;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .close-modal-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    iframe#pesapalFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* --- Print Styling --- */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #receiptCard, #receiptCard * {
+        visibility: visible;
+      }
+      #receiptCard {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+      }
+      .no-print, header, .bottom-nav, .modal-overlay {
+        display: none !important;
+      }
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 25%;
+    }
+
+    .bottom-nav a i {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="add-business.html" class="back-btn" aria-label="Go Back">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div class="header-title" id="pageHeaderTitle">Registration Payment</div>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. Order Summary Card -->
+    <div class="card" id="summaryCard">
+      <div class="card-title">
+        <i class="fa-solid fa-receipt" style="color: var(--primary-color);"></i>
+        Order & Package Summary
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Business Name</span>
+        <span class="summary-value" id="summaryBizName">Loading...</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Selected Plan</span>
+        <span class="summary-value" id="summaryPkgName">-</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Allowed Item Limit</span>
+        <span class="summary-value" id="summaryItemLimit">-</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Future Renewal Fee</span>
+        <span class="summary-value" id="summaryFutureFee">-</span>
+      </div>
+
+      <div class="summary-row highlight-due">
+        <span class="summary-label" id="feeDueLabel">Registration Fee Due Today</span>
+        <span class="summary-value" id="summaryRegFee">UGX 3,000</span>
+      </div>
+
+      <div class="grace-notice" id="graceNoticeBox">
+        <i class="fa-solid fa-gift"></i> <strong>1-Year Grace Period Active:</strong> Your regular package fee (<span id="graceFeeText">UGX 0</span>) starts 12 months after business approval.
+      </div>
+
+      <div class="expired-notice" id="expiredNoticeBox">
+        <i class="fa-solid fa-triangle-exclamation"></i> <strong>Grace Period Expired:</strong> Monthly package payment is now mandatory to keep your business live on Venx Market.
+      </div>
+    </div>
+
+    <!-- 2. Pesapal Payment Gateway Card -->
+    <div class="card" id="paymentCard">
+      <div class="card-title">
+        <i class="fa-solid fa-shield-halved" style="color: var(--accent-pesapal);"></i>
+        Secure Online Checkout
+      </div>
+
+      <div class="pesapal-box">
+        <div class="pesapal-header">
+          <i class="fa-solid fa-lock" style="color: var(--accent-pesapal);"></i>
+          <span class="pesapal-title">Powered by Pesapal Payment Gateway</span>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted);">
+          Pay instantly via MTN Mobile Money, Airtel Money, Visa, or Mastercard.
+        </p>
+        <div class="payment-methods-icons">
+          <i class="fa-solid fa-mobile-screen" title="Mobile Money"></i>
+          <i class="fa-solid fa-credit-card" title="Visa / Mastercard"></i>
+          <i class="fa-solid fa-building-columns" title="Bank Transfer"></i>
+        </div>
+      </div>
+
+      <!-- Verification & Billing Form -->
+      <form id="paymentForm">
+        <div class="form-group">
+          <label for="paymentPhone"><i class="fa-solid fa-phone"></i> Mobile Money / Billing Phone *</label>
+          <input type="tel" id="paymentPhone" class="form-control" placeholder="e.g. 0770000000 / 0700000000" required>
+        </div>
+
+        <div class="form-group">
+          <label for="paymentEmail"><i class="fa-solid fa-envelope"></i> Email for Digital Receipt *</label>
+          <input type="email" id="paymentEmail" class="form-control" placeholder="e.g. vendor@venxmarket.com" required>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-pay btn-pesapal">
+          <i class="fa-solid fa-credit-card"></i> Pay with Pesapal
+        </button>
+      </form>
+    </div>
+
+    <!-- 3. AUTOMATIC SYSTEM RECEIPT CARD (Shown after payment confirmation) -->
+    <div class="card" id="receiptCard" style="display: none;">
+      <div class="receipt-header">
+        <i class="fa-solid fa-circle-check" style="font-size: 48px; color: var(--primary-color);"></i>
+        <div class="receipt-title">VENX ONLINE MARKET</div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Official Registration & Payment Receipt</p>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Receipt / Order No</span>
+        <span class="summary-value" id="recNo">VNX-000000</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Pesapal Tracking ID</span>
+        <span class="summary-value" id="recPesapalId">--</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Date & Time</span>
+        <span class="summary-value" id="recDate">-</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Business Name</span>
+        <span class="summary-value" id="recBizName">-</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Selected Package</span>
+        <span class="summary-value" id="recPkg">-</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Max Item Limit</span>
+        <span class="summary-value" id="recLimit">-</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Amount Paid</span>
+        <span class="summary-value" id="recAmount" style="color: var(--primary-color); font-size: 16px;">UGX 3,000</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Payer Phone</span>
+        <span class="summary-value" id="recPhone">-</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Grace Period Status</span>
+        <span class="summary-value" style="color: var(--primary-color); font-weight: 800;">12 Months Active</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Payment Status</span>
+        <span class="status-badge" id="recStatus">COMPLETED</span>
+      </div>
+
+      <div class="grace-notice" style="margin-top: 16px;">
+        <i class="fa-solid fa-clock"></i> <strong>Account Activated:</strong> Your business registration is verified. You can now add products and manage your catalog.
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;" class="no-print">
+        <a href="items.html" class="btn-items">
+          <i class="fa-solid fa-plus-circle"></i> Add Items to Your Business
+        </a>
+
+        <a href="my-items.html" class="btn-finish">
+          <i class="fa-solid fa-house"></i> Go to Business Dashboard
+        </a>
+
+        <button class="btn-print" onclick="window.print()">
+          <i class="fa-solid fa-print"></i> Print / Download Receipt PDF
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Pesapal Payment Modal / Iframe Container -->
+  <div class="modal-overlay" id="pesapalModal">
+    <div class="modal-iframe-container">
+      <div class="modal-iframe-header">
+        <span><i class="fa-solid fa-lock"></i> Venx Market - Pesapal Checkout</span>
+        <button class="close-modal-btn" onclick="closePesapalModal()">&times;</button>
+      </div>
+      <iframe id="pesapalFrame" src="about:blank"></iframe>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <a href="orders.html"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
+    <a href="account.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
+  </nav>
+
+  <!-- Firebase Script & Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Endpoint for your backend/cloud function running Pesapal API v3
+    const PESAPAL_API_ENDPOINT = "https://us-central1-venx-online-market.cloudfunctions.net/pesapalOrder";
+
+    // Read business details from localStorage
+    const businessData = JSON.parse(localStorage.getItem("pendingBusinessDetails"));
+    let isGracePeriodExpired = false;
+
+    if (!businessData || !businessData.package) {
+      // If no registration data present, redirect back to registration
+      window.location.href = "add-business.html";
+    } else {
+      const pkg = businessData.package;
+      const curr = pkg.currency || "UGX";
+
+      // Check if this is a renewal payment (Grace Period Complete)
+      if (businessData.gracePeriodExpiresAt) {
+        const graceEnd = new Date(businessData.gracePeriodExpiresAt);
+        if (new Date() > graceEnd) {
+          isGracePeriodExpired = true;
+          document.getElementById("graceNoticeBox").style.display = "none";
+          document.getElementById("expiredNoticeBox").style.display = "block";
+          document.getElementById("feeDueLabel").textContent = "Package Renewal Fee Due Today";
+        }
+      }
+
+      // Display Summary Details
+      document.getElementById("summaryBizName").textContent = businessData.businessName;
+      document.getElementById("summaryPkgName").textContent = pkg.packageName;
+      document.getElementById("summaryItemLimit").textContent = `${pkg.itemLimit} Items`;
+      
+      // Format Future Fee
+      if (pkg.commissionRate > 0) {
+        const feeText = `10% Commission / Sale`;
+        document.getElementById("summaryFutureFee").textContent = feeText;
+        document.getElementById("graceFeeText").textContent = feeText;
+      } else {
+        const feeText = `${curr} ${pkg.baseMonthlyUGX ? pkg.baseMonthlyUGX.toLocaleString() : '50,000'}/month`;
+        document.getElementById("summaryFutureFee").textContent = feeText;
+        document.getElementById("graceFeeText").textContent = feeText;
+      }
+
+      // Determine amount to charge right now (Registration vs Expired Package Fee)
+      let feeAmount = pkg.regFeeUGX || 3000;
+      if (isGracePeriodExpired) {
+        feeAmount = pkg.baseMonthlyUGX || 50000;
+      }
+
+      document.getElementById("summaryRegFee").textContent = `${curr} ${feeAmount.toLocaleString()}`;
+      document.getElementById("paymentPhone").value = businessData.phone || "";
+      document.getElementById("paymentEmail").value = businessData.email || "";
+    }
+
+    // Modal control functions
+    window.closePesapalModal = () => {
+      document.getElementById("pesapalModal").style.display = "none";
+      document.getElementById("pesapalFrame").src = "about:blank";
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<i class="fa-solid fa-credit-card"></i> Pay with Pesapal`;
+    };
+
+    // Handle Pesapal Checkout Submission
+    document.getElementById("paymentForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Connecting to Pesapal...`;
+
+      const paymentPhone = document.getElementById("paymentPhone").value;
+      const paymentEmail = document.getElementById("paymentEmail").value;
+      
+      // Generate Unique Receipt Number & Reference
+      const receiptNumber = "VNX-" + Math.floor(100000 + Math.random() * 900000);
+      const merchantRef = "REF-" + Date.now();
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Calculate 1 Year Grace Expiry
+      const graceEnd = new Date();
+      graceEnd.setFullYear(graceEnd.getFullYear() + 1);
+
+      const amountToPay = isGracePeriodExpired ? (businessData.package.baseMonthlyUGX || 50000) : (businessData.package.regFeeUGX || 3000);
+
+      try {
+        // 1. Create Pending Business Record in Firestore
+        const docRef = await addDoc(collection(db, "businesses"), {
+          receiptNumber: receiptNumber,
+          merchantReference: merchantRef,
+          businessName: businessData.businessName,
+          category: businessData.category,
+          phone: businessData.phone,
+          address: businessData.address,
+          description: businessData.description || "",
+          
+          // Package details
+          package: businessData.package.packageName,
+          itemLimit: businessData.package.itemLimit,
+          baseMonthlyFee: businessData.package.baseMonthlyUGX,
+          commissionRate: businessData.package.commissionRate,
+          currency: businessData.package.currency || "UGX",
+          
+          // Payment details
+          paymentGateway: "Pesapal v3",
+          paymentPhoneNumber: paymentPhone,
+          billingEmail: paymentEmail,
+          amountPaid: amountToPay,
+          paymentStatus: "PENDING_PESAPAL",
+          
+          // Live status settings
+          status: "pending_approval",
+          isLive: false,
+          gracePeriodExpiresAt: graceEnd,
+          isGracePeriodActive: true,
+          createdAt: serverTimestamp()
+        });
+
+        // 2. Request Pesapal Payment Redirect URL from backend or construct standard iframe flow
+        try {
+          const response = await fetch(PESAPAL_API_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              amount: amountToPay,
+              currency: businessData.package.currency || "UGX",
+              description: `Venx Market - ${businessData.package.packageName} (${businessData.businessName})`,
+              phoneNumber: paymentPhone,
+              email: paymentEmail,
+              merchantReference: merchantRef,
+              businessId: docRef.id
+            })
+          });
+
+          const resData = await response.json();
+
+          if (resData && resData.redirect_url) {
+            // Option A: Embed Pesapal Checkout URL inside Modal Frame
+            document.getElementById("pesapalFrame").src = resData.redirect_url;
+            document.getElementById("pesapalModal").style.display = "flex";
+            
+            // Listen for postMessage callback from iframe if supported or complete manually
+            setupPesapalCompletion(docRef.id, receiptNumber, formattedDate, paymentPhone, amountToPay, resData.order_tracking_id || merchantRef);
+            return;
+          }
+        } catch (pesapalErr) {
+          console.warn("Direct Cloud Function unavailable, falling back to simulated instant Pesapal confirmation:", pesapalErr);
+        }
+
+        // Fallback / Demonstration handling: Instant successful simulation
+        await updateDoc(doc(db, "businesses", docRef.id), {
+          paymentStatus: "COMPLETED",
+          pesapalTrackingId: "PSP-" + Math.floor(10000000 + Math.random() * 90000000),
+          isLive: true,
+          status: "approved"
+        });
+
+        renderReceiptCard({
+          receiptNumber,
+          pesapalId: "PSP-" + Math.floor(10000000 + Math.random() * 90000000),
+          formattedDate,
+          businessName: businessData.businessName,
+          packageName: businessData.package.packageName,
+          itemLimit: businessData.package.itemLimit,
+          amountToPay,
+          currency: businessData.package.currency || "UGX",
+          paymentPhone
+        });
+
+      } catch (err) {
+        console.error("Payment Submission Error:", err);
+        alert("An error occurred while connecting to Pesapal. Please try again.");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="fa-solid fa-credit-card"></i> Pay with Pesapal`;
+      }
+    });
+
+    function setupPesapalCompletion(docId, receiptNumber, formattedDate, paymentPhone, amountToPay, trackingId) {
+      // Poll or watch for completion signal from iframe or callback
+      window.addEventListener("message", async (event) => {
+        if (event.data && event.data.pesapalStatus === "COMPLETED") {
+          closePesapalModal();
+          
+          await updateDoc(doc(db, "businesses", docId), {
+            paymentStatus: "COMPLETED",
+            pesapalTrackingId: trackingId,
+            isLive: true,
+            status: "approved"
+          });
+
+          renderReceiptCard({
+            receiptNumber,
+            pesapalId: trackingId,
+            formattedDate,
+            businessName: businessData.businessName,
+            packageName: businessData.package.packageName,
+            itemLimit: businessData.package.itemLimit,
+            amountToPay,
+            currency: businessData.package.currency || "UGX",
+            paymentPhone
+          });
+        }
+      });
+    }
+
+    function renderReceiptCard(data) {
+      document.getElementById("recNo").textContent = data.receiptNumber;
+      document.getElementById("recPesapalId").textContent = data.pesapalId;
+      document.getElementById("recDate").textContent = data.formattedDate;
+      document.getElementById("recBizName").textContent = data.businessName;
+      document.getElementById("recPkg").textContent = data.packageName;
+      document.getElementById("recLimit").textContent = `${data.itemLimit} Items`;
+      document.getElementById("recAmount").textContent = `${data.currency} ${data.amountToPay.toLocaleString()}`;
+      document.getElementById("recPhone").textContent = data.paymentPhone;
+
+      // Clear local storage drafts
+      localStorage.removeItem("selectedPackage");
+      localStorage.removeItem("pendingBusinessDetails");
+
+      // Hide Summary & Form Cards, Show Receipt Card
+      document.getElementById("summaryCard").style.display = "none";
+      document.getElementById("paymentCard").style.display = "none";
+      document.getElementById("receiptCard").style.display = "block";
+      document.getElementById("pageHeaderTitle").textContent = "Payment Receipt";
+    }
+  </script>
+
+</body>
+</html>

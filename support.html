@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help & Support - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --nav-height: 65px;
+      --whatsapp-color: #25d366;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Top Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* --- Container --- */
+    .container {
+      max-width: 600px;
+      margin: 16px auto;
+      padding: 0 16px;
+    }
+
+    /* --- Search Bar --- */
+    .search-box {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      font-size: 14px;
+      outline: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    /* --- Instant WhatsApp Banner --- */
+    .support-hero {
+      background: linear-gradient(135deg, #128c7e, var(--whatsapp-color));
+      color: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);
+    }
+
+    .support-hero h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .support-hero p {
+      font-size: 13px;
+      opacity: 0.95;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .btn-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: white;
+      color: #075e54;
+      padding: 12px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .btn-whatsapp:active {
+      transform: scale(0.98);
+    }
+
+    /* --- Quick Topic Cards Grid --- */
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .topic-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      text-decoration: none;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      transition: border-color 0.2s;
+    }
+
+    .topic-card:hover {
+      border-color: var(--primary-color);
+    }
+
+    .topic-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: #e6fffa;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .topic-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .topic-card span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* --- Accordion FAQ Section --- */
+    .faq-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      margin-bottom: 24px;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 16px 0;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      gap: 12px;
+    }
+
+    .faq-question i {
+      color: var(--text-muted);
+      font-size: 14px;
+      transition: transform 0.3s;
+    }
+
+    .faq-item.active .faq-question i {
+      transform: rotate(180deg);
+      color: var(--primary-color);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .faq-item.active .faq-answer {
+      padding-bottom: 16px;
+    }
+
+    /* --- Direct Support Form --- */
+    .form-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 13px;
+      outline: none;
+      background: #fafafa;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      background: #fff;
+    }
+
+    textarea.form-control {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .btn-send {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-send:hover {
+      background: var(--primary-dark);
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .bottom-nav a.active {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .bottom-nav a i {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="profile.html" class="back-btn" aria-label="Back to Profile">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div class="header-title">Help & Support</div>
+  </header>
+
+  <div class="container">
+
+    <!-- Search Input -->
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="faqSearch" placeholder="Search questions, mobile money, packages..." onkeyup="filterFAQs()">
+    </div>
+
+    <!-- Live WhatsApp Support Card -->
+    <div class="support-hero">
+      <h3><i class="fa-brands fa-whatsapp" style="font-size: 22px;"></i> Need Instant Assistance?</h3>
+      <p>Chat directly with our team in Uganda for fast help with Mobile Money payments, package activations, or order questions.</p>
+      <a href="https://wa.me/256700000000?text=Hello%20Venx%20Support,%20I%20need%20assistance%20with%20my%20account." target="_blank" class="btn-whatsapp">
+        <i class="fa-brands fa-whatsapp fa-lg"></i>
+        <span>Chat on WhatsApp (+256)</span>
+      </a>
+    </div>
+
+    <!-- Quick Category Grid -->
+    <div class="section-title">
+      <i class="fa-solid fa-compass" style="color: var(--primary-color);"></i>
+      <span>Browse Topics</span>
+    </div>
+
+    <div class="topic-grid">
+      <a href="#faqs" class="topic-card" onclick="openFAQTopic('mobile-money')">
+        <div class="topic-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+        <h4>Mobile Money</h4>
+        <span>MTN MoMo & Airtel</span>
+      </a>
+
+      <a href="#faqs" class="topic-card" onclick="openFAQTopic('vendor')">
+        <div class="topic-icon"><i class="fa-solid fa-store"></i></div>
+        <h4>Vendor Rules</h4>
+        <span>Listing limits & packages</span>
+      </a>
+
+      <a href="#faqs" class="topic-card" onclick="openFAQTopic('orders')">
+        <div class="topic-icon"><i class="fa-solid fa-truck-fast"></i></div>
+        <h4>Orders & Buyers</h4>
+        <span>Delivery & WhatsApp chats</span>
+      </a>
+
+      <a href="#faqs" class="topic-card" onclick="openFAQTopic('account')">
+        <div class="topic-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <h4>Account Help</h4>
+        <span>Profile & shop details</span>
+      </a>
+    </div>
+
+    <!-- Accordion FAQ Section -->
+    <div class="section-title" id="faqs">
+      <i class="fa-solid fa-circle-question" style="color: var(--primary-color);"></i>
+      <span>Frequently Asked Questions</span>
+    </div>
+
+    <div class="faq-card" id="faqContainer">
+
+      <!-- FAQ 1 -->
+      <div class="faq-item" data-topic="mobile-money vendor">
+        <button class="faq-question">
+          <span>How do I pay for Vendor Packages with Mobile Money?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer">
+          When registering your business or renewing a package (from UGX 3,000+), select <strong>MTN Mobile Money</strong> or <strong>Airtel Money</strong> at payment checkout. Enter your phone number to receive an instant USSD prompt on your phone to confirm your PIN.
+        </div>
+      </div>
+
+      <!-- FAQ 2 -->
+      <div class="faq-item" data-topic="orders vendor">
+        <button class="faq-question">
+          <span>How do buyers contact my store?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer">
+          Buyers can view your listed products and tap the <strong>"Contact via WhatsApp"</strong> or <strong>"Call Seller"</strong> button directly on your business page. Orders can be discussed and finalized straight to your phone.
+        </div>
+      </div>
+
+      <!-- FAQ 3 -->
+      <div class="faq-item" data-topic="vendor">
+        <button class="faq-question">
+          <span>What happens when my package item limit is reached?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer">
+          Each package tier (e.g., Starter, Silver, Gold) allows a specified number of active item listings. If you hit your limit, you can upgrade your plan anytime under <strong>Vendor Packages</strong> in your Profile tab to unlock more slots.
+        </div>
+      </div>
+
+      <!-- FAQ 4 -->
+      <div class="faq-item" data-topic="orders">
+        <button class="faq-question">
+          <span>Is delivery handled by Venx Online Market?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer">
+          Venx connects sellers directly with local buyers across Uganda. Delivery terms (boda boda dispatch, pick-up point, or courier) are coordinated directly between you and the buyer/seller during checkout or WhatsApp chat.
+        </div>
+      </div>
+
+      <!-- FAQ 5 -->
+      <div class="faq-item" data-topic="account">
+        <button class="faq-question">
+          <span>How do I edit my business name or location?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer">
+          Go to your <strong>Profile</strong> tab, tap <strong>Edit Profile Details</strong>, update your shop name, primary district/address (e.g., Kampala Plaza), or phone number, and click Save.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Direct Ticket / Message Form -->
+    <div class="section-title">
+      <i class="fa-solid fa-paper-plane" style="color: var(--primary-color);"></i>
+      <span>Send Us a Message</span>
+    </div>
+
+    <div class="form-card">
+      <form id="supportTicketForm">
+        <div class="form-group">
+          <label for="ticketName">Your Name *</label>
+          <input type="text" id="ticketName" class="form-control" placeholder="e.g. Sarah Namubiru" required>
+        </div>
+
+        <div class="form-group">
+          <label for="ticketPhone">WhatsApp / Phone Number *</label>
+          <input type="tel" id="ticketPhone" class="form-control" placeholder="e.g. +256 700 000000" required>
+        </div>
+
+        <div class="form-group">
+          <label for="ticketMessage">How can we help you? *</label>
+          <textarea id="ticketMessage" class="form-control" placeholder="Describe your issue or question..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-send">
+          <span>Submit Inquiry</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <a href="add-business.html"><i class="fa-solid fa-plus-circle"></i><span>Add Business</span></a>
+    <a href="orders.html"><i class="fa-solid fa-box"></i><span>My Orders</span></a>
+    <a href="profile.html" class="active"><i class="fa-solid fa-user"></i><span>Account</span></a>
+  </nav>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Accordion Toggle
+      const faqQuestions = document.querySelectorAll(".faq-question");
+
+      faqQuestions.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const item = btn.parentElement;
+          const answer = item.querySelector(".faq-answer");
+          const isActive = item.classList.contains("active");
+
+          // Close all items
+          document.querySelectorAll(".faq-item").forEach(i => {
+            i.classList.remove("active");
+            i.querySelector(".faq-answer").style.maxHeight = null;
+          });
+
+          // Toggle current
+          if (!isActive) {
+            item.classList.add("active");
+            answer.style.maxHeight = answer.scrollHeight + "px";
+          }
+        });
+      });
+
+      // 2. Pre-fill user details if logged in
+      const pendingDetails = localStorage.getItem("pendingBusinessDetails");
+      if (pendingDetails) {
+        const biz = JSON.parse(pendingDetails);
+        if (biz.businessName) document.getElementById("ticketName").value = biz.businessName;
+        if (biz.phone) document.getElementById("ticketPhone").value = biz.phone;
+      }
+    });
+
+    // 3. Search Filter for FAQs
+    function filterFAQs() {
+      const query = document.getElementById("faqSearch").value.toLowerCase();
+      const items = document.querySelectorAll(".faq-item");
+
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(query)) {
+          item.style.display = "block";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    }
+
+    // 4. Open FAQ by category click
+    function openFAQTopic(topic) {
+      const items = document.querySelectorAll(".faq-item");
+      items.forEach(item => {
+        const itemTopics = item.getAttribute("data-topic") || "";
+        if (itemTopics.includes(topic)) {
+          item.style.display = "block";
+          item.classList.add("active");
+          const answer = item.querySelector(".faq-answer");
+          answer.style.maxHeight = answer.scrollHeight + "px";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    }
+
+    // 5. Submit Form Handler
+    document.getElementById("supportTicketForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("ticketName").value;
+      alert(`Thank you, ${name}! Your inquiry has been submitted. Our Venx Support team will reach out via WhatsApp shortly.`);
+      e.target.reset();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verifying Payment - Venx Market</title>
+  <style>
+    body { font-family: system-ui, sans-serif; display: grid; place-items: center; height: 100vh; background: #f8fafc; }
+    .status-card { background: white; padding: 32px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <div class="status-card">
+    <h2 id="statusTitle">Verifying Your Payment...</h2>
+    <p id="statusMsg">Please wait while we confirm your transaction with Pesapal.</p>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderTrackingId = urlParams.get('OrderTrackingId');
+      const merchantReference = urlParams.get('OrderMerchantReference') || localStorage.getItem('venx_pending_order_id');
+
+      if (!orderTrackingId) {
+        document.getElementById('statusTitle').innerText = "Payment Verification Failed";
+        document.getElementById('statusMsg').innerText = "Missing order tracking parameters.";
+        return;
+      }
+
+      try {
+        // Query backend for status status
+        const response = await fetch(`https://g-links-backend.onrender.com/api/payments/status?OrderTrackingId=${orderTrackingId}&OrderMerchantReference=${merchantReference}`);
+        const result = await response.json();
+
+        if (result.status === 'COMPLETED' || result.payment_status_description === 'Completed') {
+          document.getElementById('statusTitle').innerText = "Payment Successful!";
+          document.getElementById('statusMsg').innerText = "Your order has been confirmed. Redirecting to your orders...";
+
+          // Mark active order as completed and archive
+          finalizeOrder(merchantReference, 'COMPLETED', orderTrackingId);
+
+          setTimeout(() => { window.location.href = 'orders.html'; }, 2500);
+        } else {
+          document.getElementById('statusTitle').innerText = "Payment Pending or Failed";
+          document.getElementById('statusMsg').innerText = `Status: ${result.status || 'FAILED'}. Redirecting to orders...`;
+          
+          finalizeOrder(merchantReference, 'FAILED', orderTrackingId);
+          setTimeout(() => { window.location.href = 'orders.html'; }, 3000);
+        }
+      } catch (err) {
+        console.error("Verification Error:", err);
+        document.getElementById('statusTitle').innerText = "Verification Error";
+        document.getElementById('statusMsg').innerText = "Unable to reach server. Please check your Orders page.";
+      }
+    });
+
+    function finalizeOrder(orderId, status, trackingId) {
+      let activeOrder = JSON.parse(localStorage.getItem('venxActiveOrder'));
+      let ordersHistory = JSON.parse(localStorage.getItem('venxOrders')) || [];
+
+      if (activeOrder && activeOrder.orderId === orderId) {
+        activeOrder.status = status;
+        activeOrder.pesapalTrackingId = trackingId;
+        activeOrder.paidAt = new Date().toISOString();
+
+        ordersHistory.unshift(activeOrder);
+        localStorage.setItem('venxOrders', JSON.stringify(ordersHistory));
+        localStorage.removeItem('venxActiveOrder');
+        localStorage.removeItem('venxCart'); // Clear cart after order completion
+      }
+    }
+  </script>
+</body>
+</html>

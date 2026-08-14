@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venx Online Market - Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --accent-gold: #f39c12;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 85px;
+    }
+
+    /* --- Header & G-LINKS Branding --- */
+    header {
+      background: var(--primary-color);
+      padding: 14px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-avatar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid white;
+      object-fit: cover;
+      background: white;
+    }
+
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .glinks-subtext {
+      font-size: 10px;
+      color: #e2f7ed;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 16px;
+      font-size: 18px;
+    }
+
+    .header-icons a { color: white; text-decoration: none; }
+
+    .cart-icon-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background: #e74c3c;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 5px;
+      border-radius: 10px;
+      min-width: 16px;
+      text-align: center;
+      line-height: 1;
+      border: 1px solid white;
+    }
+
+    .glinks-header-desc {
+      background: rgba(0, 0, 0, 0.18);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11px;
+      line-height: 1.35;
+      color: #f0fdf4;
+      border-left: 3px solid var(--accent-gold);
+      margin-bottom: 10px;
+    }
+
+    .glinks-header-desc strong { color: var(--accent-gold); }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 10px;
+      padding: 8px 14px;
+    }
+
+    .search-box i { color: var(--text-muted); margin-right: 8px; }
+    .search-box input { border: none; outline: none; width: 100%; font-size: 14px; background: transparent; }
+
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* --- Announcement Marquee Banner --- */
+    .glinks-banner {
+      background: linear-gradient(135deg, var(--primary-dark), #044b25);
+      border-radius: 16px;
+      padding: 14px 0;
+      color: white;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 14px rgba(11, 143, 77, 0.25);
+      overflow: hidden;
+    }
+
+    .glinks-header-tag {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px 8px 16px;
+      border-bottom: 1px rgba(255, 255, 255, 0.15) dashed;
+      margin-bottom: 10px;
+    }
+
+    .glinks-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .glinks-badge {
+      background: var(--accent-gold);
+      color: #000;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .marquee-wrapper { display: flex; overflow: hidden; }
+
+    .marquee-content {
+      display: flex;
+      gap: 20px;
+      animation: scrollMarquee 22s linear infinite;
+      white-space: nowrap;
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .marquee-item i { color: var(--accent-gold); }
+
+    @keyframes scrollMarquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* --- Sections & Cards --- */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .section-title { font-size: 16px; font-weight: 700; color: var(--text-main); }
+    .see-all { font-size: 13px; color: var(--primary-color); text-decoration: none; font-weight: 600; }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .category-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 14px 8px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .category-card i { font-size: 20px; color: var(--primary-color); margin-bottom: 6px; display: block; }
+    .category-card span { font-size: 11px; font-weight: 600; display: block; }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-img-wrapper {
+      height: 130px;
+      background: #f1f5f9;
+      position: relative;
+    }
+
+    .product-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+    .verified-badge {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: var(--primary-color);
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 10px;
+    }
+
+    .product-details {
+      padding: 12px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+    .business-name { font-size: 11px; font-weight: 700; color: var(--primary-color); margin-bottom: 2px; }
+    .business-location { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+
+    .item-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .item-size-tag {
+      display: inline-block;
+      font-size: 10px;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .package-tag {
+      display: inline-block;
+      font-size: 10px;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      border: 1px solid #fde68a;
+    }
+
+    .package-tag.paye {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fca5a5;
+    }
+
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .product-price { font-size: 13px; font-weight: 800; color: var(--primary-color); }
+
+    .btn-buy-app {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .loading-spinner { grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; }
+
+    /* --- Developer Credit Banner --- */
+    .developer-banner {
+      background: #1e293b;
+      color: #f8fafc;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 28px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid #334155;
+    }
+
+    .developer-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .developer-banner i {
+      color: var(--accent-gold);
+      font-size: 16px;
+    }
+
+    .developer-banner strong {
+      color: var(--accent-gold);
+      letter-spacing: 0.3px;
+    }
+
+    .developer-contact-btn {
+      background: var(--primary-color);
+      color: white !important;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* --- Bottom Nav --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 20%;
+    }
+
+    .bottom-nav a.active { color: var(--primary-color); font-weight: bold; }
+    .bottom-nav a.plus-btn { color: var(--primary-color); font-size: 24px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+      <div class="header-brand">
+        <a href="account.html">
+          <img id="userAvatar" class="profile-avatar-btn" src="https://ui-avatars.com/api/?name=User&background=0b8f4d&color=ffffff&bold=true" alt="Profile">
+        </a>
+        <div class="logo-container">
+          <div class="logo-text">Venx Market</div>
+          <span class="glinks-subtext">POWERED BY G-LINKS SERVICES</span>
+        </div>
+      </div>
+      <div class="header-icons">
+        <a href="notifications.html"><i class="fa-solid fa-bell"></i></a>
+        <a href="cart.html" class="cart-icon-wrapper">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span id="cartBadge" class="cart-badge" style="display: none;">0</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="glinks-header-desc">
+      <strong>G-LINKS Network:</strong> Official escrow gateway connecting verified businesses & hubs. Direct seller contacts are masked for platform security.
+    </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Search products, sizes, businesses..." onkeyup="filterProducts()">
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div class="glinks-banner">
+      <div class="glinks-header-tag">
+        <span class="glinks-title"><i class="fa-solid fa-bullhorn"></i> G-LINKS ANNOUNCEMENTS</span>
+        <span class="glinks-badge">VERIFIED</span>
+      </div>
+      <div class="marquee-wrapper">
+        <div class="marquee-content">
+          <div class="marquee-item"><i class="fa-solid fa-store"></i> Kyambogo Food Tech Hub: Fresh Sausage Batch Kits Available!</div>
+          <div class="marquee-item"><i class="fa-solid fa-bolt"></i> G-LINKS Express Delivery active across Kampala</div>
+          <div class="marquee-item"><i class="fa-solid fa-shield-halved"></i> All Payments Handled Securely via In-App Escrow</div>
+          
+          <div class="marquee-item"><i class="fa-solid fa-store"></i> Kyambogo Food Tech Hub: Fresh Sausage Batch Kits Available!</div>
+          <div class="marquee-item"><i class="fa-solid fa-bolt"></i> G-LINKS Express Delivery active across Kampala</div>
+          <div class="marquee-item"><i class="fa-solid fa-shield-halved"></i> All Payments Handled Securely via In-App Escrow</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">Categories</span>
+      <a href="categories.html" class="see-all">See All</a>
+    </div>
+
+    <div class="categories-grid">
+      <a href="categories.html?cat=electronics" class="category-card"><i class="fa-solid fa-mobile-screen"></i><span>Electronics</span></a>
+      <a href="categories.html?cat=fashion" class="category-card"><i class="fa-solid fa-shirt"></i><span>Fashion</span></a>
+      <a href="categories.html?cat=food" class="category-card"><i class="fa-solid fa-utensils"></i><span>Food & Drinks</span></a>
+      <a href="categories.html?cat=services" class="category-card"><i class="fa-solid fa-briefcase"></i><span>Services</span></a>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">Featured Approved Business Listings</span>
+      <a href="products.html" class="see-all">Explore All</a>
+    </div>
+
+    <div class="products-grid" id="approvedProductsGrid">
+      <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading approved business listings...</div>
+    </div>
+
+    <!-- Developer Credit Banner -->
+    <div class="developer-banner">
+      <div class="developer-banner-content">
+        <i class="fa-solid fa-code"></i>
+        <div>
+          <span>Designed by <strong>MUGISHA MUHABUZI</strong></span>
+        </div>
+      </div>
+      <a href="tel:0777364587" class="developer-contact-btn">
+        <i class="fa-solid fa-phone"></i> 0777364587
+      </a>
+    </div>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="index.html" class="active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="categories.html"><i class="fa-solid fa-layer-group"></i><span>Category</span></a>
+    <a href="packages.html" class="plus-btn"><i class="fa-solid fa-circle-plus"></i></a>
+    <a href="orders.html"><i class="fa-solid fa-box"></i><span>Orders</span></a>
+    <a href="account.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
+  </nav>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+    authDomain: "venx-online-market.firebaseapp.com",
+    projectId: "venx-online-market",
+    storageBucket: "venx-online-market.firebasestorage.app",
+    messagingSenderId: "820627929510",
+    appId: "1:820627929510:web:aa97704fbf1c6bf4077767"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let allItemsCache = [];
+
+  // --- LOCAL STORAGE HELPERS ---
+  function updateCartBadge() {
+    const badge = document.getElementById("cartBadge");
+    if (!badge) return;
+    try {
+      const rawCart = localStorage.getItem("venxCart") || localStorage.getItem("cart");
+      const cart = rawCart ? JSON.parse(rawCart) : [];
+      const totalCount = cart.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
+      if (totalCount > 0) {
+        badge.textContent = totalCount;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    } catch (e) {
+      badge.style.display = "none";
+    }
+  }
+
+  function loadCachedUserProfile() {
+    const cachedAvatar = localStorage.getItem("venxUserAvatar");
+    const avatarImg = document.getElementById("userAvatar");
+    if (cachedAvatar && avatarImg) {
+      avatarImg.src = cachedAvatar;
+    }
+  }
+
+  function loadCachedProducts() {
+    try {
+      const rawCached = localStorage.getItem("venxApprovedProducts");
+      if (rawCached) {
+        allItemsCache = JSON.parse(rawCached);
+        if (Array.isArray(allItemsCache) && allItemsCache.length > 0) {
+          renderProducts(allItemsCache);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed reading cached products:", e);
+    }
+  }
+
+  // Instant render from local storage cache before network fetch
+  loadCachedUserProfile();
+  loadCachedProducts();
+  updateCartBadge();
+
+  // --- FIREBASE AUTH LISTENERS ---
+  onAuthStateChanged(auth, (user) => {
+    const avatarImg = document.getElementById("userAvatar");
+    if (user && avatarImg) {
+      const name = user.displayName || user.email.split('@')[0];
+      const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0b8f4d&color=ffffff&bold=true`;
+      avatarImg.src = avatarUrl;
+      
+      // Save profile info to local storage
+      localStorage.setItem("venxUserAvatar", avatarUrl);
+      localStorage.setItem("venxUserName", name);
+      localStorage.setItem("venxUserEmail", user.email || "");
+      localStorage.setItem("venxUserId", user.uid);
+    }
+  });
+
+  // --- FIRESTORE PRODUCT FETCHING ---
+  async function fetchApprovedItems() {
+    try {
+      const q = query(collection(db, "products"), where("approved", "==", true));
+      const snapshot = await getDocs(q);
+
+      allItemsCache = [];
+      
+      for (const docSnap of snapshot.docs) {
+        const itemData = docSnap.data();
+        let pkgType = itemData.packageType || itemData.package || itemData.subscriptionType || null;
+
+        if (!pkgType && itemData.businessId) {
+          try {
+            const bizRef = doc(db, "businesses", itemData.businessId);
+            const bizSnap = await getDoc(bizRef);
+            if (bizSnap.exists()) {
+              pkgType = bizSnap.data().packageType || bizSnap.data().package || bizSnap.data().plan || "pay_as_you_earn";
+            }
+          } catch (e) {
+            console.warn("Error fetching business package info:", e);
+          }
+        }
+
+        allItemsCache.push({ 
+          id: docSnap.id, 
+          packageType: pkgType || "pay_as_you_earn",
+          ...itemData 
+        });
+      }
+
+      if (allItemsCache.length === 0) {
+        allItemsCache = getFallbackBusinesses();
+      }
+
+      // Save fresh listings into local storage cache
+      localStorage.setItem("venxApprovedProducts", JSON.stringify(allItemsCache));
+      renderProducts(allItemsCache);
+    } catch (error) {
+      console.warn("Firestore query fallback:", error);
+      if (allItemsCache.length === 0) {
+        allItemsCache = getFallbackBusinesses();
+        localStorage.setItem("venxApprovedProducts", JSON.stringify(allItemsCache));
+        renderProducts(allItemsCache);
+      }
+    }
+  }
+
+  function formatPackageLabel(rawPackage) {
+    if (!rawPackage) return { label: "Pkg: Pay As You Earn (10%)", isPAYE: true };
+    const str = String(rawPackage).toLowerCase();
+    
+    if (str.includes("paye") || str.includes("pay_as_you_earn") || str.includes("earn") || str.includes("commission")) {
+      return { label: "Pkg: Pay As You Earn (10%)", isPAYE: true };
+    } else if (str.includes("monthly") || str.includes("month")) {
+      return { label: "Pkg: Monthly Subscription", isPAYE: false };
+    } else if (str.includes("yearly") || str.includes("annual")) {
+      return { label: "Pkg: Yearly Subscription", isPAYE: false };
+    } else if (str.includes("starter")) {
+      return { label: "Pkg: Starter", isPAYE: false };
+    } else if (str.includes("premium")) {
+      return { label: "Pkg: Premium", isPAYE: false };
+    }
+    
+    return { label: `Pkg: ${rawPackage}`, isPAYE: false };
+  }
+
+  function renderProducts(items) {
+    const container = document.getElementById("approvedProductsGrid");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (items.length === 0) {
+      container.innerHTML = `<div class="loading-spinner">No matching approved business listings.</div>`;
+      return;
+    }
+
+    items.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+
+      const pkgInfo = formatPackageLabel(item.packageType || item.package);
+
+      card.innerHTML = `
+        <div class="product-img-wrapper">
+          <span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Approved</span>
+          <img src="${item.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop'}" alt="${item.title}">
+        </div>
+        <div class="product-details">
+          <div>
+            <div class="product-title">${item.title || 'Untitled Item'}</div>
+            <div class="business-name"><i class="fa-solid fa-store"></i> ${item.businessName || 'Verified Merchant'}</div>
+            <div class="business-location"><i class="fa-solid fa-location-dot"></i> ${item.location || 'Kampala, Uganda'}</div>
+            <div class="item-tags-container">
+              ${item.size ? `<span class="item-size-tag">Size: ${item.size}</span>` : ''}
+              <span class="package-tag ${pkgInfo.isPAYE ? 'paye' : ''}"><i class="fa-solid fa-boxes-packing"></i> ${pkgInfo.label}</span>
+            </div>
+          </div>
+          <div class="product-footer">
+            <div class="product-price">UGX ${Number(item.price || 0).toLocaleString()}</div>
+            <button class="btn-buy-app" onclick="orderOnPlatform('${item.id}')">
+              <i class="fa-solid fa-cart-plus"></i> Order
+            </button>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  // Dual-Key Storage Handler bound to Global Scope
+  window.orderOnPlatform = function(itemId) {
+    const item = allItemsCache.find(i => String(i.id) === String(itemId));
+    
+    if (!item) {
+      console.error("Item not found in cache for ID:", itemId);
+      return;
+    }
+
+    const newItem = {
+      id: String(item.id),
+      title: item.title || "Product",
+      name: item.title || "Product",
+      price: Number(item.price || 0),
+      seller: item.businessName || "Merchant",
+      businessName: item.businessName || "Merchant",
+      businessId: item.businessId || "",
+      packageType: item.packageType || item.package || "pay_as_you_earn",
+      image: item.image || "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop",
+      size: item.size || "",
+      quantity: 1
+    };
+
+    let cart = [];
+    try {
+      const rawCart = localStorage.getItem("venxCart") || localStorage.getItem("cart");
+      cart = rawCart ? JSON.parse(rawCart) : [];
+    } catch (e) {
+      cart = [];
+    }
+
+    const existingIndex = cart.findIndex(c => String(c.id) === String(item.id));
+
+    if (existingIndex > -1) {
+      cart[existingIndex].quantity = (Number(cart[existingIndex].quantity) || 1) + 1;
+    } else {
+      cart.push(newItem);
+    }
+
+    // Save under both storage keys to guarantee cart.html reads the data
+    localStorage.setItem("venxCart", JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    updateCartBadge();
+    window.location.href = "cart.html";
+  };
+
+  window.filterProducts = function() {
+    const queryText = document.getElementById("searchInput").value.toLowerCase();
+    
+    // Cache last search query in local storage
+    localStorage.setItem("venxLastSearch", queryText);
+
+    const filtered = allItemsCache.filter(item => 
+      (item.title && item.title.toLowerCase().includes(queryText)) ||
+      (item.businessName && item.businessName.toLowerCase().includes(queryText)) ||
+      (item.location && item.location.toLowerCase().includes(queryText)) ||
+      (item.packageType && item.packageType.toLowerCase().includes(queryText))
+    );
+    renderProducts(filtered);
+  };
+
+  function getFallbackBusinesses() {
+    return [
+      { id: "b1", title: "Sausage Processing Ingredient Kit", businessName: "Kyambogo Food Tech Hub", packageType: "pay_as_you_earn", location: "Kyambogo, Kampala", size: "10 Kg Batch Unit", price: 37500, image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop" },
+      { id: "b2", title: "Samsung Galaxy A15 (128GB)", businessName: "Venx Digital Hub", packageType: "monthly", location: "Kampala Central", size: "128GB / 6GB RAM", price: 522500, image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop" },
+      { id: "b3", title: "Redmi Note 13 4G", businessName: "Kampala Electronics", packageType: "yearly", location: "Wandegeya, Kampala", size: "256GB / 8GB RAM", price: 680000, image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop" },
+      { id: "b4", title: "Natural Hibiscus Extract Powder", businessName: "Bio-Preserve Uganda", packageType: "pay_as_you_earn", location: "Nakawa Industrial Area", size: "1 Kg Pack", price: 45000, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop" }
+    ];
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", fetchApprovedItems);
+  } else {
+    fetchApprovedItems();
+  }
+</script>
+
+</body>
+</html>

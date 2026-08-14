@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Package - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --accent-gold: #f39c12;
+      --accent-blue: #2980b9;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Top Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* --- Container --- */
+    .container {
+      max-width: 600px;
+      margin: 16px auto;
+      padding: 0 16px;
+    }
+
+    /* --- Country & Currency Selector --- */
+    .country-selector-card {
+      background: white;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid var(--border-color);
+    }
+
+    .country-selector-card label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .country-select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-weight: 600;
+      font-size: 13px;
+      background: #fafafa;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* --- Grace Period Banner --- */
+    .grace-banner {
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+      color: white;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(11, 143, 77, 0.2);
+    }
+
+    .grace-banner h3 {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .grace-banner p {
+      font-size: 12px;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+
+    /* --- Post-Grace Period Billing Details Card --- */
+    .post-grace-info-card {
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .post-grace-info-card h4 {
+      font-size: 14px;
+      color: var(--accent-blue);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+
+    .post-grace-info-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .post-grace-info-card li {
+      font-size: 12px;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    .post-grace-info-card li:last-child {
+      margin-bottom: 0;
+    }
+
+    .post-grace-info-card i {
+      color: var(--accent-blue);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    /* --- Package Grid --- */
+    .packages-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .package-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 2px solid transparent;
+      position: relative;
+    }
+
+    .package-card.recommended {
+      border-color: var(--primary-color);
+    }
+
+    .badge-tag {
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: var(--primary-color);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .package-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .package-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .package-price-box {
+      text-align: right;
+    }
+
+    .original-price {
+      text-decoration: line-through;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .free-price {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
+    .free-price span {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .features-list {
+      list-style: none;
+      margin-bottom: 14px;
+    }
+
+    .features-list li {
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .features-list li i {
+      color: var(--primary-color);
+      font-size: 14px;
+      width: 18px;
+    }
+
+    /* --- Renewal & Payment Method Badges inside cards --- */
+    .renewal-box {
+      background: #f8fafc;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: var(--text-main);
+    }
+
+    .renewal-title {
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .renewal-details {
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .payment-methods-supported {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .payment-methods-supported i {
+      color: var(--primary-color);
+    }
+
+    .btn-select {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-select:hover {
+      background: var(--primary-dark);
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 25%;
+    }
+
+    .bottom-nav a i {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <a href="index.html" class="back-btn" aria-label="Go Back">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div class="header-title">Select Vendor Package</div>
+  </header>
+
+  <!-- Container -->
+  <div class="container">
+
+    <!-- Country & Currency Selector -->
+    <div class="country-selector-card">
+      <label for="countrySelect">
+        <i class="fa-solid fa-globe" style="color: var(--primary-color);"></i> Select Country:
+      </label>
+      <select id="countrySelect" class="country-select">
+        <option value="UG" data-curr="UGX" data-rate="1" selected>🇺🇬 Uganda (UGX)</option>
+        <option value="KE" data-curr="KES" data-rate="0.035">🇰🇪 Kenya (KES)</option>
+        <option value="TZ" data-curr="TZS" data-rate="0.72">🇹🇿 Tanzania (TZS)</option>
+        <option value="RW" data-curr="RWF" data-rate="0.36">🇷🇼 Rwanda (RWF)</option>
+        <option value="US" data-curr="USD" data-rate="0.00027">🌐 Global (USD $)</option>
+      </select>
+    </div>
+
+    <!-- 1 Year Grace Period Offer Banner -->
+    <div class="grace-banner">
+      <h3><i class="fa-solid fa-gift"></i> 1-YEAR FREE GRACE PERIOD</h3>
+      <p>All new vendors get 1 Year Free access to monthly package fees! Select your plan below to register your business.</p>
+    </div>
+
+    <!-- Post-Grace Period Payment & Billing Policy Notice -->
+    <div class="post-grace-info-card">
+      <h4><i class="fa-solid fa-circle-info"></i> How Post-Grace Period Billing Works</h4>
+      <ul>
+        <li>
+          <i class="fa-solid fa-calendar-check"></i>
+          <span><strong>365 Days Free:</strong> Enjoy zero monthly subscription charges for your entire first year. Only a one-time setup fee (<strong class="regFeeText">UGX 3,000</strong>) applies today.</span>
+        </li>
+        <li>
+          <i class="fa-solid fa-wallet"></i>
+          <span><strong>Automatic Wallet or Mobile Deductions:</strong> Starting Year 2, monthly package fees will automatically be deducted from your vendor payout ledger or billed via Mobile Money / Pesapal.</span>
+        </li>
+        <li>
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span><strong>Switch Plans Anytime:</strong> Downscale to the 0 Monthly Fee (10% Pay-As-You-Sell) plan or upgrade your tier before your 1-year grace period expires.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Package Options Grid -->
+    <div class="packages-grid">
+
+      <!-- OPTION 1: 10% Pay-Per-Sale Commission Package -->
+      <div class="package-card">
+        <div class="package-header">
+          <div class="package-title">Pay-As-You-Sell</div>
+          <div class="package-price-box">
+            <div class="free-price">10% <span>/ sale</span></div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li><i class="fa-solid fa-percent" style="color: #e67e22;"></i> <strong>10% Sales Deduction</strong> on each item sold</li>
+          <li><i class="fa-solid fa-coins"></i> <strong>UGX 0 Monthly Fee</strong></li>
+          <li><i class="fa-solid fa-boxes-stacked"></i> Flexible Item Limit (Up to 10 Items)</li>
+          <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
+        </ul>
+
+        <div class="renewal-box">
+          <div class="renewal-title"><i class="fa-solid fa-infinity" style="color: var(--primary-color);"></i> Post-Grace Billing Terms</div>
+          <div class="renewal-details">No recurring monthly fee ever. You only pay 10% on successful orders processed through the platform.</div>
+          <div class="payment-methods-supported">
+            <i class="fa-solid fa-shield-halved"></i> Automated Ledger Deduction per order
+          </div>
+        </div>
+
+        <button class="btn-select" onclick="selectPackage('Pay-As-You-Sell (10% Commission)', 10, 0, 0.10, 'Pay-As-You-Sell')">
+          <span>Select 10% Plan</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- OPTION 2: Basic Package -->
+      <div class="package-card">
+        <div class="package-header">
+          <div class="package-title">Basic Plan</div>
+          <div class="package-price-box">
+            <div class="original-price" id="basicOriginalPrice">UGX 50,000/mo</div>
+            <div class="free-price">FREE <span>(Year 1)</span></div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>15 Business Items</strong></li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong></li>
+          <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
+          <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
+        </ul>
+
+        <div class="renewal-box">
+          <div class="renewal-title"><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-blue);"></i> After Year 1 Grace Period</div>
+          <div class="renewal-details">Renews at <strong class="renewsBasicText">UGX 50,000/mo</strong> after 365 days.</div>
+          <div class="payment-methods-supported">
+            <i class="fa-solid fa-credit-card"></i> Mobile Money, Card, or Vendor Ledger Deduction
+          </div>
+        </div>
+
+        <button class="btn-select" onclick="selectPackage('Basic Plan', 15, 50000, 0.00, 'Monthly Auto-Billing Post Grace')">
+          <span>Select Basic Plan</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- OPTION 3: Advanced Package -->
+      <div class="package-card recommended">
+        <span class="badge-tag">Most Popular</span>
+        <div class="package-header">
+          <div class="package-title">Advanced Plan</div>
+          <div class="package-price-box">
+            <div class="original-price" id="advOriginalPrice">UGX 100,000/mo</div>
+            <div class="free-price">FREE <span>(Year 1)</span></div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>25 Business Items</strong></li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong></li>
+          <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
+          <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
+          <li><i class="fa-solid fa-certificate"></i> Verified Business Badge</li>
+        </ul>
+
+        <div class="renewal-box">
+          <div class="renewal-title"><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-blue);"></i> After Year 1 Grace Period</div>
+          <div class="renewal-details">Renews at <strong class="renewsAdvText">UGX 100,000/mo</strong> after 365 days.</div>
+          <div class="payment-methods-supported">
+            <i class="fa-solid fa-credit-card"></i> Mobile Money, Card, or Vendor Ledger Deduction
+          </div>
+        </div>
+
+        <button class="btn-select" onclick="selectPackage('Advanced Plan', 25, 100000, 0.00, 'Monthly Auto-Billing Post Grace')">
+          <span>Select Advanced Plan</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- OPTION 4: Premium Package -->
+      <div class="package-card">
+        <div class="package-header">
+          <div class="package-title">Premium Plan</div>
+          <div class="package-price-box">
+            <div class="original-price" id="premOriginalPrice">UGX 150,000/mo</div>
+            <div class="free-price">FREE <span>(Year 1)</span></div>
+          </div>
+        </div>
+        <ul class="features-list">
+          <li><i class="fa-solid fa-boxes-stacked"></i> Up to <strong>35 Business Items</strong></li>
+          <li><i class="fa-solid fa-circle-check" style="color: var(--primary-color);"></i> <strong>0% Sales Deduction</strong></li>
+          <li><i class="fa-solid fa-calendar-check"></i> <strong>1 Year Grace Period</strong> Included</li>
+          <li><i class="fa-solid fa-id-card"></i> Reg Fee: <strong class="regFeeText">UGX 3,000</strong></li>
+          <li><i class="fa-solid fa-star" style="color: var(--accent-gold);"></i> Priority Search Placement</li>
+        </ul>
+
+        <div class="renewal-box">
+          <div class="renewal-title"><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-blue);"></i> After Year 1 Grace Period</div>
+          <div class="renewal-details">Renews at <strong class="renewsPremText">UGX 150,000/mo</strong> after 365 days.</div>
+          <div class="payment-methods-supported">
+            <i class="fa-solid fa-credit-card"></i> Mobile Money, Card, or Vendor Ledger Deduction
+          </div>
+        </div>
+
+        <button class="btn-select" onclick="selectPackage('Premium Plan', 35, 150000, 0.00, 'Monthly Auto-Billing Post Grace')">
+          <span>Select Premium Plan</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="categories.html">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Category</span>
+    </a>
+    <a href="orders.html">
+      <i class="fa-solid fa-box"></i>
+      <span>My Orders</span>
+    </a>
+    <a href="account.html">
+      <i class="fa-solid fa-user"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Currency Conversion, Post-Grace Period Calculation & Package Selection Logic -->
+  <script>
+    const countrySelect = document.getElementById("countrySelect");
+    let currentCurrency = "UGX";
+    let currentRate = 1;
+
+    function formatAmount(baseUGX) {
+      if (currentCurrency === "USD") {
+        return `$${(baseUGX * currentRate).toFixed(2)}`;
+      }
+      return `${currentCurrency} ${Math.round(baseUGX * currentRate).toLocaleString()}`;
+    }
+
+    function updatePricesDisplay() {
+      const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+      currentCurrency = selectedOption.getAttribute("data-curr") || "UGX";
+      currentRate = parseFloat(selectedOption.getAttribute("data-rate")) || 1;
+
+      // Original monthly fee cross-out displays
+      document.getElementById("basicOriginalPrice").textContent = `${formatAmount(50000)}/mo`;
+      document.getElementById("advOriginalPrice").textContent = `${formatAmount(100000)}/mo`;
+      document.getElementById("premOriginalPrice").textContent = `${formatAmount(150000)}/mo`;
+
+      // Post-grace period renewal rate text updates
+      document.querySelectorAll(".renewsBasicText").forEach(el => el.textContent = `${formatAmount(50000)}/mo`);
+      document.querySelectorAll(".renewsAdvText").forEach(el => el.textContent = `${formatAmount(100000)}/mo`);
+      document.querySelectorAll(".renewsPremText").forEach(el => el.textContent = `${formatAmount(150000)}/mo`);
+
+      // One-time registration fees
+      document.querySelectorAll(".regFeeText").forEach(el => el.textContent = formatAmount(3000));
+    }
+
+    countrySelect.addEventListener("change", updatePricesDisplay);
+    updatePricesDisplay(); // Initial currency load
+
+    // Selection handler: Stores package, currency, and post-grace billing details in localStorage
+    function selectPackage(packageName, itemLimit, baseMonthlyUGX, commissionRate, billingType) {
+      const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+      const currency = selectedOption.getAttribute("data-curr") || "UGX";
+
+      // Calculate future renewal date (365 days from registration date)
+      const now = new Date();
+      const renewalDate = new Date();
+      renewalDate.setDate(now.getDate() + 365);
+
+      const selectedPackageData = {
+        packageName: packageName,
+        itemLimit: itemLimit,
+        baseMonthlyUGX: baseMonthlyUGX,
+        commissionRate: commissionRate,
+        regFeeUGX: 3000,
+        country: countrySelect.value,
+        currency: currency,
+        // Post-Grace Period Payment & Billing Specifications
+        gracePeriodDays: 365,
+        gracePeriodEndsAt: renewalDate.toISOString(),
+        postGraceMonthlyFeeUGX: baseMonthlyUGX,
+        postGraceMonthlyFormatted: formatAmount(baseMonthlyUGX),
+        billingType: billingType,
+        paymentMethodsAvailable: ["Mobile Money (MTN / Airtel)", "Pesapal Gateway", "Vendor Payout Balance Deduction"]
+      };
+
+      // Reset stale session flags so user gets a fresh payment prompt in add-business.html
+      localStorage.removeItem("vendor_payment_verified");
+      localStorage.removeItem("pesapal_tracking_id");
+
+      // Store selection in browser memory for business registration and payment gateway processing
+      localStorage.setItem("selectedPackage", JSON.stringify(selectedPackageData));
+
+      // Clean redirect to business registration form
+      window.location.href = "add-business.html";
+    }
+  </script>
+</body>
+</html>

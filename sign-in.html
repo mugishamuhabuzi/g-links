@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - Venx Online Market</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0b8f4d;
+      --primary-dark: #086d3a;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --nav-height: 65px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* --- Top Header --- */
+    header {
+      background: var(--primary-color);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* --- Main Container --- */
+    .container {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    /* --- Card Container --- */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    /* --- Form Controls --- */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      background: #fafafa;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      background: white;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      margin-top: 12px;
+    }
+
+    .btn-outline:hover {
+      background: #e6fffa;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border-color);
+      z-index: 1;
+    }
+
+    .divider span {
+      position: relative;
+      background: white;
+      padding: 0 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      z-index: 2;
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-error {
+      background: #fff5f5;
+      color: #9b2c2c;
+      border: 1px solid #feb2b2;
+    }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 20%;
+    }
+
+    .bottom-nav a.plus-btn {
+      color: var(--primary-color);
+      font-size: 22px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+    <div class="header-title">Sign In</div>
+  </header>
+
+  <div class="container">
+    <div id="alertBox" class="alert alert-error"></div>
+
+    <!-- SIGN IN FORM -->
+    <div class="card">
+      <h2 style="font-size: 20px; margin-bottom: 6px; text-align: center;">Welcome Back</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center;">
+        Sign in to access your Venx Market account
+      </p>
+
+      <form id="signInForm">
+        <div class="form-group">
+          <label for="email"><i class="fa-solid fa-envelope"></i> Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="yourname@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <!-- SIGN IN BUTTON: Directs to index.html on success -->
+        <button type="submit" id="signInBtn" class="btn btn-primary">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>Don't have an account?</span>
+      </div>
+
+      <!-- CREATE NEW ACCOUNT BUTTON: Navigates to account.html -->
+      <a href="account.html" class="btn btn-outline">
+        <i class="fa-solid fa-user-plus"></i> Create New Account
+      </a>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <a href="index.html">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="categories.html">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Category</span>
+    </a>
+    <a href="add-business.html?fromPlus=true" class="plus-btn">
+      <i class="fa-solid fa-circle-plus"></i>
+    </a>
+    <a href="orders.html">
+      <i class="fa-solid fa-box"></i>
+      <span>Orders</span>
+    </a>
+    <a href="account.html">
+      <i class="fa-solid fa-user"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Firebase Auth Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
+      measurementId: "G-BLH2T3CBVQ"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const alertBox = document.getElementById("alertBox");
+
+    function showError(message) {
+      alertBox.textContent = message;
+      alertBox.style.display = "block";
+    }
+
+    // Check if user is already signed in
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // If already logged in, redirect directly to market home
+        window.location.href = "index.html";
+      }
+    });
+
+    // Handle Sign In & Redirect to index.html
+    document.getElementById("signInForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const signInBtn = document.getElementById("signInBtn");
+
+      signInBtn.disabled = true;
+      signInBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Signing In...`;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // On successful sign in, redirect straight to index.html
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("Sign In Error:", error);
+        showError("Invalid email or password. Please check your credentials and try again.");
+        signInBtn.disabled = false;
+        signInBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In`;
+      }
+    });
+  </script>
+</body>
+</html>

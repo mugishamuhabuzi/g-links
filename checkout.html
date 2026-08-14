@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesapal Payment Checkout - Venx Market</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0b8f4d;
+      --primary-dark: #076637;
+      --primary-light: #e8f7f0;
+      --accent-gold: #f59e0b;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: 60px;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 800px) {
+      .checkout-grid {
+        grid-template-columns: 1fr 420px;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .card-title i {
+      color: var(--primary);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      background: #f8fafc;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    input[readonly] {
+      background: #f1f5f9;
+      color: #334155;
+      cursor: not-allowed;
+      font-weight: 700;
+    }
+
+    .input-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Order Details Summary */
+    .order-badge {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .item-mini {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .item-mini:last-child {
+      border-bottom: none;
+    }
+
+    .item-mini img {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #e2e8f0;
+    }
+
+    .item-mini-info {
+      flex-grow: 1;
+    }
+
+    .item-mini-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .item-mini-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-top: 10px;
+      color: var(--text-muted);
+    }
+
+    .summary-row.total {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      margin-top: 12px;
+    }
+
+    .summary-row.total span:last-child {
+      color: var(--primary);
+    }
+
+    /* Payment Gateway Info Badge */
+    .gateway-info {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .gateway-info i {
+      font-size: 20px;
+      color: var(--primary);
+    }
+
+    .gateway-info p {
+      font-size: 12px;
+      color: #166534;
+      line-height: 1.3;
+    }
+
+    .payment-methods-icons {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+      font-size: 18px;
+      color: var(--text-muted);
+    }
+
+    /* Inline Alert Box */
+    .alert-banner {
+      display: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .alert-banner.error {
+      background-color: var(--danger-bg);
+      border: 1px solid #fca5a5;
+      color: var(--danger);
+    }
+
+    /* Submit Button */
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(11, 143, 77, 0.25);
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    button:disabled {
+      background-color: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="orders.html" title="Back to Orders"><i class="fa-solid fa-arrow-left"></i></a>
+      <div class="header-title">Pesapal Payment Gateway</div>
+    </div>
+    <div>
+      <i class="fa-solid fa-shield-halved"></i>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="checkout-grid">
+      
+      <!-- Order Summary Column -->
+      <div class="left-col">
+        <div class="card">
+          <div class="card-title">
+            <i class="fa-solid fa-receipt"></i> Order Summary & Breakdown
+          </div>
+
+          <div id="orderBadgeContainer">
+            <div class="order-badge" id="orderIdTag">Order ID: Fetching...</div>
+          </div>
+
+          <!-- Purchased Items Mini List -->
+          <div id="itemsPreviewList">
+            <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">Loading order items...</p>
+          </div>
+
+          <!-- Financial Breakdown -->
+          <div style="margin-top: 16px;">
+            <div class="summary-row">
+              <span>Items Subtotal</span>
+              <span id="subtotalDisplay">UGX 0</span>
+            </div>
+            
+            <!-- Vendor Commission Info Badge (Included in price) -->
+            <div class="summary-row vendor-info" id="payeCommissionRow" style="display: none; font-size: 12px; color: var(--primary-dark); background: var(--primary-light); padding: 6px 10px; border-radius: 6px; margin-top: 8px; margin-bottom: 4px;">
+              <span><i class="fa-solid fa-circle-info"></i> Vendor Fee (10% Included)</span>
+              <span id="payeCommissionDisplay">UGX 0</span>
+            </div>
+
+            <div class="summary-row">
+              <span>Delivery / Transport Fee</span>
+              <span id="deliveryDisplay">UGX 0</span>
+            </div>
+            <div class="summary-row">
+              <span>Escrow Protection Fee (1.5%)</span>
+              <span id="escrowDisplay">UGX 0</span>
+            </div>
+            <div class="summary-row" id="discountRow" style="display: none; color: var(--primary);">
+              <span>Discount</span>
+              <span id="discountDisplay">-UGX 0</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total Payable</span>
+              <span id="totalDisplay">UGX 0</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 16px; font-size: 11px; color: var(--text-muted);">
+            <i class="fa-solid fa-truck"></i> <strong>Delivery to:</strong> <span id="deliveryAddressText">Not specified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Form Column -->
+      <div class="right-col">
+        <div class="card">
+          <div class="card-title">
+            <i class="fa-solid fa-credit-card"></i> Complete Payment
+          </div>
+
+          <div class="gateway-info">
+            <i class="fa-solid fa-lock"></i>
+            <div>
+              <strong>Pesapal Escrow Secure Gateway</strong>
+              <p>Supports MTN Mobile Money, Airtel Money, Visa, & Mastercard.</p>
+              <div class="payment-methods-icons">
+                <i class="fa-solid fa-mobile-screen-button" title="Mobile Money"></i>
+                <i class="fa-brands fa-cc-visa" title="Visa"></i>
+                <i class="fa-brands fa-cc-mastercard" title="Mastercard"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alert Container for user-friendly error messages -->
+          <div id="alertBanner" class="alert-banner"></div>
+
+          <form id="checkout-form">
+            <div class="form-group">
+              <label for="orderId">Order Reference</label>
+              <input type="text" id="orderId" readonly required placeholder="ORD-XXXXX">
+            </div>
+
+            <div class="form-group">
+              <label for="buyerName">Full Name</label>
+              <input type="text" id="buyerName" required placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" required placeholder="name@example.com">
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number (MTN / Airtel)</label>
+              <input type="tel" id="phone" required placeholder="0770000000 or 256700000000">
+              <div class="input-hint">Ugandan mobile format (e.g. 077... or 2567...)</div>
+            </div>
+
+            <div class="form-group">
+              <label for="amount">Amount to Pay (UGX)</label>
+              <input type="number" id="amount" readonly required placeholder="0" min="1000">
+              <div class="input-hint"><i class="fa-solid fa-circle-info"></i> Amount is automatically calculated from order summary.</div>
+            </div>
+
+            <button type="submit" id="pay-btn">
+              <i class="fa-solid fa-shield-halved"></i> Pay Now with Pesapal
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Global variable to keep track of active order context
+    let parsedOrder = null;
+
+    // Helper: Prevent XSS when inserting dynamic text into template literals
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return str;
+      return str.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+
+    // Display inline alerts cleanly
+    function showAlert(message) {
+      const banner = document.getElementById('alertBanner');
+      if (banner) {
+        banner.className = 'alert-banner error';
+        banner.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${escapeHtml(message)}`;
+        banner.style.display = 'block';
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function clearAlert() {
+      const banner = document.getElementById('alertBanner');
+      if (banner) {
+        banner.style.display = 'none';
+        banner.innerHTML = '';
+      }
+    }
+
+    // 1. Helper function to normalize Ugandan Phone numbers
+    function formatUgandaPhone(phone) {
+      if (!phone) return '';
+      let cleaned = phone.trim().replace(/[^\d+]/g, '');
+      if (cleaned.startsWith('+256')) {
+        return cleaned.substring(1);
+      }
+      if (cleaned.startsWith('0')) {
+        return '256' + cleaned.substring(1);
+      }
+      return cleaned;
+    }
+
+    // 2. Load order details automatically on page initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const amountFromUrl = urlParams.get('amount');
+      const orderIdFromUrl = urlParams.get('orderId');
+
+      const amountInput = document.getElementById('amount');
+      const orderIdInput = document.getElementById('orderId');
+      const orderIdTag = document.getElementById('orderIdTag');
+      
+      // Try retrieving active order object stored by cart.html or orders.html
+      const storedActiveOrder = localStorage.getItem('venxActiveOrder') || localStorage.getItem('activePaymentOrder');
+
+      if (storedActiveOrder) {
+        try {
+          parsedOrder = JSON.parse(storedActiveOrder);
+        } catch (e) {
+          console.error("Error parsing stored order", e);
+        }
+      }
+
+      // Populate Order ID
+      const finalOrderId = orderIdFromUrl || (parsedOrder && parsedOrder.orderId) || localStorage.getItem('venx_order_id') || ("ORD-" + Date.now());
+      orderIdInput.value = finalOrderId;
+      orderIdTag.innerText = "Order ID: " + finalOrderId;
+
+      // Populate Amount
+      let finalAmount = 0;
+      if (amountFromUrl) {
+        finalAmount = parseFloat(amountFromUrl);
+      } else if (parsedOrder && parsedOrder.financials && parsedOrder.financials.grandTotalUGX) {
+        finalAmount = parsedOrder.financials.grandTotalUGX;
+      } else if (parsedOrder && parsedOrder.totalAmount) {
+        finalAmount = parsedOrder.totalAmount;
+      } else if (parsedOrder && (parsedOrder.subtotal !== undefined || parsedOrder.subtotalUGX !== undefined)) {
+        const sub = parsedOrder.subtotal || parsedOrder.subtotalUGX || 0;
+        const del = parsedOrder.deliveryFee || parsedOrder.transportFeeUGX || parsedOrder.deliveryFeeUGX || 0;
+        const esc = parsedOrder.escrowFee || parsedOrder.escrowFeeUGX || 0;
+        const disc = parsedOrder.discount || parsedOrder.discountUGX || 0;
+        finalAmount = sub + del + esc - disc;
+      } else if (localStorage.getItem('venx_checkout_amount')) {
+        finalAmount = parseFloat(localStorage.getItem('venx_checkout_amount'));
+      }
+
+      amountInput.value = finalAmount;
+      document.getElementById('totalDisplay').innerText = "UGX " + finalAmount.toLocaleString('en-UG');
+
+      // Prefill user contact details if present in parsedOrder or localStorage
+      if (parsedOrder) {
+        const buyerNameInput = document.getElementById('buyerName');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+
+        const nameVal = parsedOrder.buyerName || parsedOrder.customerName || (parsedOrder.deliveryDetails && parsedOrder.deliveryDetails.name) || localStorage.getItem('venx_user_name');
+        const emailVal = parsedOrder.email || (parsedOrder.deliveryDetails && parsedOrder.deliveryDetails.email) || localStorage.getItem('venx_user_email');
+        const phoneVal = parsedOrder.phone || (parsedOrder.deliveryDetails && parsedOrder.deliveryDetails.phone) || localStorage.getItem('venx_user_phone');
+
+        if (nameVal && buyerNameInput) buyerNameInput.value = nameVal;
+        if (emailVal && emailInput) emailInput.value = emailVal;
+        if (phoneVal && phoneInput) phoneInput.value = phoneVal;
+      }
+
+      // Render Order Summary Breakdown & Items if parsed order is available
+      if (parsedOrder) {
+        let subtotalUGX = 0;
+        let deliveryFeeUGX = 0;
+        let escrowFeeUGX = 0;
+        let discountUGX = 0;
+        let payeCommissionUGX = 0;
+
+        if (parsedOrder.financials) {
+          const fin = parsedOrder.financials;
+          subtotalUGX = fin.subtotalUGX || 0;
+          deliveryFeeUGX = fin.transportFeeUGX || fin.deliveryFeeUGX || 0;
+          escrowFeeUGX = fin.escrowFeeUGX || 0;
+          discountUGX = fin.discountUGX || 0;
+          payeCommissionUGX = fin.payeCommissionUGX || 0;
+        } else {
+          subtotalUGX = parsedOrder.subtotal || parsedOrder.subtotalUGX || 0;
+          deliveryFeeUGX = parsedOrder.deliveryFee || parsedOrder.transportFeeUGX || parsedOrder.deliveryFeeUGX || 0;
+          escrowFeeUGX = parsedOrder.escrowFee || parsedOrder.escrowFeeUGX || 0;
+          discountUGX = parsedOrder.discount || parsedOrder.discountUGX || 0;
+          payeCommissionUGX = parsedOrder.payeCommissionUGX || 0;
+        }
+
+        document.getElementById('subtotalDisplay').innerText = "UGX " + subtotalUGX.toLocaleString('en-UG');
+        document.getElementById('deliveryDisplay').innerText = "UGX " + deliveryFeeUGX.toLocaleString('en-UG');
+        document.getElementById('escrowDisplay').innerText = "UGX " + escrowFeeUGX.toLocaleString('en-UG');
+        
+        if (discountUGX > 0) {
+          document.getElementById('discountRow').style.display = 'flex';
+          document.getElementById('discountDisplay').innerText = "-UGX " + discountUGX.toLocaleString('en-UG');
+        } else {
+          document.getElementById('discountRow').style.display = 'none';
+        }
+
+        // Display Vendor Commission Notice (if calculated)
+        if (payeCommissionUGX > 0) {
+          const payeRow = document.getElementById('payeCommissionRow');
+          const payeDisplay = document.getElementById('payeCommissionDisplay');
+          if (payeRow && payeDisplay) {
+            payeRow.style.display = 'flex';
+            payeDisplay.innerText = "UGX " + payeCommissionUGX.toLocaleString('en-UG');
+          }
+        }
+
+        if (parsedOrder.deliveryDetails && parsedOrder.deliveryDetails.address) {
+          document.getElementById('deliveryAddressText').innerText = parsedOrder.deliveryDetails.address;
+        } else if (parsedOrder.address) {
+          document.getElementById('deliveryAddressText').innerText = parsedOrder.address;
+        }
+
+        if (parsedOrder.items && Array.isArray(parsedOrder.items) && parsedOrder.items.length > 0) {
+          let itemsHtml = "";
+          const fallbackImg = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=150';
+          
+          parsedOrder.items.forEach(item => {
+            const imgSrc = item.image || item.imageUrl || fallbackImg;
+            const title = escapeHtml(item.title || item.name || 'Item');
+            const qty = item.quantity || item.qty || 1;
+            const price = (item.price || 0).toLocaleString('en-UG');
+
+            itemsHtml += `
+              <div class="item-mini">
+                <img src="${imgSrc}" alt="${title}" onerror="this.onerror=null;this.src='${fallbackImg}';">
+                <div class="item-mini-info">
+                  <div class="item-mini-title">${title}</div>
+                  <div class="item-mini-meta">Qty: ${qty} | UGX ${price}</div>
+                </div>
+              </div>
+            `;
+          });
+          document.getElementById('itemsPreviewList').innerHTML = itemsHtml;
+        } else {
+          document.getElementById('itemsPreviewList').innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">Standard Order Package (${escapeHtml(finalOrderId)})</p>`;
+        }
+      } else {
+        document.getElementById('itemsPreviewList').innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">Standard Order Package (${escapeHtml(finalOrderId)})</p>`;
+      }
+    });
+
+    // 3. Handle Form Submission to Backend API
+    document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      clearAlert();
+
+      const payBtn = document.getElementById('pay-btn');
+      payBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Payment...`;
+      payBtn.disabled = true;
+
+      const rawPhone = document.getElementById('phone').value;
+      const formattedPhone = formatUgandaPhone(rawPhone);
+
+      const orderData = {
+        orderId: document.getElementById('orderId').value,
+        amount: parseFloat(document.getElementById('amount').value),
+        email: document.getElementById('email').value,
+        phone: formattedPhone,
+        buyerName: document.getElementById('buyerName').value,
+        financials: parsedOrder && parsedOrder.financials ? parsedOrder.financials : null,
+        items: parsedOrder && parsedOrder.items ? parsedOrder.items : []
+      };
+
+      try {
+        const response = await fetch('https://g-links-backend.onrender.com/api/payments/initiate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(orderData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.paymentUrl) {
+          // Redirect user to Pesapal payment portal
+          window.location.href = result.paymentUrl;
+        } else {
+          const errMsg = result.error || result.message || "Could not initiate payment. Please try again.";
+          showAlert("Payment Error: " + errMsg);
+          payBtn.innerHTML = `<i class="fa-solid fa-shield-halved"></i> Pay Now with Pesapal`;
+          payBtn.disabled = false;
+        }
+      } catch (error) {
+        console.error("Payment Error:", error);
+        showAlert("Unable to reach the payment server. Please check your internet connection or try again.");
+        payBtn.innerHTML = `<i class="fa-solid fa-shield-halved"></i> Pay Now with Pesapal`;
+        payBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

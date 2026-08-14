@@ -1,0 +1,285 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const admin = require('firebase-admin');
+const AfricasTalking = require('africastalking');
+
+const app = express();
+app.use(cors({ origin: '*' }));
+app.use(express.json());
+
+// =========================================================================
+// HELPER FUNCTIONS
+// =========================================================================
+function formatUgandaPhone(phone) {
+  if (!phone) return '';
+  let cleaned = phone.trim().replace(/\s+/g, '');
+  if (cleaned.startsWith('0')) {
+    return '256' + cleaned.substring(1);
+  }
+  if (cleaned.startsWith('+')) {
+    return cleaned.substring(1);
+  }
+  return cleaned;
+}
+
+// =========================================================================
+// 1. FIREBASE ADMIN SDK INITIALIZATION
+// =========================================================================
+try {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
+  });
+  console.log('✅ Connected to Firebase Firestore.');
+} catch (error) {
+  console.error('❌ Firebase Admin setup error:', error.message);
+}
+
+const db = admin.firestore();
+
+// =========================================================================
+// 2. AFRICA'S TALKING SMS SERVICE SETUP
+// =========================================================================
+const africasTalking = AfricasTalking({
+  apiKey: process.env.AT_API_KEY,
+  username: process.env.AT_USERNAME,
+});
+const sms = africasTalking.SMS;
+
+async function sendSMS(to, message) {
+  try {
+    const formattedNumber = formatUgandaPhone(to);
+    const response = await sms.send({
+      to: [`+${formattedNumber}`],
+      message: message,
+      from: process.env.AT_SENDER_ID || undefined,
+    });
+    console.log(`📱 SMS sent to +${formattedNumber}`);
+    return response;
+  } catch (err) {
+    console.error('❌ SMS error:', err.message);
+  }
+}
+
+// =========================================================================
+// 3. PESAPAL API UTILITY HELPERS
+// =========================================================================
+const PESAPAL_BASE_URL = process.env.PESAPAL_ENV === 'live'
+  ? 'https://pay.pesapal.com/v3'
+  : 'https://cybqa.pesapal.com/pesapalv3';
+
+// Request OAuth Bearer Token from Pesapal using environment variables with updated fallback keys
+async function getPesapalAuthToken() {
+  const response = await fetch(`${PESAPAL_BASE_URL}/api/Auth/RequestToken`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      consumer_key: process.env.PESAPAL_CONSUMER_KEY || 'TDpigBOOhs+zAl8cwH2Fl82jJGyD8xev',
+      consumer_secret: process.env.PESAPAL_CONSUMER_SECRET || '1KpqkfsMaihIcOlhnBo/gBZ5smw=',
+    }),
+  });
+
+  const data = await response.json();
+  if (data.token) {
+    return data.token;
+  }
+  throw new Error(data.error?.message || data.message || 'Pesapal authentication failed');
+}
+
+// Register IPN URL with Pesapal dynamically
+let cachedIpnId = null;
+async function getOrRegisterIpnId(token) {
+  if (process.env.PESAPAL_NOTIFICATION_ID) {
+    return process.env.PESAPAL_NOTIFICATION_ID;
+  }
+  if (cachedIpnId) return cachedIpnId;
+
+  const ipnUrl = `${process.env.MY_SERVER_URL || 'https://mugishamuhabuzi.github.io'}/api/ipn/pesapal`;
+
+  const response = await fetch(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterIPN`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      url: ipnUrl,
+      ipn_notification_type: 'GET',
+    }),
+  });
+
+  const data = await response.json();
+  if (data.ipn_id) {
+    cachedIpnId = data.ipn_id;
+    console.log(`✅ Registered Pesapal IPN ID: ${cachedIpnId}`);
+    return cachedIpnId;
+  }
+  console.error('❌ IPN registration response:', data);
+  return null;
+}
+
+// =========================================================================
+// 4. API ENDPOINTS
+// =========================================================================
+
+// Health Check Endpoint
+app.get('/', (req, res) => {
+  res.json({ status: 'active', message: 'Venx Market Pesapal API is live!' });
+});
+
+// Shared Payment Handler for both route aliases
+const initiatePaymentHandler = async (req, res) => {
+  const amount = req.body.amount;
+  const email = req.body.email;
+  const phone = formatUgandaPhone(req.body.phone);
+  const buyerName = req.body.buyerName || req.body.name || 'Venx Customer';
+  const orderId = req.body.orderId || `VENX-${Date.now()}`;
+
+  if (!amount || !email) {
+    return res.status(400).json({ error: 'Missing required order details (amount or email).' });
+  }
+
+  try {
+    const token = await getPesapalAuthToken();
+    const notificationId = await getOrRegisterIpnId(token);
+
+    if (!notificationId) {
+      return res.status(400).json({ error: 'Failed to retrieve or register Pesapal Notification ID.' });
+    }
+
+    const nameParts = buyerName.trim().split(' ');
+    const firstName = nameParts[0] || 'Venx';
+    const lastName = nameParts.slice(1).join(' ') || 'Customer';
+
+    const orderPayload = {
+      id: orderId,
+      currency: 'UGX',
+      amount: parseFloat(amount),
+      description: `Escrow Payment for Order #${orderId}`,
+      callback_url: process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/g-links/orders.html',
+      notification_id: notificationId,
+      billing_address: {
+        email_address: email,
+        phone_number: phone,
+        first_name: firstName,
+        last_name: lastName,
+      },
+    };
+
+    const response = await fetch(`${PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(orderPayload),
+    });
+
+    const pesapalData = await response.json();
+
+    if (pesapalData.redirect_url) {
+      return res.status(200).json({
+        status: 'success',
+        paymentUrl: pesapalData.redirect_url,
+        redirect_url: pesapalData.redirect_url,
+        orderTrackingId: pesapalData.order_tracking_id,
+      });
+    } else {
+      console.error('❌ Pesapal SubmitOrder error response:', pesapalData);
+      return res.status(400).json({ 
+        error: pesapalData.error?.message || pesapalData.message || 'Failed to generate Pesapal payment link.' 
+      });
+    }
+  } catch (err) {
+    console.error('❌ Error initiating Pesapal payment:', err);
+    return res.status(500).json({ error: err.message || 'Server error processing Pesapal payment.' });
+  }
+};
+
+// Route Endpoints (Supports both endpoint paths)
+app.post('/api/payments/initiate', initiatePaymentHandler);
+app.post('/api/pesapal-pay', initiatePaymentHandler);
+
+// Route B: Pesapal IPN Notification Handler (Automated Webhook)
+const handlePesapalIPN = async (req, res) => {
+  const orderTrackingId = req.query.OrderTrackingId || req.body.OrderTrackingId;
+  const merchantRef = req.query.OrderMerchantReference || req.body.OrderMerchantReference;
+
+  if (!orderTrackingId) {
+    return res.status(400).send('Missing OrderTrackingId');
+  }
+
+  try {
+    const token = await getPesapalAuthToken();
+
+    const statusResponse = await fetch(`${PESAPAL_BASE_URL}/api/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    const statusData = await statusResponse.json();
+    const orderId = statusData.merchant_reference || merchantRef;
+    const paymentStatus = statusData.payment_status_description;
+    const statusCode = statusData.status_code;
+
+    if (paymentStatus === 'Completed' || statusCode === 1) {
+      const amountPaid = statusData.amount;
+      const currency = statusData.currency || 'UGX';
+
+      const orderRef = db.collection('orders').doc(orderId);
+      const orderDoc = await orderRef.get();
+
+      if (orderDoc.exists) {
+        const orderData = orderDoc.data();
+
+        await orderRef.update({
+          paymentStatus: 'Paid',
+          escrowStatus: 'Held in Escrow',
+          pesapalTrackingId: orderTrackingId,
+          paidAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        console.log(`✅ Order #${orderId} updated in Firestore to Paid & Held in Escrow.`);
+
+        const customerPhone = orderData.buyerPhone || statusData.payment_account;
+        if (customerPhone) {
+          await sendSMS(customerPhone, `Venx Market: Payment of ${currency} ${amountPaid.toLocaleString()} for Order #${orderId} verified and locked in Escrow!`);
+        }
+
+        if (orderData.vendorPhone) {
+          await sendSMS(orderData.vendorPhone, `Venx Market Alert: New paid order #${orderId}! Funds are safely held in Escrow. Prepare order for dispatch.`);
+        }
+      }
+    }
+
+    res.status(200).json({
+      orderNotificationType: 'IPNChange',
+      orderTrackingId: orderTrackingId,
+      status: '200',
+    });
+  } catch (err) {
+    console.error('❌ IPN handling error:', err.message);
+    res.status(500).send('IPN processing error');
+  }
+};
+
+app.get('/api/ipn/pesapal', handlePesapalIPN);
+app.post('/api/ipn/pesapal', handlePesapalIPN);
+
+// =========================================================================
+// 5. START SERVER
+// =========================================================================
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Venx Pesapal Backend running on port ${PORT}`));
