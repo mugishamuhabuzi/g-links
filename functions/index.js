@@ -8,29 +8,46 @@ const db = admin.firestore();
 // --- PESAPAL CONFIGURATION ---
 const PESAPAL_CONSUMER_KEY = process.env.PESAPAL_KEY || "c7vnpsVpt1YQUzOhDWPbF7WBqSOFeSNu";
 const PESAPAL_CONSUMER_SECRET = process.env.PESAPAL_SECRET || "cKl3tTyMoZVKQjvfI37XQj2hsJY=";
+const PESAPAL_IPN_ID_ENV = process.env.PESAPAL_IPN_ID;
 const IS_LIVE = true;
 
 const PESAPAL_BASE_URL = IS_LIVE 
   ? "https://pay.pesapal.com/v3" 
-  : "https://cyb3r.pesapal.com/pesapalv3";
+  : "https://cybqa.pesapal.com/pesapalv3";
+
 const CALLBACK_URL = "https://venx-online-market.web.app/payment-success.html";
 const IPN_URL = "https://pesapalipn-k5xcp3ar3a-uc.a.run.app";
+
 async function getPesapalAuthToken() {
   const response = await axios.post(`${PESAPAL_BASE_URL}/api/Auth/RequestToken`, {
     consumer_key: PESAPAL_CONSUMER_KEY,
     consumer_secret: PESAPAL_CONSUMER_SECRET
+  }, {
+    headers: { "Content-Type": "application/json", "Accept": "application/json" }
   });
   return response.data.token;
 }
 
 async function getOrRegisterIPNId(token) {
-  const response = await axios.post(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterUrl`, {
-    url: IPN_URL,
-    ipn_notification_type: "GET"
-  }, {
-    headers: { "Authorization": `Bearer ${token}` }
-  });
-  return response.data.ipn_id;
+  if (PESAPAL_IPN_ID_ENV) return PESAPAL_IPN_ID_ENV;
+
+  try {
+    const response = await axios.post(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterUrl`, {
+      url: IPN_URL,
+      ipn_notification_type: "GET"
+    }, {
+      headers: { 
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }
+    });
+    return response.data.ipn_id;
+  } catch (err) {
+    console.warn("IPN Registration warning:", err.response?.data || err.message);
+    if (err.response?.data?.ipn_id) return err.response.data.ipn_id;
+    throw err;
+  }
 }
 
 /**
@@ -44,17 +61,22 @@ exports.pesapalUnifiedCheckout = onRequest({ cors: true }, async (req, res) => {
       email, 
       phoneNumber, 
       merchantReference, 
-      paymentType, // "rider", "package", "deposit", or "order"
+      paymentType, // "rider", "package", "business", "deposit", or "order"
       referenceId,  // riderId, businessId, userId, or orderId
       description 
     } = req.body;
 
     if (!amount || !email || !merchantReference || !paymentType || !referenceId) {
-      return res.status(400).json({ error: "Missing required payment fields." });
+      return res.status(400).json({ error: "Missing required payment fields (amount, email, merchantReference, paymentType, or referenceId)." });
     }
 
     const token = await getPesapalAuthToken();
     const ipnId = await getOrRegisterIPNId(token);
+
+    // Split names safely for Pesapal Billing Requirements
+    const cleanEmail = email.trim();
+    const firstName = paymentType.toUpperCase();
+    const lastName = "User";
 
     const orderPayload = {
       id: merchantReference,
@@ -64,17 +86,24 @@ exports.pesapalUnifiedCheckout = onRequest({ cors: true }, async (req, res) => {
       callback_url: CALLBACK_URL,
       notification_id: ipnId,
       billing_address: {
-        email_address: email,
+        email_address: cleanEmail,
         phone_number: phoneNumber || "",
-        first_name: paymentType.toUpperCase(),
-        last_name: "User"
+        first_name: firstName,
+        last_name: lastName,
+        country_code: "UG"
       }
     };
 
     const orderResponse = await axios.post(
       `${PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest`,
       orderPayload,
-      { headers: { "Authorization": `Bearer ${token}` } }
+      { 
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        } 
+      }
     );
 
     const { order_tracking_id, redirect_url } = orderResponse.data;
@@ -104,8 +133,12 @@ exports.pesapalUnifiedCheckout = onRequest({ cors: true }, async (req, res) => {
     return res.status(200).json({ order_tracking_id, redirect_url });
 
   } catch (error) {
-    console.error("Unified Payment Error:", error.response?.data || error.message);
-    return res.status(500).json({ error: "Payment initiation failed", details: error.message });
+    const errorDetails = error.response?.data || error.message;
+    console.error("Unified Payment Error Details:", errorDetails);
+    return res.status(500).json({ 
+      error: "Payment initiation failed", 
+      details: errorDetails 
+    });
   }
 });
 
@@ -113,7 +146,7 @@ exports.pesapalUnifiedCheckout = onRequest({ cors: true }, async (req, res) => {
  * UNIFIED IPN LISTENER FUNCTION (2nd Gen)
  */
 exports.pesapalIPN = onRequest({ cors: true }, async (req, res) => {
-  const orderTrackingId = req.query.OrderTrackingId || req.body.OrderTrackingId;
+  const orderTrackingId = req.query.OrderTrackingId || req.body.OrderTrackingId || req.query.orderTrackingId;
   if (!orderTrackingId) return res.status(400).send("Missing OrderTrackingId");
 
   try {
@@ -168,7 +201,7 @@ exports.pesapalIPN = onRequest({ cors: true }, async (req, res) => {
     return res.status(200).json({ orderNotificationType: "IPNCHANGE", status: 200 });
 
   } catch (error) {
-    console.error("IPN Error:", error.message);
+    console.error("IPN Error:", error.response?.data || error.message);
     return res.status(500).send("IPN Error");
   }
 });
