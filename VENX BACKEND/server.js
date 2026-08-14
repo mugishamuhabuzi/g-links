@@ -7,7 +7,7 @@ const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-// Helper function to format Uganda phone numbers
+// Format Uganda Phone Numbers
 function formatUgandaPhone(phone) {
   if (!phone) return '256700000000';
   let cleaned = String(phone).trim().replace(/\s+/g, '');
@@ -26,96 +26,110 @@ try {
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
       }),
     });
+    console.log('✅ Connected to Firebase Firestore.');
   }
 } catch (e) {
-  console.error('Firebase init error:', e.message);
+  console.error('❌ Firebase setup error:', e.message);
 }
 
-// 2. PESAPAL CONFIG
+const db = admin.apps.length ? admin.firestore() : null;
+
+// 2. PESAPAL CONFIGURATION
 const IS_LIVE = process.env.PESAPAL_ENV === 'live';
 const PESAPAL_BASE_URL = IS_LIVE
   ? 'https://pay.pesapal.com/v3'
   : 'https://cybqa.pesapal.com/pesapalv3';
 
-const CONSUMER_KEY = process.env.PESAPAL_CONSUMER_KEY || 'TDpigBOOhs+zAl8cwH2Fl82jJGyD8xev';
-const CONSUMER_SECRET = process.env.PESAPAL_CONSUMER_SECRET || '1KpqkfsMaihIcOlhnBo/gBZ5smw=';
+const CONSUMER_KEY = process.env.PESAPAL_CONSUMER_KEY;
+const CONSUMER_SECRET = process.env.PESAPAL_CONSUMER_SECRET;
 
-// Safe HTTP Request Helper (Prevents JSON crash on HTML responses)
-async function safePesapalPost(url, body, bearerToken = null) {
+// Safe Pesapal HTTP Helper
+async function pesapalApiCall(endpoint, body, bearerToken = null) {
   const fetchFn = globalThis.fetch || (await import('node-fetch')).default;
-  
+  const fullUrl = `${PESAPAL_BASE_URL}${endpoint}`;
+
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
   };
   if (bearerToken) {
     headers['Authorization'] = `Bearer ${bearerToken}`;
   }
 
-  const res = await fetchFn(url, {
+  const res = await fetchFn(fullUrl, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
   });
 
   const rawText = await res.text();
-  let data;
+  let parsedData;
   try {
-    data = JSON.parse(rawText);
+    parsedData = JSON.parse(rawText);
   } catch (e) {
-    throw new Error(`Pesapal endpoint (${url}) returned HTML/Non-JSON [HTTP ${res.status}]: ${rawText.substring(0, 120)}...`);
+    throw new Error(`Pesapal endpoint ${endpoint} returned HTML status ${res.status}. Verify Live/Sandbox key match in Render.`);
   }
 
-  return { ok: res.ok, status: res.status, data };
+  return { ok: res.ok, status: res.status, data: parsedData };
 }
 
 let cachedIpnId = null;
 
-// 3. MAIN PAYMENT HANDLER
+// 3. PAYMENT INITIATION HANDLER
 const initiatePaymentHandler = async (req, res) => {
   try {
+    if (!CONSUMER_KEY || !CONSUMER_SECRET) {
+      return res.status(400).json({ error: 'Missing PESAPAL_CONSUMER_KEY or PESAPAL_CONSUMER_SECRET in Render Environment settings.' });
+    }
+
     const amount = Number(req.body.amount) || 3000;
-    const email = String(req.body.email || req.body.email_address || 'vendor@venxmarket.com').trim();
+    const rawEmail = req.body.email || req.body.email_address || 'vendor@venxmarket.com';
+    const email = String(rawEmail).trim();
     const phone = formatUgandaPhone(req.body.phone || req.body.phoneNumber);
     const buyerName = String(req.body.businessName || req.body.buyerName || req.body.name || 'Venx Customer').trim();
     const orderId = req.body.orderId || req.body.merchantReference || `VENX-${Date.now()}`;
 
-    // Step 1: Request OAuth Bearer Token
-    const authRes = await safePesapalPost(`${PESAPAL_BASE_URL}/api/Auth/RequestToken`, {
+    // Step 1: Request Token
+    const authRes = await pesapalApiCall('/api/Auth/RequestToken', {
       consumer_key: CONSUMER_KEY,
       consumer_secret: CONSUMER_SECRET,
     });
 
-    if (!authRes.ok || !authRes.data.token) {
+    if (!authRes.ok || !authRes.data?.token) {
       return res.status(400).json({
-        error: 'Pesapal Authentication Failed',
+        error: 'Pesapal Authentication Failed. Ensure keys in Render match the active PESAPAL_ENV.',
         details: authRes.data,
       });
     }
     const token = authRes.data.token;
 
-    // Step 2: Register IPN Notification URL
-    if (!cachedIpnId && !process.env.PESAPAL_NOTIFICATION_ID) {
-      const serverUrl = process.env.MY_SERVER_URL || 'https://g-links-backend.onrender.com';
-      const ipnRes = await safePesapalPost(
-        `${PESAPAL_BASE_URL}/api/URLSetup/RegisterIPN`,
-        { url: `${serverUrl}/api/ipn/pesapal`, ipn_notification_type: 'GET' },
-        token
-      );
+    // Step 2: Register IPN URL (v3 Endpoint: /api/URLSetup/RegisterUrl)
+    let notificationId = process.env.PESAPAL_NOTIFICATION_ID || process.env.PESAPAL_IPN_ID || cachedIpnId;
 
-      if (ipnRes.ok && ipnRes.data.ipn_id) {
-        cachedIpnId = ipnRes.data.ipn_id;
-      } else {
-        return res.status(400).json({
-          error: 'IPN Registration Failed',
-          details: ipnRes.data,
-        });
+    if (!notificationId) {
+      const serverUrl = process.env.MY_SERVER_URL || 'https://g-links-backend.onrender.com';
+      try {
+        const ipnRes = await pesapalApiCall(
+          '/api/URLSetup/RegisterUrl',
+          { url: `${serverUrl}/api/ipn/pesapal`, ipn_notification_type: 'GET' },
+          token
+        );
+        if (ipnRes.data?.ipn_id) {
+          cachedIpnId = ipnRes.data.ipn_id;
+          notificationId = cachedIpnId;
+        }
+      } catch (ipnErr) {
+        console.warn('⚠️ IPN registration warning:', ipnErr.message);
       }
     }
-    const notificationId = process.env.PESAPAL_NOTIFICATION_ID || cachedIpnId;
 
-    // Step 3: Submit Order Request
+    if (!notificationId) {
+      return res.status(400).json({
+        error: 'Failed to obtain IPN Notification ID from Pesapal. Verify domain URL and IPN access.',
+      });
+    }
+
+    // Step 3: Order Payload
     const nameParts = buyerName.split(' ');
     const orderPayload = {
       id: orderId,
@@ -133,13 +147,10 @@ const initiatePaymentHandler = async (req, res) => {
       },
     };
 
-    const orderRes = await safePesapalPost(
-      `${PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest`,
-      orderPayload,
-      token
-    );
+    // Step 4: Submit Order Request
+    const orderRes = await pesapalApiCall('/api/Transactions/SubmitOrderRequest', orderPayload, token);
 
-    if (orderRes.ok && orderRes.data.redirect_url) {
+    if (orderRes.ok && orderRes.data?.redirect_url) {
       return res.status(200).json({
         status: 'success',
         paymentUrl: orderRes.data.redirect_url,
@@ -149,16 +160,13 @@ const initiatePaymentHandler = async (req, res) => {
     }
 
     return res.status(400).json({
-      error: 'Pesapal rejected order creation',
+      error: orderRes.data?.error?.message || orderRes.data?.message || 'Pesapal rejected order creation.',
       details: orderRes.data,
     });
 
   } catch (err) {
-    console.error('❌ Payment Initiation Error:', err.message);
-    return res.status(500).json({
-      error: 'Error initiating Vendor payment',
-      message: err.message,
-    });
+    console.error('❌ Payment Handler Error:', err.message);
+    return res.status(400).json({ error: err.message });
   }
 };
 
@@ -168,4 +176,4 @@ app.post('/api/pesapal-pay', initiatePaymentHandler);
 app.post('/api/pesapal/initiate-payment', initiatePaymentHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server active on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
