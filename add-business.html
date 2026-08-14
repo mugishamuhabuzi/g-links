@@ -288,6 +288,11 @@
         </div>
 
         <div class="form-group">
+          <label for="email"><i class="fa-solid fa-envelope"></i> Email Address *</label>
+          <input type="email" id="email" class="form-control" placeholder="e.g. vendor@example.com" required>
+        </div>
+
+        <div class="form-group">
           <label for="categorySelect"><i class="fa-solid fa-layer-group"></i> Primary Category *</label>
           <select id="categorySelect" class="form-control" required>
             <option value="" disabled selected>Select Business Category</option>
@@ -303,7 +308,7 @@
 
         <div class="form-group">
           <label for="phone"><i class="fa-solid fa-phone"></i> WhatsApp / Phone Number *</label>
-          <input type="tel" id="phone" class="form-control" placeholder="e.g. +256 700 000000" required>
+          <input type="tel" id="phone" class="form-control" placeholder="e.g. 0700000000" required>
         </div>
 
         <div class="form-group">
@@ -345,7 +350,7 @@
 
   <!-- Script to handle dynamic package loading, Pesapal callback verification & submission -->
   <script>
-    // Configuration Settings
+    // Configuration Settings (Production Backend URL)
     const API_BASE_URL = "https://g-links-backend.onrender.com"; 
     
     let savedPackage = null;
@@ -364,7 +369,6 @@
       const storedPackage = localStorage.getItem("selectedPackage");
       
       if (!storedPackage) {
-        // If user navigated directly here without picking a package
         window.location.href = "packages.html";
         return;
       }
@@ -372,12 +376,12 @@
       savedPackage = JSON.parse(storedPackage);
 
       // 2. Display summary on screen
-      document.getElementById("pkgTitle").textContent = savedPackage.packageName;
-      document.getElementById("pkgLimit").textContent = savedPackage.itemLimit === -1 ? "Unlimited" : `${savedPackage.itemLimit} Items`;
+      document.getElementById("pkgTitle").textContent = savedPackage.packageName || savedPackage.name || "Selected Package";
+      document.getElementById("pkgLimit").textContent = (savedPackage.itemLimit === -1 || savedPackage.limit === -1) ? "Unlimited" : `${savedPackage.itemLimit || savedPackage.limit || 10} Items`;
       
       const currency = savedPackage.currency || "UGX";
-      const regFee = savedPackage.regFee || savedPackage.regFeeUGX || 3000;
-      document.getElementById("pkgRegFee").textContent = `${currency} ${regFee.toLocaleString()}`;
+      const regFee = savedPackage.regFee || savedPackage.regFeeUGX || savedPackage.price || 3000;
+      document.getElementById("pkgRegFee").textContent = `${currency} ${Number(regFee).toLocaleString()}`;
 
       // 3. Check for restored business form drafts
       const pendingDetails = localStorage.getItem("pendingBusinessDetails");
@@ -385,6 +389,7 @@
         try {
           const parsed = JSON.parse(pendingDetails);
           if (parsed.businessName) document.getElementById("businessName").value = parsed.businessName;
+          if (parsed.email) document.getElementById("email").value = parsed.email;
           if (parsed.category) document.getElementById("categorySelect").value = parsed.category;
           if (parsed.phone) document.getElementById("phone").value = parsed.phone;
           if (parsed.address) document.getElementById("address").value = parsed.address;
@@ -414,7 +419,9 @@
 
       try {
         const response = await fetch(`${API_BASE_URL}/api/pesapal/verify-payment?tracking_id=${encodeURIComponent(trackingId)}`);
-        const data = await response.json();
+        
+        let data = {};
+        try { data = await response.json(); } catch (e) { }
 
         hideModal();
 
@@ -469,6 +476,7 @@
 
       const businessDetails = {
         businessName: document.getElementById("businessName").value.trim(),
+        email: document.getElementById("email").value.trim(),
         category: document.getElementById("categorySelect").value,
         phone: document.getElementById("phone").value.trim(),
         address: document.getElementById("address").value.trim(),
@@ -486,42 +494,49 @@
         localStorage.removeItem("pendingBusinessDetails");
 
         alert("Business profile created successfully!");
-        window.location.href = "add-items.html"; // Redirect to add business items / vendor portal
+        window.location.href = "add-items.html";
         return;
       }
 
       // CASE B: User needs to pay registration fee first -> Trigger Pesapal API
-      showModal("Connecting to Pesapal", "Initiating secure payment gateway for registration fee...");
+      showModal("Connecting to Pesapal", "Initiating secure payment gateway for registration fee... (If server was sleeping, this may take a few extra seconds)");
 
       const currency = savedPackage.currency || "UGX";
-      const regFee = savedPackage.regFee || savedPackage.regFeeUGX || 3000;
+      const regFee = savedPackage.regFee || savedPackage.regFeeUGX || savedPackage.price || 3000;
 
       try {
         const response = await fetch(`${API_BASE_URL}/api/pesapal/initiate-payment`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            amount: regFee,
+            amount: Number(regFee),
             currency: currency,
             phone: businessDetails.phone,
-            description: `VENX Registration - ${businessDetails.businessName} (${savedPackage.packageName})`,
-            callback_url: window.location.href.split("?")[0] // Redirect back to this page
+            email: businessDetails.email,
+            businessName: businessDetails.businessName,
+            description: `VENX Registration - ${businessDetails.businessName} (${savedPackage.packageName || 'Vendor Package'})`,
+            callback_url: window.location.href.split("?")[0]
           })
         });
 
-        const data = await response.json();
+        let data = {};
+        try {
+          data = await response.json();
+        } catch (jsonErr) {
+          throw new Error("Server returned an unreadable response. Render server might be waking up—please try clicking submit again.");
+        }
 
-        if (data.redirect_url && data.order_tracking_id) {
+        if (response.ok && data.redirect_url && data.order_tracking_id) {
           localStorage.setItem("pesapal_tracking_id", data.order_tracking_id);
           window.location.href = data.redirect_url;
         } else {
           hideModal();
-          alert("Could not start payment: " + (data.error || "Please try again."));
+          alert("Could not start payment: " + (data.error || data.message || "Server error initiating registration payment."));
         }
       } catch (err) {
         console.error("Pesapal connection failed:", err);
         hideModal();
-        alert("Failed to connect to the payment gateway. Please check your network and try again.");
+        alert(err.message || "Failed to connect to the payment gateway. Please check your network and try again.");
       }
     });
   </script>
