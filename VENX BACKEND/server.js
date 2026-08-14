@@ -13,7 +13,7 @@ app.use(express.json());
 // =========================================================================
 function formatUgandaPhone(phone) {
   if (!phone) return '';
-  let cleaned = phone.trim().replace(/\s+/g, '');
+  let cleaned = String(phone).trim().replace(/\s+/g, '');
   if (cleaned.startsWith('0')) {
     return '256' + cleaned.substring(1);
   }
@@ -27,30 +27,40 @@ function formatUgandaPhone(phone) {
 // 1. FIREBASE ADMIN SDK INITIALIZATION
 // =========================================================================
 try {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  });
-  console.log('✅ Connected to Firebase Firestore.');
+  if (!admin.apps.length) {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      }),
+    });
+    console.log('✅ Connected to Firebase Firestore.');
+  }
 } catch (error) {
   console.error('❌ Firebase Admin setup error:', error.message);
 }
 
-const db = admin.firestore();
+const db = admin.apps.length ? admin.firestore() : null;
 
 // =========================================================================
 // 2. AFRICA'S TALKING SMS SERVICE SETUP
 // =========================================================================
-const africasTalking = AfricasTalking({
-  apiKey: process.env.AT_API_KEY,
-  username: process.env.AT_USERNAME,
-});
-const sms = africasTalking.SMS;
+let sms = null;
+if (process.env.AT_API_KEY && process.env.AT_USERNAME) {
+  try {
+    const africasTalking = AfricasTalking({
+      apiKey: process.env.AT_API_KEY,
+      username: process.env.AT_USERNAME,
+    });
+    sms = africasTalking.SMS;
+  } catch (e) {
+    console.error('❌ Africa\'s Talking setup error:', e.message);
+  }
+}
 
 async function sendSMS(to, message) {
+  if (!sms) return;
   try {
     const formattedNumber = formatUgandaPhone(to);
     const response = await sms.send({
@@ -90,7 +100,7 @@ async function getPesapalAuthToken() {
   if (data.token) {
     return data.token;
   }
-  throw new Error(data.error?.message || data.message || 'Pesapal authentication failed');
+  throw new Error(`Pesapal Auth Failed: ${data.error?.message || data.message || JSON.stringify(data)}`);
 }
 
 // Register IPN URL with Pesapal dynamically
@@ -104,7 +114,7 @@ async function getOrRegisterIpnId(token) {
   const ipnUrl = `${process.env.MY_SERVER_URL || 'https://g-links-backend.onrender.com'}/api/ipn/pesapal`;
 
   try {
-    const response = await fetch(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterUrl`, {
+    const response = await fetch(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterIPN`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -123,10 +133,10 @@ async function getOrRegisterIpnId(token) {
       console.log(`✅ Registered Pesapal IPN ID: ${cachedIpnId}`);
       return cachedIpnId;
     }
-    console.error('❌ IPN registration response:', data);
+    console.error('❌ IPN registration response error:', data);
     return null;
   } catch (err) {
-    console.error('❌ IPN Exception:', err.message);
+    console.error('❌ IPN Registration Exception:', err.message);
     return null;
   }
 }
@@ -142,25 +152,23 @@ app.get('/', (req, res) => {
 
 // Shared Payment Handler
 const initiatePaymentHandler = async (req, res) => {
-  const amount = req.body.amount;
-  const email = req.body.email;
-  const phone = formatUgandaPhone(req.body.phone || req.body.phoneNumber);
-  const buyerName = req.body.businessName || req.body.buyerName || req.body.name || 'Venx Customer';
-  const orderId = req.body.orderId || req.body.merchantReference || `VENX-${Date.now()}`;
-
-  if (!amount || !email) {
-    return res.status(400).json({ error: 'Missing required order details (amount or email).' });
-  }
-
   try {
+    const amount = req.body.amount || 3000;
+    // Provide safe defaults so missing input fields don't crash the server
+    const rawEmail = req.body.email || req.body.email_address || 'vendor@venxmarket.com';
+    const email = String(rawEmail).trim();
+    const phone = formatUgandaPhone(req.body.phone || req.body.phoneNumber || '0700000000');
+    const buyerName = String(req.body.businessName || req.body.buyerName || req.body.name || 'Venx Customer').trim();
+    const orderId = req.body.orderId || req.body.merchantReference || `VENX-${Date.now()}`;
+
     const token = await getPesapalAuthToken();
     const notificationId = await getOrRegisterIpnId(token);
 
     if (!notificationId) {
-      return res.status(400).json({ error: 'Failed to retrieve or register Pesapal Notification ID.' });
+      return res.status(400).json({ error: 'Failed to retrieve or register Pesapal Notification ID. Check credentials.' });
     }
 
-    const nameParts = buyerName.trim().split(' ');
+    const nameParts = buyerName.split(' ');
     const firstName = nameParts[0] || 'Venx';
     const lastName = nameParts.slice(1).join(' ') || 'Customer';
 
@@ -168,11 +176,11 @@ const initiatePaymentHandler = async (req, res) => {
       id: orderId,
       currency: req.body.currency || 'UGX',
       amount: parseFloat(amount),
-      description: req.body.description || `Escrow Payment for Order #${orderId}`,
+      description: req.body.description || `Business Registration Fee - ${buyerName}`,
       callback_url: req.body.callback_url || process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/g-links/orders.html',
       notification_id: notificationId,
       billing_address: {
-        email_address: email.trim(),
+        email_address: email,
         phone_number: phone,
         first_name: firstName,
         last_name: lastName,
@@ -212,7 +220,7 @@ const initiatePaymentHandler = async (req, res) => {
   }
 };
 
-// Route Endpoints (Supports all endpoint path variations used across your app)
+// Route Endpoints (Supports all endpoint paths used across frontend)
 app.post('/api/payments/initiate', initiatePaymentHandler);
 app.post('/api/pesapal-pay', initiatePaymentHandler);
 app.post('/api/pesapal/initiate-payment', initiatePaymentHandler);
@@ -242,7 +250,7 @@ const handlePesapalIPN = async (req, res) => {
     const paymentStatus = statusData.payment_status_description;
     const statusCode = statusData.status_code;
 
-    if (paymentStatus === 'Completed' || statusCode === 1) {
+    if ((paymentStatus === 'Completed' || statusCode === 1) && db) {
       const amountPaid = statusData.amount;
       const currency = statusData.currency || 'UGX';
 
