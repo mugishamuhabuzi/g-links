@@ -72,7 +72,7 @@ const PESAPAL_BASE_URL = process.env.PESAPAL_ENV === 'live'
   ? 'https://pay.pesapal.com/v3'
   : 'https://cybqa.pesapal.com/pesapalv3';
 
-// Request OAuth Bearer Token from Pesapal using environment variables with updated fallback keys
+// Request OAuth Bearer Token from Pesapal
 async function getPesapalAuthToken() {
   const response = await fetch(`${PESAPAL_BASE_URL}/api/Auth/RequestToken`, {
     method: 'POST',
@@ -96,34 +96,39 @@ async function getPesapalAuthToken() {
 // Register IPN URL with Pesapal dynamically
 let cachedIpnId = null;
 async function getOrRegisterIpnId(token) {
-  if (process.env.PESAPAL_NOTIFICATION_ID) {
-    return process.env.PESAPAL_NOTIFICATION_ID;
+  if (process.env.PESAPAL_NOTIFICATION_ID || process.env.PESAPAL_IPN_ID) {
+    return process.env.PESAPAL_NOTIFICATION_ID || process.env.PESAPAL_IPN_ID;
   }
   if (cachedIpnId) return cachedIpnId;
 
-  const ipnUrl = `${process.env.MY_SERVER_URL || 'https://mugishamuhabuzi.github.io'}/api/ipn/pesapal`;
+  const ipnUrl = `${process.env.MY_SERVER_URL || 'https://g-links-backend.onrender.com'}/api/ipn/pesapal`;
 
-  const response = await fetch(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterIPN`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify({
-      url: ipnUrl,
-      ipn_notification_type: 'GET',
-    }),
-  });
+  try {
+    const response = await fetch(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterUrl`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        url: ipnUrl,
+        ipn_notification_type: 'GET',
+      }),
+    });
 
-  const data = await response.json();
-  if (data.ipn_id) {
-    cachedIpnId = data.ipn_id;
-    console.log(`✅ Registered Pesapal IPN ID: ${cachedIpnId}`);
-    return cachedIpnId;
+    const data = await response.json();
+    if (data.ipn_id) {
+      cachedIpnId = data.ipn_id;
+      console.log(`✅ Registered Pesapal IPN ID: ${cachedIpnId}`);
+      return cachedIpnId;
+    }
+    console.error('❌ IPN registration response:', data);
+    return null;
+  } catch (err) {
+    console.error('❌ IPN Exception:', err.message);
+    return null;
   }
-  console.error('❌ IPN registration response:', data);
-  return null;
 }
 
 // =========================================================================
@@ -135,13 +140,13 @@ app.get('/', (req, res) => {
   res.json({ status: 'active', message: 'Venx Market Pesapal API is live!' });
 });
 
-// Shared Payment Handler for both route aliases
+// Shared Payment Handler
 const initiatePaymentHandler = async (req, res) => {
   const amount = req.body.amount;
   const email = req.body.email;
-  const phone = formatUgandaPhone(req.body.phone);
-  const buyerName = req.body.buyerName || req.body.name || 'Venx Customer';
-  const orderId = req.body.orderId || `VENX-${Date.now()}`;
+  const phone = formatUgandaPhone(req.body.phone || req.body.phoneNumber);
+  const buyerName = req.body.businessName || req.body.buyerName || req.body.name || 'Venx Customer';
+  const orderId = req.body.orderId || req.body.merchantReference || `VENX-${Date.now()}`;
 
   if (!amount || !email) {
     return res.status(400).json({ error: 'Missing required order details (amount or email).' });
@@ -161,16 +166,17 @@ const initiatePaymentHandler = async (req, res) => {
 
     const orderPayload = {
       id: orderId,
-      currency: 'UGX',
+      currency: req.body.currency || 'UGX',
       amount: parseFloat(amount),
-      description: `Escrow Payment for Order #${orderId}`,
-      callback_url: process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/g-links/orders.html',
+      description: req.body.description || `Escrow Payment for Order #${orderId}`,
+      callback_url: req.body.callback_url || process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/g-links/orders.html',
       notification_id: notificationId,
       billing_address: {
-        email_address: email,
+        email_address: email.trim(),
         phone_number: phone,
         first_name: firstName,
         last_name: lastName,
+        country_code: 'UG',
       },
     };
 
@@ -192,6 +198,7 @@ const initiatePaymentHandler = async (req, res) => {
         paymentUrl: pesapalData.redirect_url,
         redirect_url: pesapalData.redirect_url,
         orderTrackingId: pesapalData.order_tracking_id,
+        order_tracking_id: pesapalData.order_tracking_id,
       });
     } else {
       console.error('❌ Pesapal SubmitOrder error response:', pesapalData);
@@ -205,11 +212,12 @@ const initiatePaymentHandler = async (req, res) => {
   }
 };
 
-// Route Endpoints (Supports both endpoint paths)
+// Route Endpoints (Supports all endpoint path variations used across your app)
 app.post('/api/payments/initiate', initiatePaymentHandler);
 app.post('/api/pesapal-pay', initiatePaymentHandler);
+app.post('/api/pesapal/initiate-payment', initiatePaymentHandler);
 
-// Route B: Pesapal IPN Notification Handler (Automated Webhook)
+// Route B: Pesapal IPN Notification Handler
 const handlePesapalIPN = async (req, res) => {
   const orderTrackingId = req.query.OrderTrackingId || req.body.OrderTrackingId;
   const merchantRef = req.query.OrderMerchantReference || req.body.OrderMerchantReference;
