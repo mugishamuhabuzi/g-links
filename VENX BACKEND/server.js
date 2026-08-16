@@ -10,7 +10,7 @@ app.use(express.json());
 
 const PESAPAL_BASE = 'https://pay.pesapal.com/v3';
 
-// Uganda Phone Formatter (Ensures 256XXXXXXXXX format)
+// Uganda Phone Formatter
 function formatUgandaPhone(phone) {
   if (!phone) return '256700000000';
   let cleaned = String(phone).trim().replace(/\s+/g, '');
@@ -36,7 +36,7 @@ try {
   console.warn('⚠️ Firebase init warning:', e.message);
 }
 
-// Pesapal API Fetcher with Cloudflare Bypass Headers
+// Pesapal API Fetcher
 async function pesapalFetch(endpoint, method = 'GET', body = null, token = null) {
   const fetchFn = globalThis.fetch || (await import('node-fetch')).default;
   const url = `${PESAPAL_BASE}${endpoint}`;
@@ -59,11 +59,11 @@ async function pesapalFetch(endpoint, method = 'GET', body = null, token = null)
     try {
       data = JSON.parse(text);
     } catch (err) {
-      console.error(`❌ Pesapal returned HTML (Status ${res.status}):`, text.substring(0, 300));
+      console.error(`❌ Pesapal returned non-JSON response (Status ${res.status}):`, text.substring(0, 300));
       return {
         ok: false,
         status: res.status,
-        error: `Pesapal returned HTTP ${res.status} HTML error. Check Consumer Key/Secret at pay.pesapal.com.`,
+        error: `Pesapal HTTP ${res.status} error response.`,
         rawText: text.substring(0, 300)
       };
     }
@@ -106,9 +106,9 @@ async function getIpnId(token) {
   return null;
 }
 
-// Unified Payment Initiation Handler (Products, Registration & Packages)
+// Master Payment Handler
 const handlePayment = async (req, res) => {
-  console.log('➡️ Incoming Payment Payload:', req.body);
+  console.log('➡️ Incoming Payment Request Body:', req.body);
   try {
     const key = process.env.PESAPAL_CONSUMER_KEY?.trim();
     const secret = process.env.PESAPAL_CONSUMER_SECRET?.trim();
@@ -117,7 +117,7 @@ const handlePayment = async (req, res) => {
       return res.status(500).json({ error: 'Missing PESAPAL_CONSUMER_KEY or PESAPAL_CONSUMER_SECRET in Render Environment.' });
     }
 
-    // Step 1: Request Authentication Token
+    // Step 1: Authentication
     const auth = await pesapalFetch('/api/Auth/RequestToken', 'POST', {
       consumer_key: key,
       consumer_secret: secret,
@@ -126,20 +126,21 @@ const handlePayment = async (req, res) => {
     if (!auth.ok || !auth.data?.token) {
       console.error('❌ Pesapal Authentication Failed:', auth);
       return res.status(400).json({
-        error: 'Pesapal Authentication failed. Check key validity in pay.pesapal.com.',
+        error: 'Pesapal Authentication failed. Verify keys on pay.pesapal.com.',
         details: auth.data || auth.error,
       });
     }
 
     const token = auth.data.token;
 
-    // Step 2: Retrieve Active IPN ID
+    // Step 2: Get IPN ID
     const ipnId = await getIpnId(token);
     if (!ipnId) {
+      console.error('❌ Could not acquire active IPN ID.');
       return res.status(400).json({ error: 'Could not obtain active IPN Notification ID from Pesapal.' });
     }
 
-    // Step 3: Sanitize and Parse Payment Payload
+    // Step 3: Clean Amounts, Phone & Special Characters
     let rawAmount = req.body.amount || req.body.totalAmount || req.body.price || req.body.packagePrice || 3000;
     if (typeof rawAmount === 'string') {
       rawAmount = rawAmount.replace(/[^0-9.]/g, '');
@@ -148,29 +149,22 @@ const handlePayment = async (req, res) => {
 
     const email = String(req.body.email || req.body.email_address || 'customer@venxmarket.com').trim();
     const phone = formatUgandaPhone(req.body.phone || req.body.phoneNumber);
-    const fullName = String(req.body.businessName || req.body.buyerName || req.body.name || req.body.fullName || 'Venx Customer').trim();
     
-    // Auto-detect prefix for unique order ID creation
-    let prefix = 'VENX';
-    if (req.body.businessName || (req.body.description && req.body.description.toLowerCase().includes('registration'))) {
-      prefix = 'REG';
-    } else if (req.body.packageName || (req.body.description && req.body.description.toLowerCase().includes('package'))) {
-      prefix = 'PKG';
-    }
+    // Sanitize description: strip parenthesis and special characters for Pesapal compliance
+    let rawDescription = req.body.description || req.body.packageName || (req.body.businessName ? `VENX Registration - ${req.body.businessName}` : `Order Payment`);
+    const sanitizedDescription = String(rawDescription).replace(/[^a-zA-Z0-9\s-]/g, '').substring(0, 90).trim();
 
-    const orderId = String(
-      req.body.orderId || req.body.merchantReference || req.body.id || `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
-    ).replace(/[^a-zA-Z0-9_.-]/g, '-');
+    const rawName = String(req.body.businessName || req.body.buyerName || req.body.name || req.body.fullName || 'Venx Customer').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    const nameParts = rawName.split(' ');
 
+    const orderId = `VENX-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const callbackUrl = req.body.callback_url || process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/g-links/';
-    const description = req.body.description || req.body.packageName || (req.body.businessName ? `VENX Registration - ${req.body.businessName}` : `Payment for order ${orderId}`);
 
-    const nameParts = fullName.split(' ');
     const orderPayload = {
       id: orderId,
       currency: 'UGX',
       amount: amount,
-      description: description,
+      description: sanitizedDescription || 'VENX Registration Fee',
       callback_url: callbackUrl,
       notification_id: ipnId,
       billing_address: {
@@ -182,19 +176,28 @@ const handlePayment = async (req, res) => {
       },
     };
 
-    // Step 4: Submit Order to Pesapal
+    // Step 4: Submit Order Request
     const orderRes = await pesapalFetch('/api/Transactions/SubmitOrderRequest', 'POST', orderPayload, token);
 
     if (orderRes.ok && orderRes.data?.redirect_url) {
+      const redirectUrl = orderRes.data.redirect_url;
+      console.log('✅ Payment Link Successfully Generated:', redirectUrl);
+
+      // Return all common property keys so any frontend script implementation can parse it
       return res.status(200).json({
         status: 'success',
-        paymentUrl: orderRes.data.redirect_url,
-        redirect_url: orderRes.data.redirect_url,
+        success: true,
+        redirect_url: redirectUrl,
+        redirectUrl: redirectUrl,
+        paymentUrl: redirectUrl,
+        url: redirectUrl,
+        redirect: redirectUrl,
         orderTrackingId: orderRes.data.order_tracking_id,
         merchantReference: orderId,
       });
     }
 
+    console.error('❌ Pesapal Rejected Order Submission:', orderRes.data || orderRes.error);
     return res.status(400).json({
       error: orderRes.data?.error?.message || orderRes.data?.message || 'Pesapal rejected payment creation.',
       details: orderRes.data || orderRes.error,
@@ -206,23 +209,23 @@ const handlePayment = async (req, res) => {
   }
 };
 
-// Server Status Check
+// Application Routes
 app.get('/', (req, res) => res.json({ status: 'active', gateway: 'Pesapal v3 Production' }));
 
-// Product Checkout Routes (Original - Preserved)
+// Product Checkout Routes
 app.post('/api/payments/initiate', handlePayment);
 app.post('/api/pesapal-pay', handlePayment);
 app.post('/api/pesapal/initiate-payment', handlePayment);
 app.post('/api/checkout', handlePayment);
 app.post('/api/orders/create', handlePayment);
 
-// Registration & Package Payment Routes (Newly Added)
+// Registration & Package Routes
 app.post('/api/payments/register-fee', handlePayment);
 app.post('/api/payments/package', handlePayment);
 app.post('/api/payments/package-fee', handlePayment);
 app.post('/api/vendor/register-payment', handlePayment);
 
-// IPN Processing Routes
+// IPN Endpoints
 const handleIpn = (req, res) => {
   console.log('📩 IPN Received:', req.query, req.body);
   res.status(200).json({ status: '200', message: 'IPN Received' });
