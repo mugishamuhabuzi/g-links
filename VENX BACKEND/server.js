@@ -10,12 +10,13 @@ app.use(express.json());
 
 const PESAPAL_BASE = 'https://pay.pesapal.com/v3';
 
-// Uganda Phone Formatter
+// Uganda Phone Formatter (Ensures 256XXXXXXXXX format)
 function formatUgandaPhone(phone) {
   if (!phone) return '256700000000';
   let cleaned = String(phone).trim().replace(/\s+/g, '');
   if (cleaned.startsWith('0')) return '256' + cleaned.substring(1);
   if (cleaned.startsWith('+')) return cleaned.substring(1);
+  if (!cleaned.startsWith('256') && cleaned.length === 9) return '256' + cleaned;
   return cleaned;
 }
 
@@ -105,7 +106,7 @@ async function getIpnId(token) {
   return null;
 }
 
-// Payment Initiation Handler
+// Unified Payment Initiation Handler (Products, Registration & Packages)
 const handlePayment = async (req, res) => {
   console.log('➡️ Incoming Payment Payload:', req.body);
   try {
@@ -116,7 +117,7 @@ const handlePayment = async (req, res) => {
       return res.status(500).json({ error: 'Missing PESAPAL_CONSUMER_KEY or PESAPAL_CONSUMER_SECRET in Render Environment.' });
     }
 
-    // Step 1: Auth Token
+    // Step 1: Request Authentication Token
     const auth = await pesapalFetch('/api/Auth/RequestToken', 'POST', {
       consumer_key: key,
       consumer_secret: secret,
@@ -132,26 +133,44 @@ const handlePayment = async (req, res) => {
 
     const token = auth.data.token;
 
-    // Step 2: Get IPN
+    // Step 2: Retrieve Active IPN ID
     const ipnId = await getIpnId(token);
     if (!ipnId) {
       return res.status(400).json({ error: 'Could not obtain active IPN Notification ID from Pesapal.' });
     }
 
-    // Step 3: Submit Order
-    const amount = Number(req.body.amount || req.body.totalAmount || req.body.price) || 3000;
+    // Step 3: Sanitize and Parse Payment Payload
+    let rawAmount = req.body.amount || req.body.totalAmount || req.body.price || req.body.packagePrice || 3000;
+    if (typeof rawAmount === 'string') {
+      rawAmount = rawAmount.replace(/[^0-9.]/g, '');
+    }
+    const amount = Number(rawAmount) || 3000;
+
     const email = String(req.body.email || req.body.email_address || 'customer@venxmarket.com').trim();
     const phone = formatUgandaPhone(req.body.phone || req.body.phoneNumber);
     const fullName = String(req.body.businessName || req.body.buyerName || req.body.name || req.body.fullName || 'Venx Customer').trim();
-    const orderId = String(req.body.orderId || req.body.merchantReference || `VENX-${Date.now()}`).replace(/[^a-zA-Z0-9_.-]/g, '-');
+    
+    // Auto-detect prefix for unique order ID creation
+    let prefix = 'VENX';
+    if (req.body.businessName || (req.body.description && req.body.description.toLowerCase().includes('registration'))) {
+      prefix = 'REG';
+    } else if (req.body.packageName || (req.body.description && req.body.description.toLowerCase().includes('package'))) {
+      prefix = 'PKG';
+    }
+
+    const orderId = String(
+      req.body.orderId || req.body.merchantReference || req.body.id || `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+    ).replace(/[^a-zA-Z0-9_.-]/g, '-');
+
     const callbackUrl = req.body.callback_url || process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/g-links/';
+    const description = req.body.description || req.body.packageName || (req.body.businessName ? `VENX Registration - ${req.body.businessName}` : `Payment for order ${orderId}`);
 
     const nameParts = fullName.split(' ');
     const orderPayload = {
       id: orderId,
       currency: 'UGX',
       amount: amount,
-      description: req.body.description || `Payment for order ${orderId}`,
+      description: description,
       callback_url: callbackUrl,
       notification_id: ipnId,
       billing_address: {
@@ -163,6 +182,7 @@ const handlePayment = async (req, res) => {
       },
     };
 
+    // Step 4: Submit Order to Pesapal
     const orderRes = await pesapalFetch('/api/Transactions/SubmitOrderRequest', 'POST', orderPayload, token);
 
     if (orderRes.ok && orderRes.data?.redirect_url) {
@@ -171,6 +191,7 @@ const handlePayment = async (req, res) => {
         paymentUrl: orderRes.data.redirect_url,
         redirect_url: orderRes.data.redirect_url,
         orderTrackingId: orderRes.data.order_tracking_id,
+        merchantReference: orderId,
       });
     }
 
@@ -185,15 +206,23 @@ const handlePayment = async (req, res) => {
   }
 };
 
-// Application Endpoints
+// Server Status Check
 app.get('/', (req, res) => res.json({ status: 'active', gateway: 'Pesapal v3 Production' }));
+
+// Product Checkout Routes (Original - Preserved)
 app.post('/api/payments/initiate', handlePayment);
 app.post('/api/pesapal-pay', handlePayment);
 app.post('/api/pesapal/initiate-payment', handlePayment);
 app.post('/api/checkout', handlePayment);
 app.post('/api/orders/create', handlePayment);
 
-// IPN Routes
+// Registration & Package Payment Routes (Newly Added)
+app.post('/api/payments/register-fee', handlePayment);
+app.post('/api/payments/package', handlePayment);
+app.post('/api/payments/package-fee', handlePayment);
+app.post('/api/vendor/register-payment', handlePayment);
+
+// IPN Processing Routes
 const handleIpn = (req, res) => {
   console.log('📩 IPN Received:', req.query, req.body);
   res.status(200).json({ status: '200', message: 'IPN Received' });
