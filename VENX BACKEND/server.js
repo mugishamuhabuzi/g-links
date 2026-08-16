@@ -19,7 +19,7 @@ function formatUgandaPhone(phone) {
   return cleaned;
 }
 
-// Optional Firebase setup
+// Firebase Initialization
 try {
   if (!admin.apps.length && process.env.FIREBASE_PROJECT_ID) {
     admin.initializeApp({
@@ -29,13 +29,13 @@ try {
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
       }),
     });
-    console.log('✅ Firebase initialized.');
+    console.log('✅ Firebase Admin initialized.');
   }
 } catch (e) {
   console.warn('⚠️ Firebase init warning:', e.message);
 }
 
-// Failsafe Pesapal API caller
+// Pesapal API Fetcher with Cloudflare Bypass Headers
 async function pesapalFetch(endpoint, method = 'GET', body = null, token = null) {
   const fetchFn = globalThis.fetch || (await import('node-fetch')).default;
   const url = `${PESAPAL_BASE}${endpoint}`;
@@ -43,6 +43,7 @@ async function pesapalFetch(endpoint, method = 'GET', body = null, token = null)
   const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -57,17 +58,18 @@ async function pesapalFetch(endpoint, method = 'GET', body = null, token = null)
     try {
       data = JSON.parse(text);
     } catch (err) {
-      console.error(`❌ Pesapal returned non-JSON response (HTTP ${res.status}):`, text.substring(0, 300));
+      console.error(`❌ Pesapal returned HTML (Status ${res.status}):`, text.substring(0, 300));
       return {
         ok: false,
         status: res.status,
-        error: `Pesapal returned HTTP ${res.status} HTML/Text page instead of JSON. Verify production keys.`,
+        error: `Pesapal returned HTTP ${res.status} HTML error. Check Consumer Key/Secret at pay.pesapal.com.`,
+        rawText: text.substring(0, 300)
       };
     }
 
     return { ok: res.ok, status: res.status, data };
   } catch (netErr) {
-    console.error('❌ Network Fetch Error:', netErr.message);
+    console.error('❌ Network Call Failed:', netErr.message);
     return { ok: false, status: 500, error: netErr.message };
   }
 }
@@ -81,7 +83,6 @@ async function getIpnId(token) {
     return cachedIpnId;
   }
 
-  // Fetch IPN list
   const list = await pesapalFetch('/api/URLSetup/GetIpnList', 'GET', null, token);
   if (list.ok && Array.isArray(list.data)) {
     const found = list.data.find((item) => item.url && item.url.includes('g-links-backend.onrender.com'));
@@ -91,7 +92,6 @@ async function getIpnId(token) {
     }
   }
 
-  // Register IPN if list lookup fails
   const reg = await pesapalFetch('/api/URLSetup/RegisterIPN', 'POST', {
     url: 'https://g-links-backend.onrender.com/api/ipn/pesapal',
     ipn_notification_type: 'GET',
@@ -105,8 +105,9 @@ async function getIpnId(token) {
   return null;
 }
 
-// Payment Route Handler
+// Payment Initiation Handler
 const handlePayment = async (req, res) => {
+  console.log('➡️ Incoming Payment Payload:', req.body);
   try {
     const key = process.env.PESAPAL_CONSUMER_KEY?.trim();
     const secret = process.env.PESAPAL_CONSUMER_SECRET?.trim();
@@ -115,28 +116,29 @@ const handlePayment = async (req, res) => {
       return res.status(500).json({ error: 'Missing PESAPAL_CONSUMER_KEY or PESAPAL_CONSUMER_SECRET in Render Environment.' });
     }
 
-    // Step 1: Request Token
+    // Step 1: Auth Token
     const auth = await pesapalFetch('/api/Auth/RequestToken', 'POST', {
       consumer_key: key,
       consumer_secret: secret,
     });
 
     if (!auth.ok || !auth.data?.token) {
+      console.error('❌ Pesapal Authentication Failed:', auth);
       return res.status(400).json({
-        error: 'Pesapal Authentication failed. Ensure production Consumer Key and Secret are correct.',
+        error: 'Pesapal Authentication failed. Check key validity in pay.pesapal.com.',
         details: auth.data || auth.error,
       });
     }
 
     const token = auth.data.token;
 
-    // Step 2: Retrieve IPN ID
+    // Step 2: Get IPN
     const ipnId = await getIpnId(token);
     if (!ipnId) {
       return res.status(400).json({ error: 'Could not obtain active IPN Notification ID from Pesapal.' });
     }
 
-    // Step 3: Create Order
+    // Step 3: Submit Order
     const amount = Number(req.body.amount || req.body.totalAmount || req.body.price) || 3000;
     const email = String(req.body.email || req.body.email_address || 'customer@venxmarket.com').trim();
     const phone = formatUgandaPhone(req.body.phone || req.body.phoneNumber);
@@ -183,7 +185,7 @@ const handlePayment = async (req, res) => {
   }
 };
 
-// Routes
+// Application Endpoints
 app.get('/', (req, res) => res.json({ status: 'active', gateway: 'Pesapal v3 Production' }));
 app.post('/api/payments/initiate', handlePayment);
 app.post('/api/pesapal-pay', handlePayment);
@@ -191,15 +193,13 @@ app.post('/api/pesapal/initiate-payment', handlePayment);
 app.post('/api/checkout', handlePayment);
 app.post('/api/orders/create', handlePayment);
 
-// IPN Handlers
+// IPN Routes
 const handleIpn = (req, res) => {
   console.log('📩 IPN Received:', req.query, req.body);
   res.status(200).json({ status: '200', message: 'IPN Received' });
 };
 app.get('/api/ipn/pesapal', handleIpn);
 app.post('/api/ipn/pesapal', handleIpn);
-app.get('/api/payments/ipn', handleIpn);
-app.post('/api/payments/ipn', handleIpn);
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Live Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Production server operational on port ${PORT}`));
