@@ -108,6 +108,8 @@
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
     .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s ease infinite; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -147,7 +149,7 @@
     <div id="activationBanner" class="notice-box" style="display: none; text-align: center;">
       <h3>Account Pending Activation</h3>
       <p style="margin-top: 6px;">Pay the one-time registration fee of <strong>UGX 3,000</strong> to activate your rider account and view job listings.</p>
-      <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="payRegistrationFee()">Pay UGX 3,000 via Mobile Money</button>
+      <button id="payRegBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="payRegistrationFee()">Pay UGX 3,000 via Mobile Money</button>
     </div>
 
     <!-- NAVIGATION TABS -->
@@ -215,7 +217,7 @@
         <label>Mobile Money Phone Number</label>
         <input type="text" id="depositPhone" placeholder="256770000000">
       </div>
-      <button class="btn btn-primary" style="width:100%" onclick="submitCodRemittance()">Initiate MoMo Prompt</button>
+      <button id="depositBtn" class="btn btn-primary" style="width:100%" onclick="submitCodRemittance()">Initiate MoMo Prompt</button>
       <button class="btn btn-outline" style="width:100%; margin-top:8px;" onclick="closeModal('depositModal')">Cancel</button>
     </div>
   </div>
@@ -229,12 +231,16 @@
         <label>Withdrawal Amount (UGX)</label>
         <input type="number" id="withdrawAmount" placeholder="Min. UGX 5,000">
       </div>
-      <button class="btn btn-primary" style="width:100%" onclick="submitWithdrawal()">Request Mobile Money Payout</button>
+      <div class="form-group">
+        <label>Mobile Money Phone Number</label>
+        <input type="text" id="withdrawPhone" placeholder="256770000000">
+      </div>
+      <button id="withdrawBtn" class="btn btn-primary" style="width:100%" onclick="submitWithdrawal()">Request Mobile Money Payout</button>
       <button class="btn btn-outline" style="width:100%; margin-top:8px;" onclick="closeModal('withdrawModal')">Cancel</button>
     </div>
   </div>
 
-  <!-- FIREBASE ENGINE SCRIPT -->
+  <!-- FIREBASE & PAYMENT ENGINE SCRIPT -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -242,7 +248,7 @@
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // --- YOUR FIREBASE CONFIGURATION ---
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "venx-market.firebaseapp.com",
@@ -256,18 +262,21 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
+    // --- BACKEND API CONFIGURATION (Render.com Backend) ---
+    const BACKEND_API_BASE = "https://venx-market-backend.onrender.com/api";
+
     let currentRider = null;
     let riderData = null;
 
     // --- VENX PAYMENT & FEE SYSTEM CONSTANTS ---
-    const RIDER_REGISTRATION_FEE_UGX = 3000; // Updated 3,000 UGX registration fee
-    const VENX_COMMISSION_RATE = 0.05;       // 5% Venx fee (95% net payout to rider)
-    const COD_WALLET_THRESHOLD = 50000;      // UGX 50,000 collateral requirement for COD jobs
+    const RIDER_REGISTRATION_FEE_UGX = 3000;
+    const VENX_COMMISSION_RATE = 0.05;
+    const COD_WALLET_THRESHOLD = 50000;
 
     // --- AUTH & RIDER INITIALIZATION ---
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        console.warn("User not authenticated. Automatic redirect to login.html has been disabled to prevent 404 errors.");
+        console.warn("User not authenticated.");
         return;
       }
       currentRider = user;
@@ -309,7 +318,7 @@
       document.getElementById("codNoticeBox").style.display = riderData.activeCodOrderId ? "block" : "none";
     }
 
-    // --- LISTEN TO AVAILABLE JOBS (APPLYING BUSINESS & DISPATCH RULES) ---
+    // --- LISTEN TO AVAILABLE JOBS ---
     function listenToAvailableJobs() {
       const container = document.getElementById("jobsContainer");
 
@@ -338,7 +347,6 @@
           const isCod = order.paymentMethod === "COD";
           const riderWallet = riderData.walletBalance || 0;
 
-          // RULE 1: Balance-based filtering for COD orders
           if (isCod) {
             if (riderWallet < COD_WALLET_THRESHOLD) return; 
             if (order.orderTotal > riderWallet) return;
@@ -353,8 +361,8 @@
     function renderJobCard(order, container, canAccept) {
       const isCod = order.paymentMethod === "COD";
       const totalFee = order.deliveryFee || 0;
-      const netFee = totalFee * (1 - VENX_COMMISSION_RATE); // 95% to rider
-      const venxFee = totalFee * VENX_COMMISSION_RATE;     // 5% to Venx
+      const netFee = totalFee * (1 - VENX_COMMISSION_RATE);
+      const venxFee = totalFee * VENX_COMMISSION_RATE;
 
       const card = document.createElement("div");
       card.className = "job-card";
@@ -384,7 +392,7 @@
       container.appendChild(card);
     }
 
-    // --- RULE 2: ACCEPT COD / PREPAID JOB LOGIC ---
+    // --- ACCEPT JOB LOGIC ---
     window.acceptJob = async (orderId, isCod, orderTotal) => {
       if (riderData.activeCodOrderId) {
         alert("You cannot accept new jobs while holding an unremitted COD order!");
@@ -409,7 +417,6 @@
               throw new Error("Insufficient wallet collateral to accept this COD job.");
             }
 
-            // Freeze wallet collateral equal to order total
             updatesRider.walletBalance = currentBalance - orderTotal;
             updatesRider.frozenBalance = (riderData.frozenBalance || 0) + orderTotal;
             updatesRider.activeCodOrderId = orderId;
@@ -481,8 +488,8 @@
     };
 
     window.completeDelivery = async (orderId, isCod, totalDeliveryFee) => {
-      const netEarning = totalDeliveryFee * (1 - VENX_COMMISSION_RATE); // 95% credited to rider
-      const venxFee = totalDeliveryFee * VENX_COMMISSION_RATE;           // 5% retained by Venx
+      const netEarning = totalDeliveryFee * (1 - VENX_COMMISSION_RATE);
+      const venxFee = totalDeliveryFee * VENX_COMMISSION_RATE;
 
       try {
         await runTransaction(db, async (transaction) => {
@@ -512,7 +519,7 @@
       }
     };
 
-    // --- REGISTRATION & ACTIVATION PAYMENT (UGX 3,000 CAPTURE) ---
+    // --- REGISTRATION FORM SUBMISSION ---
     document.getElementById("riderRegisterForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const payload = {
@@ -521,8 +528,8 @@
         plateNumber: document.getElementById("regPlate").value,
         phone: document.getElementById("regPhone").value,
         role: "rider",
-        regFeeUGX: RIDER_REGISTRATION_FEE_UGX, // Stored 3,000 UGX
-        riderCommissionRate: VENX_COMMISSION_RATE, // Stored 0.05 (5%)
+        regFeeUGX: RIDER_REGISTRATION_FEE_UGX,
+        riderCommissionRate: VENX_COMMISSION_RATE,
         isActivated: false,
         walletBalance: 0,
         frozenBalance: 0,
@@ -534,62 +541,114 @@
       alert(`Registration submitted. Please pay UGX ${RIDER_REGISTRATION_FEE_UGX.toLocaleString()} to activate your rider account.`);
     });
 
+    // --- REAL BACKEND PAYMENT: REGISTRATION FEE (Pesapal / Mobile Money) ---
     window.payRegistrationFee = async () => {
-      alert(`Simulating Mobile Money prompt for UGX ${RIDER_REGISTRATION_FEE_UGX.toLocaleString()} rider activation fee...`);
-      setTimeout(async () => {
-        await updateDoc(doc(db, "riders", currentRider.uid), { 
-          isActivated: true,
-          activatedAt: new Date().toISOString()
+      const btn = document.getElementById("payRegBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Initiating Mobile Money Prompt...`;
+
+      try {
+        const response = await fetch(`${BACKEND_API_BASE}/payments/initiate-registration`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            riderId: currentRider.uid,
+            phone: riderData?.phone || document.getElementById("regPhone")?.value,
+            amount: RIDER_REGISTRATION_FEE_UGX,
+            description: "Venx Rider Registration Fee"
+          })
         });
-        alert("Activation payment received! Account is now active.");
-      }, 1500);
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Payment initiation failed.");
+
+        if (data.redirectUrl) {
+          // Redirect to Pesapal hosted payment page if applicable
+          window.location.href = data.redirectUrl;
+        } else {
+          alert("STK Push sent to your phone. Enter your Mobile Money PIN to complete activation.");
+          // Optional: Poll or listen to Firestore for isActivated update via IPN listener
+        }
+      } catch (err) {
+        alert(`Payment Error: ${err.message}`);
+        btn.disabled = false;
+        btn.innerHTML = `Pay UGX 3,000 via Mobile Money`;
+      }
     };
 
-    // --- COD REMITTANCE & WITHDRAWALS ---
+    // --- REAL BACKEND PAYMENT: COD REMITTANCE & RECONCILIATION ---
     window.submitCodRemittance = async () => {
       const amount = parseFloat(document.getElementById("depositAmount").value);
+      const phone = document.getElementById("depositPhone").value;
       if (!amount || amount <= 0) return alert("Enter a valid deposit amount.");
+      if (!phone) return alert("Enter your Mobile Money phone number.");
 
-      alert(`Initiating Mobile Money STK push for UGX ${amount.toLocaleString()} to Venx Merchant...`);
+      const btn = document.getElementById("depositBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Processing Remittance...`;
 
-      setTimeout(async () => {
-        await runTransaction(db, async (transaction) => {
-          const riderRef = doc(db, "riders", currentRider.uid);
-          const rSnap = await transaction.get(riderRef);
-          const rData = rSnap.data();
-
-          let frozen = rData.frozenBalance || 0;
-          let wallet = rData.walletBalance || 0;
-
-          let unfreeze = Math.min(frozen, amount);
-          let remainingFrozen = frozen - unfreeze;
-
-          let updates = {
-            frozenBalance: remainingFrozen,
-            walletBalance: wallet + unfreeze
-          };
-
-          if (remainingFrozen === 0) updates.activeCodOrderId = null;
-
-          transaction.update(riderRef, updates);
+      try {
+        const response = await fetch(`${BACKEND_API_BASE}/payments/initiate-cod-remittance`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            riderId: currentRider.uid,
+            phone: phone,
+            amount: amount,
+            description: "Venx COD Cash Remittance"
+          })
         });
 
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Remittance request failed.");
+
+        alert("Mobile Money prompt sent to your phone. Confirm transaction to unfreeze your wallet hold.");
         closeModal("depositModal");
-        alert("Deposit received! Collateral hold updated.");
-      }, 1500);
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `Initiate MoMo Prompt`;
+      }
     };
 
+    // --- REAL BACKEND PAYMENT: WITHDRAWAL / PAYOUT ---
     window.submitWithdrawal = async () => {
       const amount = parseFloat(document.getElementById("withdrawAmount").value);
+      const phone = document.getElementById("withdrawPhone").value;
+
       if (riderData.activeCodOrderId) return alert("Withdrawals disabled while holding unremitted COD orders.");
+      if (!amount || amount < 5000) return alert("Minimum withdrawal amount is UGX 5,000.");
       if (!amount || amount > riderData.walletBalance) return alert("Invalid amount or insufficient wallet balance.");
+      if (!phone) return alert("Enter destination Mobile Money phone number.");
 
-      await updateDoc(doc(db, "riders", currentRider.uid), {
-        walletBalance: riderData.walletBalance - amount
-      });
+      const btn = document.getElementById("withdrawBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Processing Payout...`;
 
-      closeModal("withdrawModal");
-      alert(`Withdrawal of UGX ${amount.toLocaleString()} initiated to your registered mobile number.`);
+      try {
+        const response = await fetch(`${BACKEND_API_BASE}/payments/request-payout`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            riderId: currentRider.uid,
+            phone: phone,
+            amount: amount,
+            description: "Venx Rider Wallet Payout"
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Payout request failed.");
+
+        alert(`Withdrawal of UGX ${amount.toLocaleString()} successfully initiated to ${phone}.`);
+        closeModal("withdrawModal");
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `Request Mobile Money Payout`;
+      }
     };
 
     // UI Helpers
