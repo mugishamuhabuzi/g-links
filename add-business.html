@@ -401,7 +401,7 @@
 
       // 4. Check if Pesapal redirected back with tracking parameters
       const urlParams = new URLSearchParams(window.location.search);
-      const trackingId = urlParams.get("OrderTrackingId") || localStorage.getItem("pesapal_tracking_id");
+      const trackingId = urlParams.get("OrderTrackingId") || urlParams.get("orderTrackingId") || localStorage.getItem("pesapal_tracking_id");
       const localVerification = localStorage.getItem("vendor_payment_verified");
 
       if (localVerification === "true") {
@@ -514,7 +514,7 @@
             phone: businessDetails.phone,
             email: businessDetails.email,
             businessName: businessDetails.businessName,
-            description: `VENX Registration - ${businessDetails.businessName} (${savedPackage.packageName || 'Vendor Package'})`,
+            description: `VENX Registration - ${businessDetails.businessName}`,
             callback_url: window.location.href.split("?")[0]
           })
         });
@@ -526,9 +526,15 @@
           throw new Error("Server returned an unreadable response. Render server might be waking up—please try clicking submit again.");
         }
 
-        if (response.ok && data.redirect_url && data.order_tracking_id) {
-          localStorage.setItem("pesapal_tracking_id", data.order_tracking_id);
-          window.location.href = data.redirect_url;
+        // Flexibly extract redirect URL & tracking ID from any response format
+        const paymentUrl = data.redirect_url || data.paymentUrl || data.redirectUrl || data.url || data.redirect;
+        const trackingId = data.orderTrackingId || data.order_tracking_id || data.orderTrackingID;
+
+        if (response.ok && paymentUrl) {
+          if (trackingId) {
+            localStorage.setItem("pesapal_tracking_id", trackingId);
+          }
+          window.location.href = paymentUrl;
         } else {
           hideModal();
           alert("Could not start payment: " + (data.error || data.message || "Server error initiating registration payment."));
