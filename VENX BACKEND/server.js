@@ -4,12 +4,13 @@ const cors = require('cors');
 const admin = require('firebase-admin');
 
 const app = express();
+
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 const PESAPAL_BASE = 'https://pay.pesapal.com/v3';
 
-// 1. Uganda Phone Number Formatter
+// Uganda Phone Formatter
 function formatUgandaPhone(phone) {
   if (!phone) return '256700000000';
   let cleaned = String(phone).trim().replace(/\s+/g, '');
@@ -18,7 +19,7 @@ function formatUgandaPhone(phone) {
   return cleaned;
 }
 
-// 2. Firebase Admin Setup
+// Optional Firebase setup
 try {
   if (!admin.apps.length && process.env.FIREBASE_PROJECT_ID) {
     admin.initializeApp({
@@ -28,15 +29,17 @@ try {
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
       }),
     });
-    console.log('✅ Connected to Firebase.');
+    console.log('✅ Firebase initialized.');
   }
 } catch (e) {
-  console.warn('⚠️ Firebase init skipped:', e.message);
+  console.warn('⚠️ Firebase init warning:', e.message);
 }
 
-// 3. Pesapal API Helper
+// Failsafe Pesapal API caller
 async function pesapalFetch(endpoint, method = 'GET', body = null, token = null) {
   const fetchFn = globalThis.fetch || (await import('node-fetch')).default;
+  const url = `${PESAPAL_BASE}${endpoint}`;
+
   const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -46,102 +49,107 @@ async function pesapalFetch(endpoint, method = 'GET', body = null, token = null)
   const options = { method, headers };
   if (body && method !== 'GET') options.body = JSON.stringify(body);
 
-  const res = await fetchFn(`${PESAPAL_BASE}${endpoint}`, options);
-  const rawText = await res.text();
-  let data;
   try {
-    data = JSON.parse(rawText);
-  } catch (err) {
-    return { ok: false, status: res.status, error: rawText };
+    const res = await fetchFn(url, options);
+    const text = await res.text();
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      console.error(`❌ Pesapal returned non-JSON response (HTTP ${res.status}):`, text.substring(0, 300));
+      return {
+        ok: false,
+        status: res.status,
+        error: `Pesapal returned HTTP ${res.status} HTML/Text page instead of JSON. Verify production keys.`,
+      };
+    }
+
+    return { ok: res.ok, status: res.status, data };
+  } catch (netErr) {
+    console.error('❌ Network Fetch Error:', netErr.message);
+    return { ok: false, status: 500, error: netErr.message };
   }
-  return { ok: res.ok, status: res.status, data };
 }
 
 let cachedIpnId = null;
 
-// Helper to retrieve existing IPN ID or register a new one
 async function getIpnId(token) {
   if (cachedIpnId) return cachedIpnId;
-
-  // 1. Check environment variable
   if (process.env.PESAPAL_NOTIFICATION_ID) {
-    cachedIpnId = process.env.PESAPAL_NOTIFICATION_ID;
+    cachedIpnId = process.env.PESAPAL_NOTIFICATION_ID.trim();
     return cachedIpnId;
   }
 
-  // 2. Fetch existing IPNs from Pesapal
-  const listRes = await pesapalFetch('/api/URLSetup/GetIpnList', 'GET', null, token);
-  if (listRes.ok && Array.isArray(listRes.data)) {
-    const matched = listRes.data.find(
-      (item) => item.url && item.url.includes('g-links-backend.onrender.com')
-    );
-    if (matched && matched.ipn_id) {
-      cachedIpnId = matched.ipn_id;
-      console.log('✅ Retrieved existing IPN ID from Pesapal:', cachedIpnId);
+  // Fetch IPN list
+  const list = await pesapalFetch('/api/URLSetup/GetIpnList', 'GET', null, token);
+  if (list.ok && Array.isArray(list.data)) {
+    const found = list.data.find((item) => item.url && item.url.includes('g-links-backend.onrender.com'));
+    if (found && found.ipn_id) {
+      cachedIpnId = found.ipn_id;
       return cachedIpnId;
     }
   }
 
-  // 3. Register IPN if not already registered
-  const targetUrl = 'https://g-links-backend.onrender.com/api/ipn/pesapal';
-  const regRes = await pesapalFetch('/api/URLSetup/RegisterIPN', 'POST', {
-    url: targetUrl,
+  // Register IPN if list lookup fails
+  const reg = await pesapalFetch('/api/URLSetup/RegisterIPN', 'POST', {
+    url: 'https://g-links-backend.onrender.com/api/ipn/pesapal',
     ipn_notification_type: 'GET',
   }, token);
 
-  if (regRes.ok && regRes.data?.ipn_id) {
-    cachedIpnId = regRes.data.ipn_id;
-    console.log('✅ Registered new IPN ID with Pesapal:', cachedIpnId);
+  if (reg.ok && reg.data?.ipn_id) {
+    cachedIpnId = reg.data.ipn_id;
     return cachedIpnId;
   }
 
-  console.error('❌ Unable to retrieve IPN ID from Pesapal:', regRes);
   return null;
 }
 
-// 4. Payment Request Handler
+// Payment Route Handler
 const handlePayment = async (req, res) => {
   try {
-    const key = process.env.PESAPAL_CONSUMER_KEY;
-    const secret = process.env.PESAPAL_CONSUMER_SECRET;
+    const key = process.env.PESAPAL_CONSUMER_KEY?.trim();
+    const secret = process.env.PESAPAL_CONSUMER_SECRET?.trim();
 
     if (!key || !secret) {
-      return res.status(500).json({ error: 'Missing PESAPAL_CONSUMER_KEY or PESAPAL_CONSUMER_SECRET on Render.' });
+      return res.status(500).json({ error: 'Missing PESAPAL_CONSUMER_KEY or PESAPAL_CONSUMER_SECRET in Render Environment.' });
     }
 
-    // Step A: Request Authentication Token
+    // Step 1: Request Token
     const auth = await pesapalFetch('/api/Auth/RequestToken', 'POST', {
       consumer_key: key,
       consumer_secret: secret,
     });
 
     if (!auth.ok || !auth.data?.token) {
-      console.error('❌ Auth Failed:', auth.data || auth.error);
-      return res.status(400).json({ error: 'Pesapal authentication failed. Verify production keys on Render.' });
+      return res.status(400).json({
+        error: 'Pesapal Authentication failed. Ensure production Consumer Key and Secret are correct.',
+        details: auth.data || auth.error,
+      });
     }
 
     const token = auth.data.token;
 
-    // Step B: Fetch or Register IPN ID
+    // Step 2: Retrieve IPN ID
     const ipnId = await getIpnId(token);
     if (!ipnId) {
-      return res.status(400).json({ error: 'Failed to retrieve active IPN ID from Pesapal.' });
+      return res.status(400).json({ error: 'Could not obtain active IPN Notification ID from Pesapal.' });
     }
 
-    // Step C: Prepare Order Payload
+    // Step 3: Create Order
     const amount = Number(req.body.amount || req.body.totalAmount || req.body.price) || 3000;
     const email = String(req.body.email || req.body.email_address || 'customer@venxmarket.com').trim();
     const phone = formatUgandaPhone(req.body.phone || req.body.phoneNumber);
     const fullName = String(req.body.businessName || req.body.buyerName || req.body.name || req.body.fullName || 'Venx Customer').trim();
-    const rawOrderId = req.body.orderId || req.body.merchantReference || req.body.orderReference || `VENX-${Date.now()}`;
+    const orderId = String(req.body.orderId || req.body.merchantReference || `VENX-${Date.now()}`).replace(/[^a-zA-Z0-9_.-]/g, '-');
     const callbackUrl = req.body.callback_url || process.env.FRONTEND_CALLBACK_URL || 'https://mugishamuhabuzi.github.io/g-links/';
 
     const nameParts = fullName.split(' ');
     const orderPayload = {
-      id: String(rawOrderId).replace(/[^a-zA-Z0-9_.-]/g, '-'),
+      id: orderId,
       currency: 'UGX',
       amount: amount,
-      description: req.body.description || `Payment for order ${rawOrderId}`,
+      description: req.body.description || `Payment for order ${orderId}`,
       callback_url: callbackUrl,
       notification_id: ipnId,
       billing_address: {
@@ -153,7 +161,6 @@ const handlePayment = async (req, res) => {
       },
     };
 
-    // Step D: Submit Order to Pesapal
     const orderRes = await pesapalFetch('/api/Transactions/SubmitOrderRequest', 'POST', orderPayload, token);
 
     if (orderRes.ok && orderRes.data?.redirect_url) {
@@ -165,29 +172,28 @@ const handlePayment = async (req, res) => {
       });
     }
 
-    console.error('❌ Order Rejected:', orderRes.data);
     return res.status(400).json({
-      error: orderRes.data?.error?.message || orderRes.data?.message || 'Pesapal rejected payment request.',
-      details: orderRes.data,
+      error: orderRes.data?.error?.message || orderRes.data?.message || 'Pesapal rejected payment creation.',
+      details: orderRes.data || orderRes.error,
     });
 
   } catch (err) {
     console.error('❌ Server Payment Exception:', err.message);
-    return res.status(500).json({ error: 'Server error processing payment: ' + err.message });
+    return res.status(500).json({ error: 'Internal Server Error: ' + err.message });
   }
 };
 
-// Endpoints
-app.get('/', (req, res) => res.json({ status: 'active', mode: 'Pesapal v3 Live' }));
+// Routes
+app.get('/', (req, res) => res.json({ status: 'active', gateway: 'Pesapal v3 Production' }));
 app.post('/api/payments/initiate', handlePayment);
 app.post('/api/pesapal-pay', handlePayment);
 app.post('/api/pesapal/initiate-payment', handlePayment);
 app.post('/api/checkout', handlePayment);
 app.post('/api/orders/create', handlePayment);
 
-// IPN Webhook Handlers
+// IPN Handlers
 const handleIpn = (req, res) => {
-  console.log('📩 Pesapal IPN Notification:', req.query, req.body);
+  console.log('📩 IPN Received:', req.query, req.body);
   res.status(200).json({ status: '200', message: 'IPN Received' });
 };
 app.get('/api/ipn/pesapal', handleIpn);
