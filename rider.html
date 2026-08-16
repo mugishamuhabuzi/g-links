@@ -11,8 +11,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Google Maps API -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=geometry"></script>
+  <!-- Google Maps API (Replace with your Google Maps API Key if needed) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyYourGoogleMapsKeyPlaceholder&libraries=geometry"></script>
 
   <style>
     :root {
@@ -27,7 +27,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: #f1f5f9; color: var(--text); padding-bottom: 90px; }
+    body { background-color: #f1f5f9; color: var(--text); padding-bottom: 80px; }
 
     header {
       background: var(--dark);
@@ -42,21 +42,17 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
-    .brand { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+    .brand { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; }
     .header-actions { display: flex; align-items: center; gap: 10px; }
-    
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.70rem; font-weight: 600; text-transform: uppercase; }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
     .badge-active { background: #dcfce7; color: #166534; }
     .badge-inactive { background: #fee2e2; color: #991b1b; }
 
     .container { max-width: 500px; margin: 0 auto; padding: 16px; }
 
-    /* Auth Screen */
-    #authScreen { display: none; padding: 20px 0; }
-    .auth-card { background: white; border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
-    .auth-tab { flex: 1; padding: 10px; text-align: center; font-weight: 600; cursor: pointer; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-    .auth-tab.active { color: var(--primary); border-color: var(--primary); }
+    /* Auth Card */
+    .auth-container { background: white; border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 20px; }
+    .auth-toggle { text-align: center; margin-top: 14px; font-size: 0.85rem; color: var(--primary); cursor: pointer; font-weight: 600; }
 
     /* Wallet Module */
     .wallet-card {
@@ -101,12 +97,19 @@
       font-size: 0.85rem;
     }
 
-    /* Map Container */
-    #map { width: 100%; height: 220px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); display: none; }
+    /* Google Map Container */
+    #map {
+      width: 100%;
+      height: 220px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      display: none;
+    }
 
     /* Tabs */
-    .tabs { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 16px; border: 1px solid var(--border); overflow-x: auto; }
-    .tab { flex: 1; min-width: 90px; padding: 10px 6px; text-align: center; font-size: 0.8rem; font-weight: 600; border-radius: 8px; cursor: pointer; color: #64748b; white-space: nowrap; }
+    .tabs { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 16px; border: 1px solid var(--border); }
+    .tab { flex: 1; padding: 10px; text-align: center; font-size: 0.875rem; font-weight: 600; border-radius: 8px; cursor: pointer; color: #64748b; }
     .tab.active { background: var(--primary); color: white; }
 
     /* Cards */
@@ -117,15 +120,6 @@
     .tag-prepaid { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
     .job-body p { font-size: 0.875rem; margin-bottom: 6px; line-height: 1.4; }
     .job-footer { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; }
-
-    /* Status Toggle Switch */
-    .status-toggle { display: flex; align-items: center; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; gap: 6px; }
-    .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; inset: 0; background-color: #cbd5e1; transition: .3s; border-radius: 18px; }
-    .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--primary); }
-    input:checked + .slider:before { transform: translateX(16px); }
 
     /* Modal Overlay */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
@@ -140,59 +134,36 @@
 <body>
 
   <header>
-    <div class="brand">
-      <span>Venx Rider Portal</span>
-    </div>
+    <div class="brand">Venx Rider Portal</div>
     <div class="header-actions">
-      <div class="status-toggle" id="statusToggleContainer" style="display:none;">
-        <span id="onlineStatusText">Offline</span>
-        <label class="switch">
-          <input type="checkbox" id="riderOnlineToggle" onchange="toggleRiderOnlineStatus()">
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div id="activationBadge" class="badge badge-inactive">Inactive</div>
+      <div id="activationBadge" class="badge badge-inactive" style="display:none;">Inactive</div>
+      <button id="logoutBtn" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem; display: none;" onclick="logoutRider()">Logout</button>
     </div>
   </header>
 
   <div class="container">
 
-    <!-- AUTH SCREEN (LOGIN / SIGNUP) -->
-    <div id="authScreen">
-      <div class="auth-card">
-        <div class="auth-tabs">
-          <div class="auth-tab active" id="authTabLogin" onclick="switchAuthMode('login')">Sign In</div>
-          <div class="auth-tab" id="authTabRegister" onclick="switchAuthMode('register')">New Account</div>
+    <!-- AUTHENTICATION VIEW (Shown when logged out) -->
+    <div id="authView" class="auth-container" style="display: none;">
+      <h3 id="authTitle" style="margin-bottom: 6px;">Rider Login</h3>
+      <p id="authSubtitle" style="font-size: 0.8rem; color: #64748b; margin-bottom: 16px;">Access your Venx delivery portal account.</p>
+      
+      <form id="authForm">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="authEmail" required placeholder="rider@venx.market">
         </div>
-
-        <form id="authForm">
-          <div class="form-group" id="nameGroup" style="display: none;">
-            <label>Full Name</label>
-            <input type="text" id="authName" placeholder="e.g., John Mugisha">
-          </div>
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="authEmail" required placeholder="rider@venx.ug">
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="authPassword" required placeholder="••••••••">
-          </div>
-          <div class="form-group" id="phoneGroup" style="display: none;">
-            <label>Mobile Money Phone Number</label>
-            <input type="text" id="authPhone" placeholder="0771234567">
-          </div>
-          <button type="submit" class="btn btn-primary" id="authSubmitBtn" style="width: 100%;">Sign In</button>
-        </form>
-        <button class="btn btn-outline" id="authToggleBtn" style="width: 100%; margin-top: 10px;" onclick="toggleAuthMode()">Need an account? Register</button>
-      </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="authPassword" required placeholder="••••••••">
+        </div>
+        <button type="submit" id="authSubmitBtn" class="btn btn-primary" style="width: 100%;">Sign In</button>
+      </form>
+      <div class="auth-toggle" id="authToggleBtn" onclick="toggleAuthMode()">Don't have an account? Register</div>
     </div>
 
-    <!-- MAIN DASHBOARD APP -->
-    <div id="mainDashboard" style="display: none;">
-      
-      <!-- GOOGLE MAP -->
-      <div id="map"></div>
+    <!-- MAIN DASHBOARD VIEW (Shown when authenticated) -->
+    <div id="dashboardView" style="display: none;">
 
       <!-- WALLET MODULE -->
       <div class="wallet-card">
@@ -208,7 +179,7 @@
           </div>
         </div>
         <div class="wallet-actions">
-          <button class="btn btn-primary" onclick="openModal('withdrawModal')">Withdraw</button>
+          <button class="btn btn-primary" onclick="openModal('withdrawModal')">Withdraw Payout</button>
           <button class="btn btn-secondary" onclick="openModal('depositModal')">Remit COD Cash</button>
         </div>
       </div>
@@ -218,24 +189,26 @@
         ⚠️ <strong>Active COD Hold:</strong> You hold an unremitted Cash-on-Delivery order. New job acceptances and withdrawals are paused until collected funds are remitted.
       </div>
 
-      <!-- REGISTRATION / ACTIVATION BANNER (UGX 2,000) -->
+      <!-- REGISTRATION / ACTIVATION BANNER (UGX 2,000 Pesapal Fee) -->
       <div id="activationBanner" class="notice-box" style="display: none; text-align: center;">
         <h3>Account Pending Activation</h3>
-        <p style="margin-top: 6px;">Pay the one-time registration fee of <strong>UGX 2,000</strong> to activate your rider account and view job listings.</p>
+        <p style="margin-top: 6px;">Pay the one-time registration fee of <strong>UGX 2,000</strong> via Pesapal to activate your rider account and view job listings.</p>
         <button id="payRegBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="payRegistrationFee()">Pay UGX 2,000 via Pesapal</button>
       </div>
+
+      <!-- GOOGLE MAP DISPLAY -->
+      <div id="map"></div>
 
       <!-- NAVIGATION TABS -->
       <div class="tabs">
         <div class="tab active" id="tabBtnAvailable" onclick="switchTab('available')">Available Jobs</div>
         <div class="tab" id="tabBtnActive" onclick="switchTab('active')">My Active Job</div>
-        <div class="tab" id="tabBtnHistory" onclick="switchTab('history')">Earnings & History</div>
       </div>
 
       <!-- TAB 1: AVAILABLE JOBS -->
       <div id="tabAvailable">
         <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 12px; background: white; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
-          💡 <strong>Job Dispatch Rules:</strong> Maintain a wallet balance of <strong>UGX 50,000+</strong> to unlock high-value Cash on Delivery (COD) orders. Below 50,000 UGX, only Prepaid orders are shown. Platform retains 5% per completed delivery.
+          💡 <strong>Dispatch Rules:</strong> Maintain a wallet balance of <strong>UGX 50,000+</strong> to unlock high-value Cash on Delivery (COD) orders. Below UGX 50,000, only Prepaid orders are shown. Platform retains 5% commission per delivery.
         </div>
         <div id="jobsContainer">
           <p style="text-align: center; color: #64748b; padding: 20px;">Loading available orders...</p>
@@ -249,28 +222,20 @@
         </div>
       </div>
 
-      <!-- TAB 3: EARNINGS & HISTORY -->
-      <div id="tabHistory" style="display: none;">
-        <div class="job-card">
-          <h3>Delivery History & Performance</h3>
-          <p style="font-size: 0.85rem; color: #64748b; margin: 6px 0 12px 0;">Track your completed deliveries and Venx net commission splits.</p>
-          <div id="historyContainer">
-            <p style="text-align: center; color: #64748b; padding: 15px;">No completed delivery history yet.</p>
-          </div>
-        </div>
-        <button class="btn btn-danger" style="width: 100%; margin-top: 10px;" onclick="logoutRider()">Sign Out</button>
-      </div>
-
     </div>
 
   </div>
 
-  <!-- MODAL: REGISTRATION DETAILS FORM -->
+  <!-- MODAL: PROFILE & VEHICLE REGISTRATION DETAILS -->
   <div id="registerModal" class="modal">
     <div class="modal-content">
-      <h3>Complete Rider Identity</h3>
-      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px;">Submit your vehicle and ID details to register as a Venx Delivery Partner (Fee: UGX 2,000).</p>
-      <form id="riderRegisterForm">
+      <h3>Complete Rider Profile</h3>
+      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px;">Submit your details to finalize your Venx Delivery Partner profile.</p>
+      <form id="riderProfileForm">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="regName" required placeholder="e.g., John Mugisha">
+        </div>
         <div class="form-group">
           <label>National ID / NIN</label>
           <input type="text" id="regNin" required placeholder="e.g., CM9012345678">
@@ -281,7 +246,7 @@
         </div>
         <div class="form-group">
           <label>Mobile Money Phone Number</label>
-          <input type="text" id="regPhone" required placeholder="0771234567">
+          <input type="text" id="regPhone" required placeholder="256770000000">
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%;">Save Details & Continue</button>
       </form>
@@ -292,7 +257,7 @@
   <div id="depositModal" class="modal">
     <div class="modal-content">
       <h3>Remit COD Cash</h3>
-      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px;">Deposit cash collected from buyers back to Venx Market to unfreeze your wallet hold via Pesapal / MoMo.</p>
+      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px;">Deposit cash collected from buyers back to Venx Market to unfreeze your wallet hold.</p>
       <div class="form-group">
         <label>Amount to Remit (UGX)</label>
         <input type="number" id="depositAmount" placeholder="e.g., 45000">
@@ -301,7 +266,7 @@
         <label>Mobile Money Phone Number</label>
         <input type="text" id="depositPhone" placeholder="256770000000">
       </div>
-      <button id="depositBtn" class="btn btn-primary" style="width:100%" onclick="submitCodRemittance()">Initiate Pesapal Prompt</button>
+      <button id="depositBtn" class="btn btn-primary" style="width:100%" onclick="submitCodRemittance()">Initiate Pesapal Remittance</button>
       <button class="btn btn-outline" style="width:100%; margin-top:8px;" onclick="closeModal('depositModal')">Cancel</button>
     </div>
   </div>
@@ -319,7 +284,7 @@
         <label>Mobile Money Phone Number</label>
         <input type="text" id="withdrawPhone" placeholder="256770000000">
       </div>
-      <button id="withdrawBtn" class="btn btn-primary" style="width:100%" onclick="submitWithdrawal()">Request Mobile Money Payout</button>
+      <button id="withdrawBtn" class="btn btn-primary" style="width:100%" onclick="submitWithdrawal()">Request Payout</button>
       <button class="btn btn-outline" style="width:100%; margin-top:8px;" onclick="closeModal('withdrawModal')">Cancel</button>
     </div>
   </div>
@@ -327,24 +292,27 @@
   <!-- FIREBASE & PAYMENT ENGINE SCRIPT -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import {  
-      getFirestore, doc, setDoc, updateDoc, onSnapshot, collection, query, where, orderBy, runTransaction, getDoc 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
     import { 
       getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {  
+      getFirestore, doc, setDoc, updateDoc, onSnapshot, collection, query, where, runTransaction  
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // --- FIREBASE CONFIGURATION ---
+    // --- FIREBASE CONFIGURATION (venx-online-market) ---
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "venx-market.firebaseapp.com",
-      projectId: "venx-market",
-      storageBucket: "venx-market.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:abcdef"
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
+      measurementId: "G-BLH2T3CBVQ"
     };
 
     const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
     const db = getFirestore(app);
     const auth = getAuth(app);
 
@@ -353,117 +321,60 @@
 
     let currentRider = null;
     let riderData = null;
-    let map = null;
-    let riderMarker = null;
     let isRegisterMode = false;
+    let googleMap = null;
+    let mapMarker = null;
 
-    // --- VENX PAYMENT & FEE SYSTEM CONSTANTS ---
+    // --- CONSTANTS & RULES ---
     const RIDER_REGISTRATION_FEE_UGX = 2000;
     const VENX_COMMISSION_RATE = 0.05;
     const COD_WALLET_THRESHOLD = 50000;
 
-    // --- GOOGLE MAPS INIT ---
+    // --- INITIALIZE GOOGLE MAP ---
     window.initMap = function() {
-      const kampalaCoords = { lat: 0.3476, lng: 32.5825 };
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: kampalaCoords,
+      const mapElem = document.getElementById("map");
+      if (!mapElem) return;
+      googleMap = new google.maps.Map(mapElem, {
+        center: { lat: 0.3476, lng: 32.5825 }, // Kampala, Uganda default
         zoom: 13,
-        disableDefaultUI: true,
+        disableDefaultUI: true
       });
-      riderMarker = new google.maps.Marker({
-        position: kampalaCoords,
-        map: map,
-        title: "Your Location",
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 8,
-          fillColor: "#16a34a",
-          fillOpacity: 1,
-          strokeColor: "#ffffff",
-          strokeWeight: 2,
-        }
-      });
-      startLocationTracking();
-    }
+    };
+    window.initMap();
 
-    function startLocationTracking() {
-      if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(
-          async (position) => {
-            const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
-            if (riderMarker) riderMarker.setPosition(pos);
-            if (map) map.setCenter(pos);
-            if (currentRider) {
-              try {
-                await updateDoc(doc(db, "riders", currentRider.uid), {
-                  currentLocation: pos,
-                  lastLocationUpdate: new Date().toISOString()
-                });
-              } catch (e) { console.error("GPS update error:", e); }
-            }
-          },
-          (err) => console.warn("Geolocation warning:", err),
-          { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
-        );
-      }
-    }
-
-    // --- AUTH STATE LISTENER ---
+    // --- AUTH STATE OBSERVER ---
     onAuthStateChanged(auth, async (user) => {
+      const authView = document.getElementById("authView");
+      const dashboardView = document.getElementById("dashboardView");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const badge = document.getElementById("activationBadge");
+
       if (!user) {
         currentRider = null;
         riderData = null;
-        document.getElementById("authScreen").style.display = "block";
-        document.getElementById("mainDashboard").style.display = "none";
-        document.getElementById("statusToggleContainer").style.display = "none";
-        document.getElementById("map").style.display = "none";
+        authView.style.display = "block";
+        dashboardView.style.display = "none";
+        logoutBtn.style.display = "none";
+        badge.style.display = "none";
         return;
       }
 
       currentRider = user;
-      document.getElementById("authScreen").style.display = "none";
-      document.getElementById("mainDashboard").style.display = "block";
-      document.getElementById("statusToggleContainer").style.display = "flex";
-      document.getElementById("map").style.display = "block";
-      if (!map && typeof google !== 'undefined') initMap();
+      authView.style.display = "none";
+      dashboardView.style.display = "block";
+      logoutBtn.style.display = "block";
+      badge.style.display = "inline-block";
 
       listenToRiderProfile(user.uid);
     });
 
-    function listenToRiderProfile(uid) {
-      onSnapshot(doc(db, "riders", uid), (docSnap) => {
-        if (!docSnap.exists()) {
-          openModal("registerModal");
-          return;
-        }
-
-        riderData = docSnap.data();
-        updateUIProfile();
-        listenToAvailableJobs();
-        listenToActiveJob();
-        listenToHistory();
-      });
-    }
-
-    // --- AUTH FORM HANDLER ---
+    // --- AUTH TOGGLE (Login <-> Register) ---
     window.toggleAuthMode = () => {
       isRegisterMode = !isRegisterMode;
-      document.getElementById("nameGroup").style.display = isRegisterMode ? "block" : "none";
-      document.getElementById("phoneGroup").style.display = isRegisterMode ? "block" : "none";
-      document.getElementById("authTabLogin").classList.toggle("active", !isRegisterMode);
-      document.getElementById("authTabRegister").classList.toggle("active", isRegisterMode);
-      document.getElementById("authSubmitBtn").innerText = isRegisterMode ? "Create Account & Register" : "Sign In";
-      document.getElementById("authToggleBtn").innerText = isRegisterMode ? "Already have an account? Sign In" : "Need an account? Register";
-    };
-
-    window.switchAuthMode = (mode) => {
-      isRegisterMode = (mode === 'register');
-      document.getElementById("nameGroup").style.display = isRegisterMode ? "block" : "none";
-      document.getElementById("phoneGroup").style.display = isRegisterMode ? "block" : "none";
-      document.getElementById("authTabLogin").classList.toggle("active", !isRegisterMode);
-      document.getElementById("authTabRegister").classList.toggle("active", isRegisterMode);
-      document.getElementById("authSubmitBtn").innerText = isRegisterMode ? "Create Account & Register" : "Sign In";
-      document.getElementById("authToggleBtn").innerText = isRegisterMode ? "Already have an account? Sign In" : "Need an account? Register";
+      document.getElementById("authTitle").innerText = isRegisterMode ? "Create Rider Account" : "Rider Login";
+      document.getElementById("authSubtitle").innerText = isRegisterMode ? "Register to start delivering with Venx Market." : "Access your Venx delivery portal account.";
+      document.getElementById("authSubmitBtn").innerText = isRegisterMode ? "Register Account" : "Sign In";
+      document.getElementById("authToggleBtn").innerText = isRegisterMode ? "Already have an account? Sign In" : "Don't have an account? Register";
     };
 
     document.getElementById("authForm").addEventListener("submit", async (e) => {
@@ -476,24 +387,7 @@
 
       try {
         if (isRegisterMode) {
-          const fullName = document.getElementById("authName").value;
-          const phone = document.getElementById("authPhone").value;
-          const userCred = await createUserWithEmailAndPassword(auth, email, password);
-          
-          // Pre-create rider doc skeleton
-          await setDoc(doc(db, "riders", userCred.user.uid), {
-            fullName: fullName,
-            email: email,
-            phone: phone,
-            role: "rider",
-            regFeeUGX: RIDER_REGISTRATION_FEE_UGX,
-            riderCommissionRate: VENX_COMMISSION_RATE,
-            isActivated: false,
-            isOnline: false,
-            walletBalance: 0,
-            frozenBalance: 0,
-            createdAt: new Date().toISOString()
-          });
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
           openModal("registerModal");
         } else {
           await signInWithEmailAndPassword(auth, email, password);
@@ -502,7 +396,7 @@
         alert(`Authentication Error: ${err.message}`);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = isRegisterMode ? "Create Account & Register" : "Sign In";
+        btn.innerHTML = isRegisterMode ? "Register Account" : "Sign In";
       }
     });
 
@@ -510,28 +404,28 @@
       await signOut(auth);
     };
 
-    // --- RIDER ONLINE STATUS TOGGLE ---
-    window.toggleRiderOnlineStatus = async () => {
-      const isOnline = document.getElementById("riderOnlineToggle").checked;
-      document.getElementById("onlineStatusText").innerText = isOnline ? "Online" : "Offline";
-      try {
-        await updateDoc(doc(db, "riders", currentRider.uid), { isOnline: isOnline });
-      } catch (err) {
-        alert(`Status update error: ${err.message}`);
-      }
-    };
+    // --- PROFILE LISTENER ---
+    function listenToRiderProfile(uid) {
+      onSnapshot(doc(db, "riders", uid), (docSnap) => {
+        if (!docSnap.exists()) {
+          openModal("registerModal");
+          return;
+        }
 
-    // --- UI UPDATER ---
+        riderData = docSnap.data();
+        updateUIProfile();
+        listenToAvailableJobs();
+        listenToActiveJob();
+      });
+    }
+
+    // --- UI PROFILE UPDATER ---
     function updateUIProfile() {
       document.getElementById("walletBalance").innerText = `UGX ${(riderData.walletBalance || 0).toLocaleString()}`;
       document.getElementById("frozenBalance").innerText = `UGX ${(riderData.frozenBalance || 0).toLocaleString()}`;
 
       const badge = document.getElementById("activationBadge");
       const banner = document.getElementById("activationBanner");
-      const toggle = document.getElementById("riderOnlineToggle");
-
-      toggle.checked = !!riderData.isOnline;
-      document.getElementById("onlineStatusText").innerText = riderData.isOnline ? "Online" : "Offline";
 
       if (riderData.isActivated) {
         badge.innerText = "Active";
@@ -546,19 +440,16 @@
       document.getElementById("codNoticeBox").style.display = riderData.activeCodOrderId ? "block" : "none";
     }
 
-    // --- LISTEN TO AVAILABLE JOBS ---
+    // --- AVAILABLE JOBS LISTENER ---
     function listenToAvailableJobs() {
       const container = document.getElementById("jobsContainer");
 
       if (!riderData?.isActivated) {
-        container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--danger);">Please complete the UGX ${RIDER_REGISTRATION_FEE_UGX.toLocaleString()} Pesapal activation payment to access jobs.</p>`;
+        container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--danger);">Please complete the UGX ${RIDER_REGISTRATION_FEE_UGX.toLocaleString()} activation payment via Pesapal to access available orders.</p>`;
         return;
       }
 
-      const q = query(
-        collection(db, "orders"),
-        where("deliveryStatus", "==", "Pending Pickup")
-      );
+      const q = query(collection(db, "orders"), where("deliveryStatus", "==", "Pending Pickup"));
 
       onSnapshot(q, (snapshot) => {
         container.innerHTML = "";
@@ -620,7 +511,7 @@
       container.appendChild(card);
     }
 
-    // --- ACCEPT JOB LOGIC ---
+    // --- ACCEPT JOB ---
     window.acceptJob = async (orderId, isCod, orderTotal) => {
       if (riderData.activeCodOrderId) {
         alert("You cannot accept new jobs while holding an unremitted COD order!");
@@ -665,13 +556,19 @@
       }
     };
 
-    // --- LISTEN TO ACTIVE JOB ---
+    // --- ACTIVE JOB LISTENER & MAP UPDATER ---
     function listenToActiveJob() {
       const container = document.getElementById("activeJobContainer");
+      const mapElem = document.getElementById("map");
+
       if (!riderData?.activeJobId) {
         container.innerHTML = `<p style="text-align: center; color: #64748b; padding: 20px;">No active job currently assigned.</p>`;
+        if (mapElem) mapElem.style.display = "none";
         return;
       }
+
+      if (mapElem) mapElem.style.display = "block";
+      if (googleMap && window.google) google.maps.event.trigger(googleMap, 'resize');
 
       onSnapshot(doc(db, "orders", riderData.activeJobId), (docSnap) => {
         if (!docSnap.exists()) return;
@@ -734,72 +631,42 @@
             riderNetEarningUGX: netEarning
           });
 
-          let riderUpdates = {
+          transaction.update(riderRef, {
             walletBalance: (rData.walletBalance || 0) + netEarning,
             activeJobId: null
-          };
-
-          if (isCod && rData.activeCodOrderId === orderId) {
-            riderUpdates.activeCodOrderId = null;
-          }
-
-          transaction.update(riderRef, riderUpdates);
+          });
         });
 
-        alert(`Delivery complete! UGX ${netEarning.toLocaleString()} (95%) credited to your wallet.`);
+        alert(`Delivery complete! UGX ${netEarning.toLocaleString()} credited to your wallet.`);
         switchTab('available');
       } catch (err) {
         alert(`Error: ${err.message}`);
       }
     };
 
-    // --- LISTEN TO HISTORY ---
-    function listenToHistory() {
-      const container = document.getElementById("historyContainer");
-      const q = query(
-        collection(db, "orders"),
-        where("assignedRiderId", "==", currentRider.uid),
-        where("deliveryStatus", "==", "Delivered")
-      );
-
-      onSnapshot(q, (snapshot) => {
-        if (snapshot.empty) {
-          container.innerHTML = `<p style="text-align: center; color: #64748b; padding: 15px;">No completed delivery history yet.</p>`;
-          return;
-        }
-
-        container.innerHTML = "";
-        snapshot.forEach((docSnap) => {
-          const ord = docSnap.data();
-          const itemDiv = document.createElement("div");
-          itemDiv.style.cssText = "padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem;";
-          itemDiv.innerHTML = `
-            <strong>Order #${docSnap.id.substring(0,6)}</strong> - <span style="color:var(--primary);">+UGX ${(ord.riderNetEarningUGX || 0).toLocaleString()}</span><br>
-            <small style="color:#64748b;">Completed: ${new Date(ord.completedAt).toLocaleString()}</small>
-          `;
-          container.appendChild(itemDiv);
-        });
-      });
-    }
-
     // --- REGISTRATION FORM SUBMISSION ---
-    document.getElementById("riderRegisterForm").addEventListener("submit", async (e) => {
+    document.getElementById("riderProfileForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const payload = {
+        fullName: document.getElementById("regName").value,
         nin: document.getElementById("regNin").value,
         plateNumber: document.getElementById("regPlate").value,
         phone: document.getElementById("regPhone").value,
+        role: "rider",
         regFeeUGX: RIDER_REGISTRATION_FEE_UGX,
         riderCommissionRate: VENX_COMMISSION_RATE,
-        isActivated: false
+        isActivated: false,
+        walletBalance: 0,
+        frozenBalance: 0,
+        createdAt: new Date().toISOString()
       };
 
-      await updateDoc(doc(db, "riders", currentRider.uid), payload);
+      await setDoc(doc(db, "riders", currentRider.uid), payload, { merge: true });
       closeModal("registerModal");
-      alert(`Registration details saved. Please pay UGX ${RIDER_REGISTRATION_FEE_UGX.toLocaleString()} via Pesapal to activate your account.`);
+      alert(`Profile saved. Please pay UGX ${RIDER_REGISTRATION_FEE_UGX.toLocaleString()} via Pesapal to activate your account.`);
     });
 
-    // --- PESAPAL PAYMENT: REGISTRATION FEE (UGX 2,000) ---
+    // --- PESAPAL PAYMENT: REGISTRATION FEE ---
     window.payRegistrationFee = async () => {
       const btn = document.getElementById("payRegBtn");
       btn.disabled = true;
@@ -811,9 +678,10 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             riderId: currentRider.uid,
-            phone: riderData?.phone || document.getElementById("regPhone")?.value,
+            email: currentRider.email,
+            phone: riderData?.phone || "256700000000",
             amount: RIDER_REGISTRATION_FEE_UGX,
-            description: "Venx Rider Registration Fee (UGX 2000)"
+            description: "Venx Rider Registration Fee (Pesapal)"
           })
         });
 
@@ -823,7 +691,7 @@
         if (data.redirectUrl) {
           window.location.href = data.redirectUrl;
         } else {
-          alert("Pesapal payment prompt sent to your Mobile Money line. Enter PIN to complete activation.");
+          alert("Pesapal payment prompt initiated successfully.");
         }
       } catch (err) {
         alert(`Payment Error: ${err.message}`);
@@ -832,7 +700,7 @@
       }
     };
 
-    // --- PESAPAL PAYMENT: COD REMITTANCE & RECONCILIATION ---
+    // --- PESAPAL PAYMENT: COD REMITTANCE ---
     window.submitCodRemittance = async () => {
       const amount = parseFloat(document.getElementById("depositAmount").value);
       const phone = document.getElementById("depositPhone").value;
@@ -851,24 +719,28 @@
             riderId: currentRider.uid,
             phone: phone,
             amount: amount,
-            description: "Venx COD Cash Remittance"
+            description: "Venx COD Cash Remittance via Pesapal"
           })
         });
 
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || "Remittance request failed.");
 
-        alert("Pesapal MoMo prompt sent to your phone. Confirm transaction to unfreeze your wallet hold.");
-        closeModal("depositModal");
+        if (data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        } else {
+          alert("Pesapal remittance prompt sent. Confirm to unfreeze wallet hold.");
+          closeModal("depositModal");
+        }
       } catch (err) {
         alert(`Error: ${err.message}`);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `Initiate Pesapal Prompt`;
+        btn.innerHTML = `Initiate Pesapal Remittance`;
       }
     };
 
-    // --- REAL BACKEND PAYMENT: WITHDRAWAL / PAYOUT ---
+    // --- PAYOUT WITHDRAWAL ---
     window.submitWithdrawal = async () => {
       const amount = parseFloat(document.getElementById("withdrawAmount").value);
       const phone = document.getElementById("withdrawPhone").value;
@@ -903,18 +775,19 @@
         alert(`Error: ${err.message}`);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `Request Mobile Money Payout`;
+        btn.innerHTML = `Request Payout`;
       }
     };
 
-    // UI Helpers
+    // --- UI HELPERS ---
     window.switchTab = (tab) => {
       document.getElementById("tabAvailable").style.display = tab === 'available' ? 'block' : 'none';
       document.getElementById("tabActive").style.display = tab === 'active' ? 'block' : 'none';
-      document.getElementById("tabHistory").style.display = tab === 'history' ? 'block' : 'none';
       document.getElementById("tabBtnAvailable").classList.toggle("active", tab === 'available');
       document.getElementById("tabBtnActive").classList.toggle("active", tab === 'active');
-      document.getElementById("tabBtnHistory").classList.toggle("active", tab === 'history');
+      if (tab === 'active' && googleMap) {
+        setTimeout(() => google.maps.event.trigger(googleMap, 'resize'), 200);
+      }
     };
 
     window.openModal = (id) => document.getElementById(id).style.display = 'flex';
