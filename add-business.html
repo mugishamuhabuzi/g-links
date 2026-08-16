@@ -308,7 +308,7 @@
 
         <div class="form-group">
           <label for="phone"><i class="fa-solid fa-phone"></i> WhatsApp / Phone Number *</label>
-          <input type="tel" id="phone" class="form-control" placeholder="e.g. 0700000000" required>
+          <input type="tel" id="phone" class="form-control" placeholder="e.g. 0777364587" required>
         </div>
 
         <div class="form-group">
@@ -348,15 +348,12 @@
     </div>
   </div>
 
-  <!-- Script to handle dynamic package loading, Pesapal callback verification & submission -->
   <script>
-    // Configuration Settings (Production Backend URL)
     const API_BASE_URL = "https://g-links-backend.onrender.com"; 
     
     let savedPackage = null;
     let isPaymentVerified = false;
 
-    // DOM Elements
     const submitBtn = document.getElementById("submitBtn");
     const btnText = document.getElementById("btnText");
     const paymentStatusBadge = document.getElementById("paymentStatusBadge");
@@ -364,8 +361,19 @@
     const modalTitle = document.getElementById("modalTitle");
     const modalDesc = document.getElementById("modalDesc");
 
+    // Converts local phone numbers (0777...) to standard international format (256777...)
+    function formatUgandaPhone(phone) {
+      if (!phone) return "";
+      let cleaned = phone.replace(/\D/g, ""); // Remove non-digit characters
+      if (cleaned.startsWith("0") && cleaned.length === 10) {
+        cleaned = "256" + cleaned.substring(1);
+      } else if (cleaned.startsWith("7") && cleaned.length === 9) {
+        cleaned = "256" + cleaned;
+      }
+      return cleaned;
+    }
+
     document.addEventListener("DOMContentLoaded", async () => {
-      // 1. Read package selection from localStorage
       const storedPackage = localStorage.getItem("selectedPackage");
       
       if (!storedPackage) {
@@ -375,7 +383,6 @@
 
       savedPackage = JSON.parse(storedPackage);
 
-      // 2. Display summary on screen
       document.getElementById("pkgTitle").textContent = savedPackage.packageName || savedPackage.name || "Selected Package";
       document.getElementById("pkgLimit").textContent = (savedPackage.itemLimit === -1 || savedPackage.limit === -1) ? "Unlimited" : `${savedPackage.itemLimit || savedPackage.limit || 10} Items`;
       
@@ -383,7 +390,6 @@
       const regFee = savedPackage.regFee || savedPackage.regFeeUGX || savedPackage.price || 3000;
       document.getElementById("pkgRegFee").textContent = `${currency} ${Number(regFee).toLocaleString()}`;
 
-      // 3. Check for restored business form drafts
       const pendingDetails = localStorage.getItem("pendingBusinessDetails");
       if (pendingDetails) {
         try {
@@ -399,7 +405,6 @@
         }
       }
 
-      // 4. Check if Pesapal redirected back with tracking parameters
       const urlParams = new URLSearchParams(window.location.search);
       const trackingId = urlParams.get("OrderTrackingId") || urlParams.get("orderTrackingId") || localStorage.getItem("pesapal_tracking_id");
       const localVerification = localStorage.getItem("vendor_payment_verified");
@@ -413,7 +418,6 @@
       }
     });
 
-    // Function to verify payment status with backend API
     async function verifyPesapalPayment(trackingId) {
       showModal("Verifying Payment", "Checking transaction status with Pesapal... Please wait.");
 
@@ -429,7 +433,7 @@
           localStorage.setItem("vendor_payment_verified", "true");
           markPaymentAsVerified();
         } else if (data.status === "PENDING") {
-          alert("Your registration payment is still pending confirmation on Mobile Money/Card. Complete the prompt on your phone and refresh this page.");
+          alert("Your registration payment is still pending confirmation. Dial *165# on MTN to approve the prompt, then refresh this page.");
           updateButtonState(false);
         } else {
           alert("Payment was not completed. Status: " + (data.status || "Failed"));
@@ -443,7 +447,6 @@
       }
     }
 
-    // Update UI when payment is verified
     function markPaymentAsVerified() {
       isPaymentVerified = true;
       paymentStatusBadge.className = "payment-badge badge-verified";
@@ -470,25 +473,25 @@
       loadingModal.style.display = "none";
     }
 
-    // 5. Form Submit Handler
     document.getElementById("businessForm").addEventListener("submit", async function(e) {
       e.preventDefault();
+
+      const rawPhone = document.getElementById("phone").value.trim();
+      const formattedPhone = formatUgandaPhone(rawPhone);
 
       const businessDetails = {
         businessName: document.getElementById("businessName").value.trim(),
         email: document.getElementById("email").value.trim(),
         category: document.getElementById("categorySelect").value,
-        phone: document.getElementById("phone").value.trim(),
+        phone: formattedPhone,
         address: document.getElementById("address").value.trim(),
         description: document.getElementById("description").value.trim(),
         package: savedPackage,
         registeredAt: new Date().toISOString()
       };
 
-      // Store form values in case of redirect or offline recovery
       localStorage.setItem("pendingBusinessDetails", JSON.stringify(businessDetails));
 
-      // CASE A: User has ALREADY paid registration fee -> Save & Proceed to add items
       if (isPaymentVerified) {
         localStorage.setItem("activeVendorBusiness", JSON.stringify(businessDetails));
         localStorage.removeItem("pendingBusinessDetails");
@@ -498,7 +501,6 @@
         return;
       }
 
-      // CASE B: User needs to pay registration fee first -> Trigger Pesapal API
       showModal("Connecting to Pesapal", "Initiating secure payment gateway for registration fee... (If server was sleeping, this may take a few extra seconds)");
 
       const currency = savedPackage.currency || "UGX";
@@ -511,7 +513,7 @@
           body: JSON.stringify({
             amount: Number(regFee),
             currency: currency,
-            phone: businessDetails.phone,
+            phone: formattedPhone,
             email: businessDetails.email,
             businessName: businessDetails.businessName,
             description: `VENX Registration - ${businessDetails.businessName}`,
@@ -526,7 +528,6 @@
           throw new Error("Server returned an unreadable response. Render server might be waking up—please try clicking submit again.");
         }
 
-        // Flexibly extract redirect URL & tracking ID from any response format
         const paymentUrl = data.redirect_url || data.paymentUrl || data.redirectUrl || data.url || data.redirect;
         const trackingId = data.orderTrackingId || data.order_tracking_id || data.orderTrackingID;
 
