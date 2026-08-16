@@ -5,7 +5,18 @@ const admin = require('firebase-admin');
 
 const app = express();
 
-app.use(cors({ origin: '*' }));
+// 1. Updated CORS configuration to explicitly allow your GitHub Pages frontend
+app.use(cors({
+  origin: [
+    'https://mugishamuhabuzi.github.io',
+    'http://localhost:3000',
+    'http://127.0.0.1:5500',
+    '*' // Fallback wildcard to ensure zero disruption with existing requests
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 const PESAPAL_BASE = 'https://pay.pesapal.com/v3';
@@ -183,7 +194,6 @@ const handlePayment = async (req, res) => {
       const redirectUrl = orderRes.data.redirect_url;
       console.log('✅ Payment Link Successfully Generated:', redirectUrl);
 
-      // Return all common property keys so any frontend script implementation can parse it
       return res.status(200).json({
         status: 'success',
         success: true,
@@ -212,6 +222,9 @@ const handlePayment = async (req, res) => {
 // Application Routes
 app.get('/', (req, res) => res.json({ status: 'active', gateway: 'Pesapal v3 Production' }));
 
+// Added Health Check Route for Render Cold-Start Warm-up
+app.get('/api/health', (req, res) => res.status(200).json({ status: 'healthy', timestamp: Date.now() }));
+
 // Product Checkout Routes
 app.post('/api/payments/initiate', handlePayment);
 app.post('/api/pesapal-pay', handlePayment);
@@ -224,6 +237,10 @@ app.post('/api/payments/register-fee', handlePayment);
 app.post('/api/payments/package', handlePayment);
 app.post('/api/payments/package-fee', handlePayment);
 app.post('/api/vendor/register-payment', handlePayment);
+
+// Added explicit rider button routes to prevent 404 fetch errors
+app.post('/api/payments/initiate-registration', handlePayment);
+app.post('/api/payments/initiate-cod-remittance', handlePayment);
 
 // IPN Endpoints
 const handleIpn = (req, res) => {
