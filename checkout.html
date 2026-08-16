@@ -411,8 +411,8 @@
 
             <div class="form-group">
               <label for="amount">Amount to Pay (UGX)</label>
-              <input type="number" id="amount" readonly required placeholder="0" min="1000">
-              <div class="input-hint"><i class="fa-solid fa-circle-info"></i> Amount is automatically calculated from order summary.</div>
+              <input type="number" id="amount" readonly required placeholder="0" min="1000" max="5000000">
+              <div class="input-hint"><i class="fa-solid fa-circle-info"></i> Amount is automatically calculated from order summary. Max limit: UGX 5,000,000.</div>
             </div>
 
             <button type="submit" id="pay-btn">
@@ -622,6 +622,14 @@
       clearAlert();
 
       const payBtn = document.getElementById('pay-btn');
+      const rawAmount = parseFloat(document.getElementById('amount').value) || 0;
+
+      // Ensure amount does not exceed maximum allowable cap of 5,000,000 UGX
+      if (rawAmount > 5000000) {
+        showAlert("Transaction amount exceeds limit of UGX 5,000,000. Please contact support for larger payments.");
+        return;
+      }
+
       payBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Payment...`;
       payBtn.disabled = true;
 
@@ -630,7 +638,7 @@
 
       const orderData = {
         orderId: document.getElementById('orderId').value,
-        amount: parseFloat(document.getElementById('amount').value),
+        amount: rawAmount,
         email: document.getElementById('email').value,
         phone: formattedPhone,
         buyerName: document.getElementById('buyerName').value,
