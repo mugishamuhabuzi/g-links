@@ -85,10 +85,27 @@
     .header-icons {
       display: flex;
       gap: 16px;
+      align-items: center;
       font-size: 18px;
     }
 
     .header-icons a { color: white; text-decoration: none; }
+
+    .vendor-nav-icon {
+      background: rgba(255, 255, 255, 0.2);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transition: background 0.2s;
+    }
+
+    .vendor-nav-icon:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
 
     .cart-icon-wrapper {
       position: relative;
@@ -433,6 +450,10 @@
         </div>
       </div>
       <div class="header-icons">
+        <!-- Vendor Dashboard Button (Visible only to logged in vendors) -->
+        <a href="vendor.html" id="vendorDashboardBtn" class="vendor-nav-icon" style="display: none;" title="Vendor Dashboard" onclick="openVendorDashboard(event)">
+          <i class="fa-solid fa-store"></i>
+        </a>
         <a href="notifications.html"><i class="fa-solid fa-bell"></i></a>
         <a href="cart.html" class="cart-icon-wrapper">
           <i class="fa-solid fa-cart-shopping"></i>
@@ -535,7 +556,7 @@
 
   let allItemsCache = [];
 
-  // --- LOCAL STORAGE HELPERS ---
+  // --- LOCAL STORAGE & VENDOR HELPERS ---
   function updateCartBadge() {
     const badge = document.getElementById("cartBadge");
     if (!badge) return;
@@ -576,13 +597,93 @@
     }
   }
 
+  function updateVendorButtonVisibility(isVendor) {
+    const vendorBtn = document.getElementById("vendorDashboardBtn");
+    if (vendorBtn) {
+      if (isVendor) {
+        vendorBtn.style.display = "inline-flex";
+      } else {
+        vendorBtn.style.display = "none";
+      }
+    }
+  }
+
+  function loadCachedVendorStatus() {
+    const cachedIsVendor = localStorage.getItem("venxIsVendor") === "true";
+    updateVendorButtonVisibility(cachedIsVendor);
+  }
+
   // Instant render from local storage cache before network fetch
   loadCachedUserProfile();
   loadCachedProducts();
+  loadCachedVendorStatus();
   updateCartBadge();
 
+  // --- CHECK VENDOR STATUS IN FIRESTORE ---
+  async function checkVendorStatus(user) {
+    if (!user) {
+      localStorage.setItem("venxIsVendor", "false");
+      updateVendorButtonVisibility(false);
+      return false;
+    }
+    try {
+      const cachedIsVendor = localStorage.getItem("venxIsVendor");
+      if (cachedIsVendor === "true") {
+        updateVendorButtonVisibility(true);
+      	return true;
+      }
+
+      const bizQueries = [
+        query(collection(db, "businesses"), where("userId", "==", user.uid)),
+        query(collection(db, "businesses"), where("ownerId", "==", user.uid)),
+        query(collection(db, "businesses"), where("email", "==", user.email))
+      ];
+
+      let isVendor = false;
+      for (const q of bizQueries) {
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          isVendor = true;
+          localStorage.setItem("venxBusinessId", snap.docs[0].id);
+          break;
+        }
+      }
+
+      if (!isVendor) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userDocRef);
+        if (userSnap.exists()) {
+          const uData = userSnap.data();
+          if (uData.role === "vendor" || uData.isVendor || uData.businessId) {
+            isVendor = true;
+          }
+        }
+      }
+
+      localStorage.setItem("venxIsVendor", isVendor ? "true" : "false");
+      updateVendorButtonVisibility(isVendor);
+      return isVendor;
+    } catch (e) {
+      console.warn("Error checking vendor status:", e);
+      const isVendor = localStorage.getItem("venxIsVendor") === "true";
+      updateVendorButtonVisibility(isVendor);
+      return isVendor;
+    }
+  }
+
+  window.openVendorDashboard = function(event) {
+    const isVendor = localStorage.getItem("venxIsVendor") === "true";
+    if (!isVendor) {
+      if (event) event.preventDefault();
+      alert("Access restricted: Only registered vendors can access the vendor dashboard.");
+      window.location.href = "packages.html";
+      return;
+    }
+    window.location.href = "vendor.html";
+  };
+
   // --- FIREBASE AUTH LISTENERS ---
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     const avatarImg = document.getElementById("userAvatar");
     if (user && avatarImg) {
       const name = user.displayName || user.email.split('@')[0];
@@ -594,6 +695,11 @@
       localStorage.setItem("venxUserName", name);
       localStorage.setItem("venxUserEmail", user.email || "");
       localStorage.setItem("venxUserId", user.uid);
+
+      await checkVendorStatus(user);
+    } else {
+      localStorage.setItem("venxIsVendor", "false");
+      updateVendorButtonVisibility(false);
     }
   });
 
