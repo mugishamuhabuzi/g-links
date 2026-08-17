@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venx Market - Vendor Dashboard</title>
+  <!-- Tailwind CSS for clean, responsive styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl font-bold text-indigo-600">VENX</span>
+        <span class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Vendor Portal</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span id="vendorEmailDisplay" class="text-sm text-gray-700 font-medium">Loading...</span>
+        <button id="logoutBtn" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-100 transition">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Subscription Payment & Grace Period Notification Banner -->
+  <div id="subscriptionAlertBanner" class="bg-amber-50 border-b border-amber-200 px-4 py-3 hidden">
+    <div class="max-w-7xl mx-auto flex justify-between items-center text-sm text-amber-800">
+      <div class="flex items-center space-x-2">
+        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <span id="subscriptionAlertText">Your subscription package requires renewal. Grace period active.</span>
+      </div>
+      <button onclick="openSubscriptionModal()" class="bg-amber-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-amber-700 transition">Renew Package</button>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Container -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+
+    <!-- Welcome & Stats Overview Row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <p class="text-sm text-gray-500 font-medium">Total Revenue</p>
+        <h3 id="totalRevenue" class="text-2xl font-bold text-gray-900 mt-1">UGX 0</h3>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <p class="text-sm text-gray-500 font-medium">Pending Payout</p>
+        <h3 id="pendingPayout" class="text-2xl font-bold text-indigo-600 mt-1">UGX 0</h3>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <p class="text-sm text-gray-500 font-medium">Confirmed Orders</p>
+        <h3 id="totalOrders" class="text-2xl font-bold text-gray-900 mt-1">0</h3>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
+        <button onclick="requestPayout()" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-sm">
+          Request Payout
+        </button>
+      </div>
+    </div>
+
+    <!-- Package & Inventory Limits Summary Card -->
+    <div class="bg-gradient-to-r from-indigo-900 to-indigo-700 rounded-2xl text-white p-6 mb-8 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="bg-indigo-500 bg-opacity-40 text-xs px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider" id="packageNameDisplay">Loading Package...</span>
+          <span class="text-xs text-indigo-200" id="gracePeriodStatus">Grace Period: Checking...</span>
+        </div>
+        <h2 class="text-xl font-bold mt-2">Product Slots: <span id="productSlotsCount">0 / 0</span> used</h2>
+        <p class="text-indigo-200 text-sm mt-1">Upgrade your tier to list more items on Venx Market.</p>
+      </div>
+      <div class="flex space-x-3">
+        <button onclick="openSubscriptionModal()" class="bg-white text-indigo-900 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-50 transition">Manage Subscription</button>
+      </div>
+    </div>
+
+    <!-- Dashboard Tabs -->
+    <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
+      <button onclick="switchTab('orders')" id="tabOrdersBtn" class="py-3 px-6 font-semibold text-indigo-600 border-b-2 border-indigo-600 focus:outline-none whitespace-nowrap">Customer Orders & Items</button>
+      <button onclick="switchTab('products')" id="tabProductsBtn" class="py-3 px-6 font-semibold text-gray-500 hover:text-indigo-600 focus:outline-none whitespace-nowrap">My Products</button>
+      <button onclick="switchTab('payouts')" id="tabPayoutsBtn" class="py-3 px-6 font-semibold text-gray-500 hover:text-indigo-600 focus:outline-none whitespace-nowrap">Payout History</button>
+    </div>
+
+    <!-- TAB 1: Customer Orders & Items Bought -->
+    <div id="sectionOrders" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+        <h2 class="text-lg font-bold text-gray-900">Items Bought From Your Business</h2>
+        <span class="text-xs bg-indigo-50 text-indigo-600 py-1 px-3 rounded-full font-semibold">Real-time Sync</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+              <th class="py-3 px-6">Order ID</th>
+              <th class="py-3 px-6">Item / Product</th>
+              <th class="py-3 px-6">Buyer Details</th>
+              <th class="py-3 px-6">Amount (UGX)</th>
+              <th class="py-3 px-6">Fulfillment Status</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody" class="divide-y divide-gray-100 text-sm text-gray-700">
+            <tr><td colspan="5" class="py-6 text-center text-gray-400">Loading your store orders...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 2: Product Management -->
+    <div id="sectionProducts" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900">Manage Your Products</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Add and manage items visible to Venx Market buyers.</p>
+        </div>
+        <button onclick="openAddProductModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition">+ Add New Product</button>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+              <th class="py-3 px-6">Product Name</th>
+              <th class="py-3 px-6">Price (UGX)</th>
+              <th class="py-3 px-6">Stock Status</th>
+              <th class="py-3 px-6">Action</th>
+            </tr>
+          </thead>
+          <tbody id="productsTableBody" class="divide-y divide-gray-100 text-sm text-gray-700">
+            <tr><td colspan="4" class="py-6 text-center text-gray-400">Loading products...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 3: Payout History -->
+    <div id="sectionPayouts" class="hidden bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="p-6 border-b border-gray-100">
+        <h2 class="text-lg font-bold text-gray-900">Verified Payout Requests</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+              <th class="py-3 px-6">Request ID</th>
+              <th class="py-3 px-6">Amount Requested (UGX)</th>
+              <th class="py-3 px-6">Date</th>
+              <th class="py-3 px-6">Status</th>
+            </tr>
+          </thead>
+          <tbody id="payoutsTableBody" class="divide-y divide-gray-100 text-sm text-gray-700">
+            <tr><td colspan="4" class="py-6 text-center text-gray-400">No payout records found.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ADD PRODUCT MODAL -->
+  <div id="addProductModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-gray-900">Add New Product</h3>
+        <button onclick="closeAddProductModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+      <form id="addProductForm" onsubmit="submitNewProduct(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Product Name</label>
+          <input type="text" id="newProdName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Price (UGX)</label>
+          <input type="number" id="newProdPrice" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Description</label>
+          <textarea id="newProdDesc" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+        </div>
+        <div class="flex justify-end space-x-3 pt-2">
+          <button type="button" onclick="closeAddProductModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SUBSCRIPTION RENEWAL MODAL -->
+  <div id="subscriptionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-gray-900">Choose / Renew Subscription Package</h3>
+        <button onclick="closeSubscriptionModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+      <div class="space-y-4">
+        <div class="border rounded-xl p-4 flex justify-between items-center hover:border-indigo-500 cursor-pointer" onclick="selectPackage('Basic', 10, 20000)">
+          <div>
+            <h4 class="font-bold text-gray-900">Basic Tier</h4>
+            <p class="text-xs text-gray-500">Up to 10 product listings</p>
+          </div>
+          <span class="font-bold text-indigo-600">UGX 20,000 / mo</span>
+        </div>
+        <div class="border rounded-xl p-4 flex justify-between items-center hover:border-indigo-500 cursor-pointer" onclick="selectPackage('Standard', 30, 45000)">
+          <div>
+            <h4 class="font-bold text-gray-900">Standard Tier</h4>
+            <p class="text-xs text-gray-500">Up to 30 product listings + Priority support</p>
+          </div>
+          <span class="font-bold text-indigo-600">UGX 45,000 / mo</span>
+        </div>
+        <div class="border rounded-xl p-4 flex justify-between items-center hover:border-indigo-500 cursor-pointer" onclick="selectPackage('Premium', 100, 90000)">
+          <div>
+            <h4 class="font-bold text-gray-900">Premium Tier</h4>
+            <p class="text-xs text-gray-500">Up to 100 product listings + Featured placement</p>
+          </div>
+          <span class="font-bold text-indigo-600">UGX 90,000 / mo</span>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button onclick="closeSubscriptionModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase & Dashboard Logic Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, doc, getDoc, setDoc, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Provided Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX2jTRmAJjTXAv4cpNFbERbPDI_gbmLtk",
+      authDomain: "venx-online-market.firebaseapp.com",
+      projectId: "venx-online-market",
+      storageBucket: "venx-online-market.firebasestorage.app",
+      messagingSenderId: "820627929510",
+      appId: "1:820627929510:web:aa97704fbf1c6bf4077767",
+      measurementId: "G-BLH2T3CBVQ"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let activeVendorId = null;
+    let vendorDataCache = null;
+    let currentProductCount = 0;
+    let maxAllowedProducts = 10;
+
+    // Secure Authentication Check
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        activeVendorId = user.uid;
+        document.getElementById("vendorEmailDisplay").innerText = user.email;
+        
+        // Load data specific to this vendor ID
+        await loadVendorDashboardData(activeVendorId);
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // Logout Handler
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+
+    // Load Vendor Specific Data & Subscription Details
+    async function loadVendorDashboardData(vendorId) {
+      try {
+        // 1. Fetch Vendor Profile & Subscription status
+        const vendorDocRef = doc(db, "vendors", vendorId);
+        const vendorSnap = await getDoc(vendorDocRef);
+
+        let packageName = "Basic Tier";
+        maxAllowedProducts = 10;
+        let expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 30); // default 30 days ahead if new
+
+        if (vendorSnap.exists()) {
+          vendorDataCache = vendorSnap.data();
+          packageName = vendorDataCache.packageType || "Basic Tier";
+          maxAllowedProducts = Number(vendorDataCache.maxProducts || 10);
+          if (vendorDataCache.subscriptionExpiry) {
+            expiryDate = vendorDataCache.subscriptionExpiry.toDate();
+          }
+        } else {
+          // Initialize default vendor profile if not created yet
+          await setDoc(vendorDocRef, {
+            email: auth.currentUser.email,
+            packageType: "Basic Tier",
+            maxProducts: 10,
+            subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            createdAt: serverTimestamp()
+          }, { merge: true });
+        }
+
+        // Calculate Grace Period / Time Left
+        const now = new Date();
+        const diffTime = expiryDate - now;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        document.getElementById("packageNameDisplay").innerText = packageName;
+        
+        if (diffDays <= 0) {
+          document.getElementById("gracePeriodStatus").innerText = "Status: Expired (Grace Period Active)";
+          document.getElementById("subscriptionAlertBanner").classList.remove("hidden");
+          document.getElementById("subscriptionAlertText").innerText = "Your package subscription has expired. Please renew to keep listings active.";
+        } else if (diffDays <= 5) {
+          document.getElementById("gracePeriodStatus").innerText = `Status: Expires in ${diffDays} day(s)`;
+          document.getElementById("subscriptionAlertBanner").classList.remove("hidden");
+          document.getElementById("subscriptionAlertText").innerText = `Your subscription expires in ${diffDays} days. Renew soon to avoid interruption.`;
+        } else {
+          document.getElementById("gracePeriodStatus").innerText = `Active (${diffDays} days remaining)`;
+        }
+
+        // 2. Fetch Orders for this vendor
+        const ordersRef = collection(db, "orders");
+        const qOrders = query(ordersRef, where("vendorId", "==", vendorId));
+        const ordersSnap = await getDocs(qOrders);
+
+        let totalRev = 0;
+        let orderCount = 0;
+        let ordersHtml = "";
+
+        ordersSnap.forEach((docSnap) => {
+          const order = docSnap.data();
+          orderCount++;
+          const amount = Number(order.amount || order.price || 0);
+          totalRev += amount;
+
+          ordersHtml += `
+            <tr class="hover:bg-gray-50">
+              <td class="py-4 px-6 font-mono text-xs text-gray-500">${docSnap.id.substring(0, 10)}...</td>
+              <td class="py-4 px-6 font-medium text-gray-900">${order.productName || order.description || 'Order Item'}</td>
+              <td class="py-4 px-6 text-gray-600">${order.buyerName || order.email || 'Customer'}</td>
+              <td class="py-4 px-6 font-semibold text-gray-900">UGX ${amount.toLocaleString()}</td>
+              <td class="py-4 px-6"><span class="bg-green-50 text-green-700 py-1 px-3 rounded-full text-xs font-semibold">Paid / Confirmed</span></td>
+            </tr>
+          `;
+        });
+
+        if (orderCount === 0) {
+          ordersHtml = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No customer orders recorded for your business yet.</td></tr>`;
+        }
+
+        document.getElementById("ordersTableBody").innerHTML = ordersHtml;
+        document.getElementById("totalRevenue").innerText = `UGX ${totalRev.toLocaleString()}`;
+        document.getElementById("pendingPayout").innerText = `UGX ${totalRev.toLocaleString()}`;
+        document.getElementById("totalOrders").innerText = orderCount;
+
+        // 3. Fetch Products for this vendor
+        const productsRef = collection(db, "products");
+        const qProducts = query(productsRef, where("vendorId", "==", vendorId));
+        const productsSnap = await getDocs(qProducts);
+
+        currentProductCount = productsSnap.size;
+        document.getElementById("productSlotsCount").innerText = `${currentProductCount} / ${maxAllowedProducts}`;
+
+        let productsHtml = "";
+        productsSnap.forEach((docSnap) => {
+          const prod = docSnap.data();
+          productsHtml += `
+            <tr class="hover:bg-gray-50">
+              <td class="py-4 px-6 font-medium text-gray-900">${prod.productName}</td>
+              <td class="py-4 px-6">UGX ${Number(prod.price || 0).toLocaleString()}</td>
+              <td class="py-4 px-6"><span class="bg-blue-50 text-blue-700 py-1 px-3 rounded-full text-xs font-semibold">In Stock</span></td>
+              <td class="py-4 px-6 text-indigo-600 font-medium hover:underline cursor-pointer">Edit</td>
+            </tr>
+          `;
+        });
+
+        if (productsSnap.empty) {
+          productsHtml = `<tr><td colspan="4" class="py-6 text-center text-gray-400">You have no products listed.</td></tr>`;
+        }
+        document.getElementById("productsTableBody").innerHTML = productsHtml;
+
+        // 4. Load Payout History
+        const payoutsRef = collection(db, "payouts");
+        const qPayouts = query(payoutsRef, where("vendorId", "==", vendorId));
+        const payoutsSnap = await getDocs(qPayouts);
+        let payoutsHtml = "";
+        payoutsSnap.forEach((docSnap) => {
+          const pay = docSnap.data();
+          const pDate = pay.timestamp ? new Date(pay.timestamp.seconds * 1000).toLocaleDateString() : 'Recent';
+          payoutsHtml += `
+            <tr class="hover:bg-gray-50">
+              <td class="py-4 px-6 font-mono text-xs text-gray-500">${docSnap.id.substring(0, 10)}...</td>
+              <td class="py-4 px-6 font-semibold text-gray-900">${pay.amount}</td>
+              <td class="py-4 px-6 text-gray-600">${pDate}</td>
+              <td class="py-4 px-6"><span class="bg-amber-50 text-amber-700 py-1 px-3 rounded-full text-xs font-semibold">${pay.status}</span></td>
+            </tr>
+          `;
+        });
+        if (!payoutsSnap.empty) {
+          document.getElementById("payoutsTableBody").innerHTML = payoutsHtml;
+        }
+
+      } catch (err) {
+        console.error("Error loading vendor dashboard:", err);
+      }
+    }
+
+    // Modal Controls
+    window.openAddProductModal = function() {
+      if (currentProductCount >= maxAllowedProducts) {
+        alert(`Product limit reached! Your current package allows up to ${maxAllowedProducts} items. Please upgrade your package to add more.`);
+        openSubscriptionModal();
+        return;
+      }
+      document.getElementById("addProductModal").classList.remove("hidden");
+    };
+    window.closeAddProductModal = function() {
+      document.getElementById("addProductModal").classList.add("hidden");
+    };
+
+    window.openSubscriptionModal = function() {
+      document.getElementById("subscriptionModal").classList.remove("hidden");
+    };
+    window.closeSubscriptionModal = function() {
+      document.getElementById("subscriptionModal").classList.add("hidden");
+    };
+
+    // Submit New Product with limit verification
+    window.submitNewProduct = async function(e) {
+      e.preventDefault();
+      if (!activeVendorId) return;
+
+      if (currentProductCount >= maxAllowedProducts) {
+        alert("Package limit reached. Cannot add more products.");
+        return;
+      }
+
+      const name = document.getElementById("newProdName").value;
+      const price = Number(document.getElementById("newProdPrice").value);
+      const description = document.getElementById("newProdDesc").value;
+
+      try {
+        await addDoc(collection(db, "products"), {
+          vendorId: activeVendorId,
+          productName: name,
+          price: price,
+          description: description,
+          createdAt: serverTimestamp()
+        });
+        alert("Product added successfully!");
+        closeAddProductModal();
+        document.getElementById("addProductForm").reset();
+        await loadVendorDashboardData(activeVendorId);
+      } catch (err) {
+        alert("Error adding product: " + err.message);
+      }
+    };
+
+    // Select/Renew Package Handler
+    window.selectPackage = async function(tierName, limit, price) {
+      if (!activeVendorId) return;
+      try {
+        const newExpiry = new Date();
+        newExpiry.setDate(newExpiry.getDate() + 30);
+
+        const vendorDocRef = doc(db, "vendors", activeVendorId);
+        await setDoc(vendorDocRef, {
+          packageType: `${tierName} Tier`,
+          maxProducts: limit,
+          subscriptionExpiry: newExpiry
+        }, { merge: true });
+
+        alert(`Successfully subscribed to ${tierName} Tier! Package updated.`);
+        closeSubscriptionModal();
+        await loadVendorDashboardData(activeVendorId);
+      } catch (err) {
+        alert("Failed to update subscription: " + err.message);
+      }
+    };
+
+    // Payout Request Handler
+    window.requestPayout = async function() {
+      if (!activeVendorId) return;
+      try {
+        await addDoc(collection(db, "payouts"), {
+          vendorId: activeVendorId,
+          amount: document.getElementById("pendingPayout").innerText,
+          status: "Pending Verification",
+          timestamp: serverTimestamp()
+        });
+        alert("Payout request submitted successfully and sent for verification!");
+        await loadVendorDashboardData(activeVendorId);
+      } catch (err) {
+        alert("Failed to request payout: " + err.message);
+      }
+    };
+
+    // Tab Switcher Helper
+    window.switchTab = function(tabName) {
+      document.getElementById("sectionOrders").classList.add("hidden");
+      document.getElementById("sectionProducts").classList.add("hidden");
+      document.getElementById("sectionPayouts").classList.add("hidden");
+      
+      document.getElementById("tabOrdersBtn").className = "py-3 px-6 font-semibold text-gray-500 hover:text-indigo-600 focus:outline-none border-b-2 border-transparent whitespace-nowrap";
+      document.getElementById("tabProductsBtn").className = "py-3 px-6 font-semibold text-gray-500 hover:text-indigo-600 focus:outline-none border-b-2 border-transparent whitespace-nowrap";
+      document.getElementById("tabPayoutsBtn").className = "py-3 px-6 font-semibold text-gray-500 hover:text-indigo-600 focus:outline-none border-b-2 border-transparent whitespace-nowrap";
+
+      if (tabName === 'orders') {
+        document.getElementById("sectionOrders").classList.remove("hidden");
+        document.getElementById("tabOrdersBtn").className = "py-3 px-6 font-semibold text-indigo-600 border-b-2 border-indigo-600 focus:outline-none whitespace-nowrap";
+      } else if (tabName === 'products') {
+        document.getElementById("sectionProducts").classList.remove("hidden");
+        document.getElementById("tabProductsBtn").className = "py-3 px-6 font-semibold text-indigo-600 border-b-2 border-indigo-600 focus:outline-none whitespace-nowrap";
+      } else if (tabName === 'payouts') {
+        document.getElementById("sectionPayouts").classList.remove("hidden");
+        document.getElementById("tabPayoutsBtn").className = "py-3 px-6 font-semibold text-indigo-600 border-b-2 border-indigo-600 focus:outline-none whitespace-nowrap";
+      }
+    };
+  </script>
+</body>
+</html>
