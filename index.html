@@ -84,7 +84,7 @@
 
     .header-icons {
       display: flex;
-      gap: 16px;
+      gap: 14px;
       align-items: center;
       font-size: 18px;
     }
@@ -92,19 +92,20 @@
     .header-icons a { color: white; text-decoration: none; }
 
     .vendor-nav-icon {
-      background: rgba(255, 255, 255, 0.2);
-      width: 34px;
-      height: 34px;
+      background: rgba(255, 255, 255, 0.25);
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
+      font-size: 16px;
       transition: background 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.4);
     }
 
     .vendor-nav-icon:hover {
-      background: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.4);
     }
 
     .cart-icon-wrapper {
@@ -454,8 +455,8 @@
         <a href="vendor.html" id="vendorDashboardBtn" class="vendor-nav-icon" style="display: none;" title="Vendor Dashboard" onclick="openVendorDashboard(event)">
           <i class="fa-solid fa-store"></i>
         </a>
-        <a href="notifications.html"><i class="fa-solid fa-bell"></i></a>
-        <a href="cart.html" class="cart-icon-wrapper">
+        <a href="notifications.html" title="Notifications"><i class="fa-solid fa-bell"></i></a>
+        <a href="cart.html" class="cart-icon-wrapper" title="Cart">
           <i class="fa-solid fa-cart-shopping"></i>
           <span id="cartBadge" class="cart-badge" style="display: none;">0</span>
         </a>
