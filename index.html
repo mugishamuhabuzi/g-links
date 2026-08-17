@@ -451,7 +451,7 @@
         </div>
       </div>
       <div class="header-icons">
-        <!-- Vendor Dashboard Button (Visible only to logged in vendors) -->
+        <!-- Vendor Dashboard Button (Visible to logged in vendors) -->
         <a href="vendor.html" id="vendorDashboardBtn" class="vendor-nav-icon" style="display: none;" title="Vendor Dashboard" onclick="openVendorDashboard(event)">
           <i class="fa-solid fa-store"></i>
         </a>
@@ -557,7 +557,6 @@
 
   let allItemsCache = [];
 
-  // --- LOCAL STORAGE & VENDOR HELPERS ---
   function updateCartBadge() {
     const badge = document.getElementById("cartBadge");
     if (!badge) return;
@@ -614,13 +613,12 @@
     updateVendorButtonVisibility(cachedIsVendor);
   }
 
-  // Instant render from local storage cache before network fetch
   loadCachedUserProfile();
   loadCachedProducts();
   loadCachedVendorStatus();
   updateCartBadge();
 
-  // --- CHECK VENDOR STATUS IN FIRESTORE ---
+  // --- ROBUST VENDOR STATUS CHECK (SAFE IN-MEMORY MATCHING) ---
   async function checkVendorStatus(user) {
     if (!user) {
       localStorage.setItem("venxIsVendor", "false");
@@ -628,39 +626,52 @@
       return false;
     }
     try {
-      const cachedIsVendor = localStorage.getItem("venxIsVendor");
-      if (cachedIsVendor === "true") {
+      if (localStorage.getItem("venxIsVendor") === "true") {
         updateVendorButtonVisibility(true);
       	return true;
       }
 
-      const bizQueries = [
-        query(collection(db, "businesses"), where("userId", "==", user.uid)),
-        query(collection(db, "businesses"), where("ownerId", "==", user.uid)),
-        query(collection(db, "businesses"), where("email", "==", user.email))
-      ];
-
       let isVendor = false;
-      for (const q of bizQueries) {
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          isVendor = true;
-          localStorage.setItem("venxBusinessId", snap.docs[0].id);
-          break;
-        }
-      }
 
-      if (!isVendor) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userDocRef);
+      // 1. Check user doc role
+      try {
+        const userSnap = await getDoc(doc(db, "users", user.uid));
         if (userSnap.exists()) {
           const uData = userSnap.data();
-          if (uData.role === "vendor" || uData.isVendor || uData.businessId) {
+          if (uData.role === "vendor" || uData.isVendor || uData.businessId || uData.packageType) {
             isVendor = true;
           }
         }
+      } catch (err) {
+        console.warn("User doc check warning:", err);
       }
 
+      // 2. Check businesses collection without complex index queries
+      if (!isVendor) {
+        try {
+          const bizSnapshot = await getDocs(collection(db, "businesses"));
+          bizSnapshot.forEach(docSnap => {
+            const b = docSnap.data();
+            if (
+              b.userId === user.uid || 
+              b.ownerId === user.uid || 
+              b.owner === user.uid || 
+              b.uid === user.uid ||
+              b.createdBy === user.uid ||
+              (b.email && user.email && b.email.toLowerCase() === user.email.toLowerCase())
+            ) {
+              isVendor = true;
+              localStorage.setItem("venxBusinessId", docSnap.id);
+            }
+          });
+        } catch (err) {
+          console.warn("Businesses fetch warning:", err);
+        }
+      }
+
+      // DEVELOPMENT OVERRIDE: If you want to force-show the vendor button for testing while logged in, 
+      // you can also set localStorage.setItem("venxIsVendor", "true") in your browser console.
+      
       localStorage.setItem("venxIsVendor", isVendor ? "true" : "false");
       updateVendorButtonVisibility(isVendor);
       return isVendor;
@@ -683,7 +694,6 @@
     window.location.href = "vendor.html";
   };
 
-  // --- FIREBASE AUTH LISTENERS ---
   onAuthStateChanged(auth, async (user) => {
     const avatarImg = document.getElementById("userAvatar");
     if (user && avatarImg) {
@@ -691,7 +701,6 @@
       const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0b8f4d&color=ffffff&bold=true`;
       avatarImg.src = avatarUrl;
       
-      // Save profile info to local storage
       localStorage.setItem("venxUserAvatar", avatarUrl);
       localStorage.setItem("venxUserName", name);
       localStorage.setItem("venxUserEmail", user.email || "");
@@ -704,7 +713,6 @@
     }
   });
 
-  // --- FIRESTORE PRODUCT FETCHING ---
   async function fetchApprovedItems() {
     try {
       const q = query(collection(db, "products"), where("approved", "==", true));
@@ -739,7 +747,6 @@
         allItemsCache = getFallbackBusinesses();
       }
 
-      // Save fresh listings into local storage cache
       localStorage.setItem("venxApprovedProducts", JSON.stringify(allItemsCache));
       renderProducts(allItemsCache);
     } catch (error) {
@@ -814,7 +821,6 @@
     });
   }
 
-  // Dual-Key Storage Handler bound to Global Scope
   window.orderOnPlatform = function(itemId) {
     const item = allItemsCache.find(i => String(i.id) === String(itemId));
     
@@ -853,7 +859,6 @@
       cart.push(newItem);
     }
 
-    // Save under both storage keys to guarantee cart.html reads the data
     localStorage.setItem("venxCart", JSON.stringify(cart));
     localStorage.setItem("cart", JSON.stringify(cart));
 
@@ -863,8 +868,6 @@
 
   window.filterProducts = function() {
     const queryText = document.getElementById("searchInput").value.toLowerCase();
-    
-    // Cache last search query in local storage
     localStorage.setItem("venxLastSearch", queryText);
 
     const filtered = allItemsCache.filter(item => 
