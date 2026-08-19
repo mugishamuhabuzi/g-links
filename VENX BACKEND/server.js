@@ -32,6 +32,7 @@ function formatUgandaPhone(phone) {
 }
 
 // Firebase Initialization
+let db;
 try {
   if (!admin.apps.length && process.env.FIREBASE_PROJECT_ID) {
     admin.initializeApp({
@@ -43,6 +44,7 @@ try {
     });
     console.log('✅ Firebase Admin initialized.');
   }
+  db = admin.firestore();
 } catch (e) {
   console.warn('⚠️ Firebase init warning:', e.message);
 }
@@ -219,10 +221,99 @@ const handlePayment = async (req, res) => {
   }
 };
 
+// ==========================================
+// ESCROW PAYOUT EVALUATION ENGINE (STEP 4)
+// ==========================================
+app.post('/api/evaluate-payout', async (req, res) => {
+  const { orderId } = req.body;
+
+  if (!orderId) {
+    return res.status(400).json({ success: false, message: "Order ID is required." });
+  }
+
+  if (!db) {
+    return res.status(500).json({ success: false, message: "Firebase database not initialized on server." });
+  }
+
+  try {
+    const orderRef = db.collection('orders').doc(orderId);
+    const orderDoc = await orderRef.get();
+
+    if (!orderDoc.exists) {
+      return res.status(404).json({ success: false, message: "Order not found." });
+    }
+
+    const orderData = orderDoc.data();
+
+    // 1. Idempotency safeguard
+    if (orderData.payoutStatus === "released") {
+      return res.status(400).json({ success: false, message: "Payout has already been released for this order." });
+    }
+
+    // 2. Validate the Three Pillars of Verification
+    const isCustomerPaid = 
+      (orderData.paymentStatus || "").toLowerCase() === "completed" || 
+      (orderData.paymentStatus || "").toLowerCase() === "successful";
+
+    const isRiderConfirmed = 
+      (orderData.riderStatus || orderData.deliveryStatus || "").toLowerCase() === "accepted" || 
+      (orderData.riderStatus || orderData.deliveryStatus || "").toLowerCase() === "delivered";
+
+    const isAdminApproved = orderData.adminApproval === true;
+
+    // 3. Evaluate criteria
+    if (!isCustomerPaid || !isRiderConfirmed || !isAdminApproved) {
+      return res.status(200).json({ 
+        success: false, 
+        released: false,
+        message: "Escrow hold active. Missing one or more required approvals.",
+        checks: {
+          customerPaid: isCustomerPaid,
+          riderConfirmed: isRiderConfirmed,
+          adminApproved: isAdminApproved
+        }
+      });
+    }
+
+    // 4. All conditions satisfied: Execute payout release atomically via batch write
+    const payoutAmount = orderData.totalAmount || orderData.amount || 0;
+    const vendorId = orderData.vendorId;
+
+    const batch = db.batch();
+
+    batch.update(orderRef, {
+      payoutStatus: "released",
+      releasedAt: new Date().toISOString()
+    });
+
+    const txnRef = db.collection('vendorTransactions').doc();
+    batch.set(txnRef, {
+      vendorId: vendorId,
+      orderId: orderId,
+      amount: payoutAmount,
+      type: "payout_credit",
+      status: "completed",
+      createdAt: new Date().toISOString()
+    });
+
+    await batch.commit();
+
+    return res.status(200).json({ 
+      success: true, 
+      released: true, 
+      message: "Payout successfully released from escrow and logged to vendor history." 
+    });
+
+  } catch (error) {
+    console.error("Error processing payout evaluation:", error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Application Routes
 app.get('/', (req, res) => res.json({ status: 'active', gateway: 'Pesapal v3 Production' }));
 
-// Added Health Check Route for Render Cold-Start Warm-up
+// Health Check Route for Render Cold-Start Warm-up
 app.get('/api/health', (req, res) => res.status(200).json({ status: 'healthy', timestamp: Date.now() }));
 
 // Product Checkout Routes
@@ -238,7 +329,7 @@ app.post('/api/payments/package', handlePayment);
 app.post('/api/payments/package-fee', handlePayment);
 app.post('/api/vendor/register-payment', handlePayment);
 
-// Added explicit rider button routes to prevent 404 fetch errors
+// Explicit rider button routes to prevent 404 fetch errors
 app.post('/api/payments/initiate-registration', handlePayment);
 app.post('/api/payments/initiate-cod-remittance', handlePayment);
 
