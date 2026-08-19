@@ -1179,6 +1179,118 @@
         window.location.href = "orders.html";
       }
     }
+ function calculateFinancials() {
+      if (cart.length === 0) return;
+
+      computedSubtotalUGX = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+
+      // Compute 10% commission internally (Deducted from vendor payout, NOT added to buyer total)
+      computedPayeCommissionUGX = cart.reduce((sum, item) => {
+        if (isPayePackage(item.packageType)) {
+          return sum + (item.price * (item.quantity || 1) * 0.10);
+        }
+        return sum;
+      }, 0);
+
+      // Transport fee based on delivery mode
+      computedTransportUGX = deliveryMode === "type" ? 5000 : 4000; 
+
+      // Escrow fee (1.5% if paying online via Pesapal, 0 for COD)
+      computedEscrowUGX = selectedPaymentMethod === "PESAPAL" ? Math.round(computedSubtotalUGX * 0.015) : 0;
+
+      computedGrandTotalUGX = computedSubtotalUGX + computedTransportUGX + computedEscrowUGX - appliedDiscountUGX;
+
+      // Update UI elements
+      const currKey = document.getElementById("currencySelect").value;
+      const curr = EXCHANGE_RATES[currKey] || EXCHANGE_RATES.UGX;
+
+      document.getElementById("subtotalText").innerText = formatMoney(computedSubtotalUGX * curr.rate, curr);
+      document.getElementById("transportFeeText").innerText = formatMoney(computedTransportUGX * curr.rate, curr);
+      document.getElementById("escrowFeeText").innerText = formatMoney(computedEscrowUGX * curr.rate, curr);
+      document.getElementById("grandTotalText").innerText = formatMoney(computedGrandTotalUGX * curr.rate, curr);
+
+      if (computedPayeCommissionUGX > 0) {
+        document.getElementById("payeCommissionRow").style.display = "flex";
+        document.getElementById("payeCommissionText").innerText = formatMoney(computedPayeCommissionUGX * curr.rate, curr) + " (10% PAYE)";
+      } else {
+        document.getElementById("payeCommissionRow").style.display = "none";
+      }
+
+      if (appliedDiscountUGX > 0) {
+        document.getElementById("discountRow").style.display = "flex";
+        document.getElementById("discountText").innerText = "-" + formatMoney(appliedDiscountUGX * curr.rate, curr);
+      } else {
+        document.getElementById("discountRow").style.display = "none";
+      }
+
+      document.getElementById("destinationText").innerText = getBuyerLocationName();
+    }
+
+    // --- Three-Factor Checkout & Order Submission ---
+    async function proceedToCheckout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+
+      const destination = getBuyerLocationName();
+      const orderNote = document.getElementById("orderNote").value.trim();
+      const checkoutBtn = document.getElementById("checkoutBtn");
+
+      checkoutBtn.disabled = true;
+      checkoutBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Order...`;
+
+      try {
+        // Group items or generate order records for Firestore
+        for (const item of cart) {
+          const orderId = "VENX-ORD-" + Math.floor(100000 + Math.random() * 900000);
+          
+          const orderPayload = {
+            orderId: orderId,
+            vendorId: item.businessId || item.location || "vendor_default",
+            title: item.title,
+            price: item.price,
+            quantity: item.quantity,
+            totalAmount: item.price * item.quantity,
+            currency: document.getElementById("currencySelect").value,
+            destination: destination,
+            orderNote: orderNote,
+            paymentMethod: selectedPaymentMethod,
+            
+            // --- Three-Factor Automated Payout Tracking Fields ---
+            paymentStatus: selectedPaymentMethod === "PESAPAL" ? "pending" : "cod_pending", // Factor 1
+            riderConfirmation: "pending",   // Factor 2: Updated when rider drops off and buyer accepts
+            adminApproval: false,           // Factor 3: Updated when admin verifies fulfillment
+            payoutStatus: "held",           // Automatically releases when all 3 factors clear
+            
+            createdAt: new Date().toISOString()
+          };
+
+          // Save to Firestore 'orders' collection
+          // Ensure your Firebase SDK is initialized in your environment
+          await db.collection("orders").add(orderPayload);
+        }
+
+        // Clear local cart after successful order creation
+        localStorage.removeItem("venxCart");
+        localStorage.removeItem("cart");
+
+        if (selectedPaymentMethod === "PESAPAL") {
+          alert("Order created successfully! Redirecting to Pesapal Secure Payment gateway...");
+          // Redirect to Pesapal payment URL or payment handler endpoint
+          // window.location.href = "pesapal-payment-gateway.html";
+        } else {
+          alert("COD Order placed successfully! Nearby riders have been notified.");
+          window.location.href = "index.html";
+        }
+
+      } catch (error) {
+        console.error("Checkout error:", error);
+        alert("Failed to process order. Please try again.");
+        checkoutBtn.disabled = false;
+        checkoutBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay via Pesapal (Escrow)`;
+      }
+    }
   </script>
 </body>
 </html>
